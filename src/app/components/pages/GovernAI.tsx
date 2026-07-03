@@ -1,7 +1,7 @@
 import { Scale, Database, CheckCircle, XCircle, FileText } from 'lucide-react';
 import { MetricCard } from '../ui/MetricCard';
-import { Card } from '../ui/Card';
-import { Badge } from '../ui/Badge';
+import { Card } from '../ui/card';
+import { Badge } from '../ui/badge';
 
 export function GovernAI() {
   const complianceStandards = [

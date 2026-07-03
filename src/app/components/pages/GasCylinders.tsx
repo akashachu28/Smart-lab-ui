@@ -6,7 +6,7 @@ import { PressureMonitoringTab } from './gasCylinders/PressureMonitoringTab';
 import { LeakDetectionTab } from './gasCylinders/LeakDetectionTab';
 import { LifecycleManagementTab } from './gasCylinders/LifecycleManagementTab';
 import { IdentificationTrackingTab } from './gasCylinders/IdentificationTrackingTab';
-import { Badge } from '../ui/Badge';
+import { Badge } from '../ui/badge';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 // ── Cylinder Tracking Data ──────────────────────────────────────────────

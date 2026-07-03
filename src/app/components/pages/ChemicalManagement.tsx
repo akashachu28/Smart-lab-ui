@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { TestTube, AlertTriangle, ShieldCheck, Clock, Search, Barcode, TrendingUp, Package, Activity, Eye, Thermometer, Droplet, Wind, Brain, QrCode, ChevronRight, AlertOctagon } from 'lucide-react';
 import { MetricCard } from '../ui/MetricCard';
-import { Badge } from '../ui/Badge';
+import { Badge } from '../ui/badge';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area, ReferenceLine } from 'recharts';
 
 const tabs = ['Chemical Register', 'Storage Map', 'Compliance', 'MSDS', 'Analytics', 'Tracking', 'Consumption & Forecast', 'Expiry & Reorder', 'Chemical Compatibility'];

@@ -4,7 +4,7 @@ import {
   Timer, ShieldCheck, QrCode, Brain, Bell, ChevronRight, Plus, Search,
   Download, Filter, Zap, Link
 } from 'lucide-react';
-import { Badge } from '../ui/Badge';
+import { Badge } from '../ui/badge';
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, FunnelChart, Funnel, LabelList

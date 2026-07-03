@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Trash2, AlertTriangle, CheckCircle, TrendingDown, Recycle, Leaf, Eye, Brain, MapPin, Clock, Package, TrendingUp, Download } from 'lucide-react';
 import { MetricCard } from '../ui/MetricCard';
-import { Badge } from '../ui/Badge';
-import { Card } from '../ui/Card';
+import { Badge } from '../ui/badge';
+import { Card } from '../ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from 'recharts';
 
 const tabs = ['Overview', 'Waste Tracking', 'Vision Segregation', 'Sustainability'];

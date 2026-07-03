@@ -4,8 +4,8 @@ import {
   AlertTriangle, CheckCircle, Filter, Download
 } from 'lucide-react';
 import { MetricCard } from '../ui/MetricCard';
-import { Badge } from '../ui/Badge';
-import { Card } from '../ui/Card';
+import { Badge } from '../ui/badge';
+import { Card } from '../ui/card';
 import {
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Legend, PieChart, Pie, Cell, AreaChart, Area

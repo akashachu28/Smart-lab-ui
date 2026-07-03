@@ -1,6 +1,6 @@
 import { GitBranch, CheckCircle, XCircle, AlertCircle, Clock } from 'lucide-react';
-import { Card } from '../ui/Card';
-import { Badge } from '../ui/Badge';
+import { Card } from '../ui/card';
+import { Badge } from '../ui/badge';
 
 export function AISecOps() {
   const integrations = [

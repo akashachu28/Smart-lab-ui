@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Bot, Send, Sparkles, TrendingDown, Shield, FileWarning } from 'lucide-react';
-import { Card } from '../ui/Card';
-import { Badge } from '../ui/Badge';
+import { Card } from '../ui/card';
+import { Badge } from '../ui/badge';
 
 export function SecurityCopilot() {
   const [input, setInput] = useState('');

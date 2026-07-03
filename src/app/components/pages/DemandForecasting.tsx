@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Package, AlertTriangle, DollarSign, Target, TrendingUp, Calendar, ShoppingCart, Brain, ChevronDown, AlertCircle, Truck } from 'lucide-react';
 import { MetricCard } from '../ui/MetricCard';
-import { Badge } from '../ui/Badge';
+import { Badge } from '../ui/badge';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Area, AreaChart } from 'recharts';
 
 // Data

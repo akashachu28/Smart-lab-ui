@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Bot, Send, Mic, Paperclip, Plus, Clock, FileText, ChevronRight, Settings, Beaker, ClipboardList, Package, BookOpen, FlaskConical, AlertTriangle, Languages, BarChart3 } from 'lucide-react';
-import { Badge } from '../ui/Badge';
+import { Badge } from '../ui/badge';
 
 const sessions = [
   { id: 1, title: 'Acetone MSDS Query', time: 'Today, 09:14' },

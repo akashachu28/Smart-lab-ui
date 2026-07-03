@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { AlertOctagon, ShieldCheck, Search, Clock, Activity, AlertTriangle, Eye, CheckCircle } from 'lucide-react';
 import { MetricCard } from '../ui/MetricCard';
-import { Badge } from '../ui/Badge';
+import { Badge } from '../ui/badge';
 import { OverviewTab } from './compatibilityMonitoring/OverviewTab';
 import { ValidationTab } from './compatibilityMonitoring/ValidationTab';
 import { StorageMonitoringTab } from './compatibilityMonitoring/StorageMonitoringTab';
