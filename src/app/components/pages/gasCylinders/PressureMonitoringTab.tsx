@@ -17,6 +17,24 @@ const pressureTrendData = [
 export function PressureMonitoringTab() {
   return (
     <div className="grid grid-cols-3 gap-4">
+      {/* Pressure Analytics */}
+      <div className="col-span-3 grid grid-cols-3 gap-3">
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200/40 rounded-xl p-4 shadow-sm">
+          <Gauge className="w-5 h-5 text-blue-600 mb-2" />
+          <div className="text-2xl font-bold text-slate-800 mb-1">168 bar</div>
+          <p className="text-xs text-slate-600">Average Pressure</p>
+        </div>
+        <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200/40 rounded-xl p-4 shadow-sm">
+          <TrendingDown className="w-5 h-5 text-amber-600 mb-2" />
+          <div className="text-2xl font-bold text-slate-800 mb-1">4.2 bar/day</div>
+          <p className="text-xs text-slate-600">Pressure Drop Rate</p>
+        </div>
+        <div className="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200/40 rounded-xl p-4 shadow-sm">
+          <AlertTriangle className="w-5 h-5 text-red-600 mb-2" />
+          <div className="text-2xl font-bold text-slate-800 mb-1">18</div>
+          <p className="text-xs text-slate-600">Predicted Empty (48h)</p>
+        </div>
+      </div>
       {/* Pressure Distribution */}
       <Card title="Pressure Distribution" subtitle="Real-time gauge summary" className="col-span-1 bg-white/70 border-slate-200/40">
         <div className="space-y-4">
@@ -99,24 +117,7 @@ export function PressureMonitoringTab() {
         </div>
       </Card>
 
-      {/* Pressure Analytics */}
-      <div className="col-span-3 grid grid-cols-3 gap-3">
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200/40 rounded-xl p-4 shadow-sm">
-          <Gauge className="w-5 h-5 text-blue-600 mb-2" />
-          <div className="text-2xl font-bold text-slate-800 mb-1">168 bar</div>
-          <p className="text-xs text-slate-600">Average Pressure</p>
-        </div>
-        <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200/40 rounded-xl p-4 shadow-sm">
-          <TrendingDown className="w-5 h-5 text-amber-600 mb-2" />
-          <div className="text-2xl font-bold text-slate-800 mb-1">4.2 bar/day</div>
-          <p className="text-xs text-slate-600">Pressure Drop Rate</p>
-        </div>
-        <div className="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200/40 rounded-xl p-4 shadow-sm">
-          <AlertTriangle className="w-5 h-5 text-red-600 mb-2" />
-          <div className="text-2xl font-bold text-slate-800 mb-1">18</div>
-          <p className="text-xs text-slate-600">Predicted Empty (48h)</p>
-        </div>
-      </div>
+      
     </div>
   );
 }

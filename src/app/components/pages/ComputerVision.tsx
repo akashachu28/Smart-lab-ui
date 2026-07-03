@@ -73,6 +73,24 @@ const ALL_LOGS = [
 
 const CATEGORY_FILTER = ['All', 'PPE', 'Restricted', 'Access', 'Occupancy', 'Behaviour', 'Fire'];
 
+// ── PPE Compliance by Area ───────────────────────────────────────────────────
+
+const PPE_COMPLIANCE_BY_AREA = [
+  { area: 'Lab A', compliance: 82, violations: 18, totalScans: 145, helmet: 85, gloves: 92, goggles: 78, labCoat: 94, faceShield: 72 },
+  { area: 'Lab B', compliance: 88, violations: 12, totalScans: 98, helmet: 90, gloves: 94, goggles: 86, labCoat: 96, faceShield: 80 },
+  { area: 'Chemical Bay', compliance: 91, violations: 9, totalScans: 76, helmet: 93, gloves: 96, goggles: 89, labCoat: 98, faceShield: 85 },
+  { area: 'Radiation Lab', compliance: 95, violations: 5, totalScans: 42, helmet: 97, gloves: 98, goggles: 94, labCoat: 100, faceShield: 92 },
+  { area: 'Corridor C', compliance: 78, violations: 22, totalScans: 112, helmet: 80, gloves: 85, goggles: 74, labCoat: 88, faceShield: 68 },
+];
+
+const PPE_RECENT_ALERTS = [
+  { time: '11:38', area: 'Lab A — Bench 3', personnel: 'John Smith', violation: 'Face shield missing', severity: 'high' },
+  { time: '11:05', area: 'Lab B — Entry', personnel: 'Sarah Johnson', violation: 'No safety goggles', severity: 'high' },
+  { time: '10:28', area: 'Lab A — Bench 1', personnel: 'Mike Davis', violation: 'Gloves not worn', severity: 'high' },
+  { time: '09:30', area: 'Lab B — Bench 2', personnel: 'Emily Chen', violation: 'Helmet missing', severity: 'high' },
+  { time: '08:40', area: 'Lab A — Entry', personnel: 'David Wilson', violation: 'Lab coat not worn', severity: 'medium' },
+];
+
 // ── PPE Detection Logs ───────────────────────────────────────────────────────
 
 const PPE_LOGS = [
@@ -92,7 +110,7 @@ const PPE_LOGS = [
 
 const RESTRICTED_LOGS = [
   { id: 'RES-0045', date: '2026-07-02', time: '11:22:15', zone: 'Chemical Bay', personnel: 'Unknown', badge: 'N/A', authorized: false, duration: '2m 15s', status: 'Critical', action: 'Security notified' },
-  { id: 'RES-0044', date: '2026-07-02', time: '09:44:02', zone: 'Radiation Lab', personnel: 'James Clark', badge: 'EMP-4521', authorized: true, duration: '45s', status: 'Warning', action: 'Door held open — tailgating detected' },
+  { id: 'RES-0044', date: '2026-07-02', time: '09:44:02', zone: 'Radiation Lab', personnel: 'James Clark', badge: 'EMP-4521', authorized: true, duration: '45s', status: 'Normal', action: 'Authorized access' },
   { id: 'RES-0043', date: '2026-07-02', time: '08:12:30', zone: 'Chemical Bay', personnel: 'Maria Rodriguez', badge: 'EMP-3387', authorized: true, duration: '15m 22s', status: 'Normal', action: 'Authorized access' },
   { id: 'RES-0042', date: '2026-07-01', time: '16:30:45', zone: 'Server Room Annex', personnel: 'Unknown', badge: 'N/A', authorized: false, duration: '30s', status: 'Critical', action: 'Access denied — proximity alert' },
   { id: 'RES-0041', date: '2026-07-01', time: '14:22:10', zone: 'Radiation Lab', personnel: 'Christopher Lee', badge: 'EMP-2156', authorized: true, duration: '8m 45s', status: 'Normal', action: 'Authorized access' },
@@ -173,10 +191,15 @@ const areaStatus = [
 export function ComputerVision() {
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [activeSection, setActiveSection] = useState('Overview');
+  const [ppeAreaFilter, setPpeAreaFilter] = useState('All Areas');
 
   const filteredLogs = categoryFilter === 'All'
     ? ALL_LOGS
     : ALL_LOGS.filter(l => l.category === categoryFilter);
+
+  const filteredPpeLogs = ppeAreaFilter === 'All Areas'
+    ? PPE_LOGS
+    : PPE_LOGS.filter(l => l.area.startsWith(ppeAreaFilter));
 
   const sections = ['Overview', 'PPE Detection', 'Occupancy', 'Restricted Areas', 'Unsafe Behavior', 'Events Log'];
 
@@ -200,11 +223,10 @@ export function ComputerVision() {
       </div>
 
       {/* KPI Strip — one per detection type */}
-      <div className="grid grid-cols-6 gap-3">
+      <div className="grid grid-cols-5 gap-3">
         <MetricCard title="PPE Compliance" value="84%" subtitle="Overall today" icon={ShieldCheck} status="warning" trend="up" trendValue="+4% vs yesterday" />
         <MetricCard title="Restricted Breaches" value="3" subtitle="Today" icon={MapPin} status="error" />
-        <MetricCard title="Unauth. Entries" value="1" subtitle="Today" icon={UserX} status="error" />
-        <MetricCard title="Peak Occupancy" value="20" subtitle="Lab A (max 18)" icon={Users} status="warning" />
+        <MetricCard title="Unauthorized Entries" value="1" subtitle="Today" icon={UserX} status="error" />
         <MetricCard title="Unsafe Behaviour" value="5" subtitle="Incidents today" icon={Zap} status="warning" />
         <MetricCard title="Fire / Smoke" value="0" subtitle="No active events" icon={Flame} status="success" />
       </div>
@@ -242,27 +264,7 @@ export function ComputerVision() {
               </div>
             </CardWrapper>
 
-            {/* Behaviour breakdown pie */}
-            <CardWrapper title="Behaviour Breakdown" subtitle="Current session" className="flex-1">
-              <div className="flex items-center gap-3">
-                <ResponsiveContainer width={100} height={100}>
-                  <PieChart>
-                    <Pie data={behaviourPie} cx="50%" cy="50%" innerRadius={28} outerRadius={44} dataKey="value">
-                      {behaviourPie.map((e, i) => <Cell key={i} fill={e.color} />)}
-                    </Pie>
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="space-y-1.5 flex-1">
-                  {behaviourPie.map(d => (
-                    <div key={d.name} className="flex items-center gap-1.5">
-                      <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: d.color }}></div>
-                      <span className="text-[10px] text-slate-600 flex-1 truncate">{d.name}</span>
-                      <span className="text-[10px] font-semibold text-slate-700">{d.value}%</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </CardWrapper>
+            
           </div>
 
           {/* Bar chart — weekly detection counts */}
@@ -328,39 +330,11 @@ export function ComputerVision() {
 
       {/* ── PPE Detection ── */}
       {activeSection === 'PPE Detection' && (
-        <div className="grid grid-cols-2 gap-4">
-          <CardWrapper title="PPE Compliance Rate — Today" subtitle="Hourly trend by equipment type">
-            <ResponsiveContainer width="100%" height={220}>
-              <LineChart data={ppeComplianceTrend}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="time" tick={{ fontSize: 9 }} />
-                <YAxis domain={[50, 100]} tick={{ fontSize: 9 }} unit="%" />
-                <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `${v}%`} />
-                <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
-                <Line type="monotone" dataKey="labCoat" name="Lab Coat" stroke="#10b981" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="gloves" name="Gloves" stroke="#06b6d4" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="helmet" name="Helmet" stroke="#f59e0b" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="goggles" name="Goggles" stroke="#8b5cf6" strokeWidth={2} dot={false} />
-                <Line type="monotone" dataKey="faceShield" name="Face Shield" stroke="#ef4444" strokeWidth={2} dot={false} />
-              </LineChart>
-            </ResponsiveContainer>
-          </CardWrapper>
-
-          <CardWrapper title="Compliance by PPE Item" subtitle="Today — compliant vs violations">
-            <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={ppeBreakdown} layout="vertical" barSize={14}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
-                <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 9 }} unit="%" />
-                <YAxis type="category" dataKey="item" tick={{ fontSize: 10 }} width={68} />
-                <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `${v}%`} />
-                <Bar dataKey="compliant" name="Compliant" stackId="a" fill="#10b981" />
-                <Bar dataKey="violation" name="Violation" stackId="a" fill="#ef4444" radius={[0, 2, 2, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardWrapper>
+        <div className="grid grid-cols-3 gap-4">
+          
 
           {/* PPE violation summary cards */}
-          <div className="col-span-2 grid grid-cols-5 gap-3">
+          <div className="col-span-3 grid grid-cols-5 gap-3">
             {[
               { item: 'Lab Coat', icon: '🥼', compliant: 95, violations: 5, trend: 'down' },
               { item: 'Gloves', icon: '🧤', compliant: 91, violations: 9, trend: 'up' },
@@ -384,82 +358,217 @@ export function ComputerVision() {
           </div>
 
           {/* PPE Detection Logs Table */}
-          <div className="col-span-2">
+          <div className="col-span-3">
             <CardWrapper title="PPE Detection Logs" subtitle="Recent personnel scans with equipment status">
+              {/* Area Filter */}
+              <div className="flex items-center gap-2 mb-3">
+                <Filter className="w-3.5 h-3.5 text-slate-400" />
+                <span className="text-xs text-slate-500 mr-1">Area:</span>
+                {['All Areas', 'Lab A', 'Lab B', 'Chemical Bay', 'Radiation Lab'].map(area => (
+                  <button
+                    key={area}
+                    onClick={() => setPpeAreaFilter(area)}
+                    className={`px-3 py-1 text-[11px] rounded-full border font-medium transition-colors ${
+                      ppeAreaFilter === area
+                        ? 'bg-cyan-500 text-white border-cyan-500'
+                        : 'border-slate-200 text-slate-600 hover:bg-slate-100'
+                    }`}
+                  >{area}</button>
+                ))}
+                <span className="ml-auto text-[10px] text-slate-400">{filteredPpeLogs.length} records</span>
+              </div>
+
               <div className="overflow-hidden rounded-lg border border-slate-200/40">
                 <table className="w-full text-xs">
                   <thead>
                     <tr className="border-b border-slate-100 bg-slate-50/50">
-                      <th className="text-left px-3 py-2 text-slate-500 font-medium">Log ID</th>
                       <th className="text-left px-3 py-2 text-slate-500 font-medium">Date</th>
                       <th className="text-left px-3 py-2 text-slate-500 font-medium">Time</th>
                       <th className="text-left px-3 py-2 text-slate-500 font-medium">Area</th>
-                      <th className="text-left px-3 py-2 text-slate-500 font-medium">Personnel</th>
-                      <th className="text-center px-3 py-2 text-slate-500 font-medium">Helmet</th>
-                      <th className="text-center px-3 py-2 text-slate-500 font-medium">Gloves</th>
-                      <th className="text-center px-3 py-2 text-slate-500 font-medium">Goggles</th>
-                      <th className="text-center px-3 py-2 text-slate-500 font-medium">Lab Coat</th>
-                      <th className="text-center px-3 py-2 text-slate-500 font-medium">Face Shield</th>
-                      <th className="text-left px-3 py-2 text-slate-500 font-medium">Status</th>
+                      <th className="text-left px-3 py-2 text-slate-500 font-medium">Violations</th>
+                      <th className="text-left px-3 py-2 text-slate-500 font-medium">Image</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {PPE_LOGS.map(log => (
-                      <tr key={log.id} className={`border-b border-slate-50 hover:bg-slate-50/60 transition-colors ${
-                        log.status === 'Violation' ? 'bg-red-50/20' : ''
-                      }`}>
-                        <td className="px-3 py-2.5 font-mono text-slate-400 text-[10px]">{log.id}</td>
-                        <td className="px-3 py-2.5 text-slate-500 whitespace-nowrap">{log.date}</td>
-                        <td className="px-3 py-2.5 text-slate-500 whitespace-nowrap">{log.time}</td>
-                        <td className="px-3 py-2.5 text-slate-600">{log.area}</td>
-                        <td className="px-3 py-2.5 text-slate-700 font-medium">{log.personnel}</td>
-                        <td className="px-3 py-2.5 text-center">
-                          {log.helmet ? (
-                            <CheckCircle className="w-3.5 h-3.5 text-green-500 inline-block" />
-                          ) : (
-                            <AlertTriangle className="w-3.5 h-3.5 text-red-500 inline-block" />
-                          )}
-                        </td>
-                        <td className="px-3 py-2.5 text-center">
-                          {log.gloves ? (
-                            <CheckCircle className="w-3.5 h-3.5 text-green-500 inline-block" />
-                          ) : (
-                            <AlertTriangle className="w-3.5 h-3.5 text-red-500 inline-block" />
-                          )}
-                        </td>
-                        <td className="px-3 py-2.5 text-center">
-                          {log.goggles ? (
-                            <CheckCircle className="w-3.5 h-3.5 text-green-500 inline-block" />
-                          ) : (
-                            <AlertTriangle className="w-3.5 h-3.5 text-red-500 inline-block" />
-                          )}
-                        </td>
-                        <td className="px-3 py-2.5 text-center">
-                          {log.labCoat ? (
-                            <CheckCircle className="w-3.5 h-3.5 text-green-500 inline-block" />
-                          ) : (
-                            <AlertTriangle className="w-3.5 h-3.5 text-red-500 inline-block" />
-                          )}
-                        </td>
-                        <td className="px-3 py-2.5 text-center">
-                          {log.faceShield ? (
-                            <CheckCircle className="w-3.5 h-3.5 text-green-500 inline-block" />
-                          ) : (
-                            <AlertTriangle className="w-3.5 h-3.5 text-red-500 inline-block" />
-                          )}
-                        </td>
-                        <td className="px-3 py-2.5">
-                          <Badge variant={log.status === 'Compliant' ? 'success' : 'error'} size="sm">
-                            {log.status}
-                          </Badge>
-                        </td>
-                      </tr>
-                    ))}
+                    {filteredPpeLogs.map(log => {
+                      const violations = [];
+                      if (!log.helmet) violations.push('Helmet');
+                      if (!log.gloves) violations.push('Gloves');
+                      if (!log.goggles) violations.push('Goggles');
+                      if (!log.labCoat) violations.push('Lab Coat');
+                      if (!log.faceShield) violations.push('Face Shield');
+                      const violationText = violations.length > 0 ? violations.join(', ') : 'Compliant';
+                      const isCompliant = violations.length === 0;
+
+                      return (
+                        <tr key={log.id} className={`border-b border-slate-50 hover:bg-slate-50/60 transition-colors ${
+                          !isCompliant ? 'bg-red-50/20' : ''
+                        }`}>
+                          <td className="px-3 py-2.5 text-slate-500 whitespace-nowrap">{log.date}</td>
+                          <td className="px-3 py-2.5 text-slate-500 whitespace-nowrap">{log.time}</td>
+                          <td className="px-3 py-2.5 text-slate-600">{log.area}</td>
+                          <td className="px-3 py-2.5">
+                            {isCompliant ? (
+                              <div className="flex items-center gap-1.5">
+                                <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+                                <span className="text-green-700 font-medium">{violationText}</span>
+                              </div>
+                            ) : (
+                              <div className="flex items-start gap-1.5">
+                                <AlertTriangle className="w-3.5 h-3.5 text-red-500 mt-0.5 flex-shrink-0" />
+                                <span className="text-red-700 font-medium">{violationText}</span>
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-3 py-2.5">
+                            <div className="w-12 h-12 bg-slate-200 rounded-lg flex items-center justify-center overflow-hidden">
+                              <span className="text-[10px] text-slate-400">Image</span>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
             </CardWrapper>
           </div>
+
+          {/* PPE Recent Alerts Card */}
+          <CardWrapper title="Recent PPE Violations" subtitle="Latest 5 violation alerts" className="col-span-1">
+            <div className="space-y-2">
+              {PPE_RECENT_ALERTS.map((alert, idx) => (
+                <div key={idx} className={`p-2.5 rounded-lg border ${
+                  alert.severity === 'high' ? 'bg-red-50/60 border-red-200/40' : 'bg-amber-50/60 border-amber-200/40'
+                }`}>
+                  <div className="flex items-start justify-between mb-1">
+                    <div className="flex items-center gap-1.5">
+                      <AlertTriangle className={`w-3 h-3 ${alert.severity === 'high' ? 'text-red-500' : 'text-amber-500'}`} />
+                      <span className="text-[10px] text-slate-500">{alert.time}</span>
+                    </div>
+                    <Badge variant={alert.severity === 'high' ? 'error' : 'warning'} size="sm">
+                      {alert.severity === 'high' ? 'High' : 'Medium'}
+                    </Badge>
+                  </div>
+                  <p className="text-xs font-medium text-slate-800 mb-0.5">{alert.personnel}</p>
+                  <p className="text-[10px] text-slate-600">{alert.area}</p>
+                  <p className="text-[10px] text-slate-500 mt-1">{alert.violation}</p>
+                </div>
+              ))}
+            </div>
+          </CardWrapper>
+
+          {/* PPE Compliance by Area */}
+          <CardWrapper title="PPE Compliance by Area" subtitle="Breakdown per laboratory zone" className="col-span-2">
+            <div className="space-y-3">
+              {PPE_COMPLIANCE_BY_AREA.map(area => (
+                <div key={area.area} className="border border-slate-200/40 rounded-lg p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-xs font-semibold text-slate-800">{area.area}</h4>
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <span className={`text-lg font-bold ${
+                          area.compliance >= 90 ? 'text-green-600' : 
+                          area.compliance >= 80 ? 'text-amber-600' : 
+                          'text-red-600'
+                        }`}>{area.compliance}%</span>
+                        <span className="text-[9px] text-slate-400 ml-1">compliance</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs text-slate-600">{area.violations} violations</span>
+                        <span className="text-[9px] text-slate-400 block">{area.totalScans} scans</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-5 gap-2">
+                    {[
+                      { label: '⛑️ Helmet', value: area.helmet },
+                      { label: '🧤 Gloves', value: area.gloves },
+                      { label: '🥽 Goggles', value: area.goggles },
+                      { label: '🥼 Lab Coat', value: area.labCoat },
+                      { label: '🛡️ Face Shield', value: area.faceShield },
+                    ].map(item => (
+                      <div key={item.label} className="text-center">
+                        <div className="text-[10px] text-slate-500 mb-1">{item.label}</div>
+                        <div className={`text-sm font-bold ${
+                          item.value >= 90 ? 'text-green-600' : 
+                          item.value >= 80 ? 'text-amber-600' : 
+                          'text-red-600'
+                        }`}>{item.value}%</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardWrapper>
+
+          {/* PPE Recent Alerts Card */}
+          <CardWrapper title="Recent PPE Violations" subtitle="Latest 5 violation alerts" className="col-span-1">
+            <div className="space-y-2">
+              {PPE_RECENT_ALERTS.map((alert, idx) => (
+                <div key={idx} className={`p-2.5 rounded-lg border ${
+                  alert.severity === 'high' ? 'bg-red-50/60 border-red-200/40' : 'bg-amber-50/60 border-amber-200/40'
+                }`}>
+                  <div className="flex items-start justify-between mb-1">
+                    <div className="flex items-center gap-1.5">
+                      <AlertTriangle className={`w-3 h-3 ${alert.severity === 'high' ? 'text-red-500' : 'text-amber-500'}`} />
+                      <span className="text-[10px] text-slate-500">{alert.time}</span>
+                    </div>
+                    <Badge variant={alert.severity === 'high' ? 'error' : 'warning'} size="sm">
+                      {alert.severity === 'high' ? 'High' : 'Medium'}
+                    </Badge>
+                  </div>
+                  <p className="text-xs font-medium text-slate-800 mb-0.5">{alert.personnel}</p>
+                  <p className="text-[10px] text-slate-600">{alert.area}</p>
+                  <p className="text-[10px] text-slate-500 mt-1">{alert.violation}</p>
+                </div>
+              ))}
+            </div>
+          </CardWrapper>
+
+          {/* PPE Compliance by Area - Minimal */}
+          <CardWrapper title="PPE Compliance by Area" subtitle="Breakdown per laboratory zone" className="col-span-2">
+            <div className="space-y-2">
+              {PPE_COMPLIANCE_BY_AREA.map(area => (
+                <div key={area.area} className="flex items-center justify-between p-2.5 bg-slate-50/50 border border-slate-200/40 rounded-lg hover:bg-slate-100/50 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <div className="text-left min-w-[100px]">
+                      <h4 className="text-xs font-semibold text-slate-800">{area.area}</h4>
+                      <p className="text-[10px] text-slate-400">{area.violations} violations</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2.5">
+                      {[
+                        { icon: '⛑️', value: area.helmet },
+                        { icon: '🧤', value: area.gloves },
+                        { icon: '🥽', value: area.goggles },
+                        { icon: '🥼', value: area.labCoat },
+                        { icon: '🛡️', value: area.faceShield },
+                      ].map((item, idx) => (
+                        <div key={idx} className="text-center">
+                          <div className="text-xs mb-0.5">{item.icon}</div>
+                          <div className={`text-[10px] font-semibold ${
+                            item.value >= 90 ? 'text-green-600' : 
+                            item.value >= 80 ? 'text-amber-600' : 
+                            'text-red-600'
+                          }`}>{item.value}%</div>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="text-right border-l border-slate-200 pl-4">
+                      <span className={`text-2xl font-bold ${
+                        area.compliance >= 90 ? 'text-green-600' : 
+                        area.compliance >= 80 ? 'text-amber-600' : 
+                        'text-red-600'
+                      }`}>{area.compliance}%</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardWrapper>
         </div>
       )}
 
@@ -542,39 +651,28 @@ export function ComputerVision() {
       {activeSection === 'Restricted Areas' && (
         <div className="grid grid-cols-1 gap-4">
           {/* Summary Cards */}
-          <div className="grid grid-cols-4 gap-3">
-            <div className="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200/40 rounded-xl p-4 shadow-sm">
-              <div className="flex items-center justify-between mb-2">
-                <MapPin className="w-5 h-5 text-red-600" />
-                <Badge variant="error" size="sm">Critical</Badge>
-              </div>
-              <div className="text-2xl font-bold text-slate-800 mb-1">3</div>
-              <p className="text-xs text-slate-600">Unauthorized breaches today</p>
-            </div>
-            <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200/40 rounded-xl p-4 shadow-sm">
-              <div className="flex items-center justify-between mb-2">
-                <AlertTriangle className="w-5 h-5 text-amber-600" />
-                <Badge variant="warning" size="sm">Warning</Badge>
-              </div>
-              <div className="text-2xl font-bold text-slate-800 mb-1">2</div>
-              <p className="text-xs text-slate-600">Tailgating incidents</p>
-            </div>
-            <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200/40 rounded-xl p-4 shadow-sm">
-              <div className="flex items-center justify-between mb-2">
-                <CheckCircle className="w-5 h-5 text-green-600" />
-                <Badge variant="success" size="sm">Active</Badge>
-              </div>
-              <div className="text-2xl font-bold text-slate-800 mb-1">8</div>
-              <p className="text-xs text-slate-600">Restricted zones monitored</p>
-            </div>
-            <div className="bg-gradient-to-br from-cyan-50 to-cyan-100/50 border border-cyan-200/40 rounded-xl p-4 shadow-sm">
-              <div className="flex items-center justify-between mb-2">
-                <Users className="w-5 h-5 text-cyan-600" />
-                <Badge variant="info" size="sm">Live</Badge>
-              </div>
-              <div className="text-2xl font-bold text-slate-800 mb-1">127</div>
-              <p className="text-xs text-slate-600">Authorized access events</p>
-            </div>
+          <div className="grid grid-cols-3 gap-3">
+            <MetricCard 
+              title="Restricted Zones Monitored" 
+              value="8" 
+              subtitle="Monitored" 
+              icon={CheckCircle} 
+              status="success" 
+            />
+            <MetricCard 
+              title="Authorized Access Events" 
+              value="127" 
+              subtitle="Events today" 
+              icon={Users} 
+              status="info" 
+            />
+            <MetricCard 
+              title="Unauthorized Breaches Today" 
+              value="3" 
+              subtitle="Today" 
+              icon={MapPin} 
+              status="error" 
+            />
           </div>
 
           {/* Restricted Area Access Logs */}
@@ -583,7 +681,6 @@ export function ComputerVision() {
               <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b border-slate-100 bg-slate-50/50">
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Log ID</th>
                     <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Date</th>
                     <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Time</th>
                     <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Restricted Zone</th>
@@ -591,8 +688,7 @@ export function ComputerVision() {
                     <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Badge ID</th>
                     <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Authorization</th>
                     <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Duration</th>
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Status</th>
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Action Taken</th>
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Image</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -600,7 +696,6 @@ export function ComputerVision() {
                     <tr key={log.id} className={`border-b border-slate-50 hover:bg-slate-50/60 transition-colors ${
                       log.status === 'Critical' ? 'bg-red-50/30' : log.status === 'Warning' ? 'bg-amber-50/20' : ''
                     }`}>
-                      <td className="px-4 py-2.5 font-mono text-slate-400 text-[10px]">{log.id}</td>
                       <td className="px-4 py-2.5 text-slate-500 whitespace-nowrap">{log.date}</td>
                       <td className="px-4 py-2.5 text-slate-500 whitespace-nowrap">{log.time}</td>
                       <td className="px-4 py-2.5 text-slate-700 font-medium">{log.zone}</td>
@@ -613,14 +708,10 @@ export function ComputerVision() {
                       </td>
                       <td className="px-4 py-2.5 text-slate-600">{log.duration}</td>
                       <td className="px-4 py-2.5">
-                        <Badge 
-                          variant={log.status === 'Critical' ? 'error' : log.status === 'Warning' ? 'warning' : 'success'} 
-                          size="sm"
-                        >
-                          {log.status}
-                        </Badge>
+                        <div className="w-12 h-12 bg-slate-200 rounded-lg flex items-center justify-center overflow-hidden">
+                          <span className="text-[10px] text-slate-400">Image</span>
+                        </div>
                       </td>
-                      <td className="px-4 py-2.5 text-slate-600 text-[11px]">{log.action}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -672,39 +763,31 @@ export function ComputerVision() {
       {activeSection === 'Unsafe Behavior' && (
         <div className="grid grid-cols-1 gap-4">
           {/* Summary Cards */}
-          <div className="grid grid-cols-4 gap-3">
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100/50 border border-orange-200/40 rounded-xl p-4 shadow-sm">
-              <div className="flex items-center justify-between mb-2">
-                <Zap className="w-5 h-5 text-orange-600" />
-                <Badge variant="warning" size="sm">Today</Badge>
-              </div>
-              <div className="text-2xl font-bold text-slate-800 mb-1">5</div>
-              <p className="text-xs text-slate-600">Unsafe incidents detected</p>
-            </div>
-            <div className="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200/40 rounded-xl p-4 shadow-sm">
-              <div className="flex items-center justify-between mb-2">
-                <AlertTriangle className="w-5 h-5 text-red-600" />
-                <Badge variant="error" size="sm">High Risk</Badge>
-              </div>
-              <div className="text-2xl font-bold text-slate-800 mb-1">2</div>
-              <p className="text-xs text-slate-600">High-risk behaviors</p>
-            </div>
-            <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200/40 rounded-xl p-4 shadow-sm">
-              <div className="flex items-center justify-between mb-2">
-                <CheckCircle className="w-5 h-5 text-green-600" />
-                <Badge variant="success" size="sm">Resolved</Badge>
-              </div>
-              <div className="text-2xl font-bold text-slate-800 mb-1">3</div>
-              <p className="text-xs text-slate-600">Issues resolved today</p>
-            </div>
-            <div className="bg-gradient-to-br from-cyan-50 to-cyan-100/50 border border-cyan-200/40 rounded-xl p-4 shadow-sm">
-              <div className="flex items-center justify-between mb-2">
-                <Flame className="w-5 h-5 text-cyan-600" />
-                <Badge variant="info" size="sm">This Week</Badge>
-              </div>
-              <div className="text-2xl font-bold text-slate-800 mb-1">38</div>
-              <p className="text-xs text-slate-600">Total incidents</p>
-            </div>
+          <div className="grid grid-cols-3 gap-3">
+            <MetricCard 
+              title="Total incidents" 
+              value="38" 
+              subtitle="Today" 
+              icon={CheckCircle} 
+              status="success" 
+            />
+            
+            <MetricCard 
+              title="High-Risk Behaviors" 
+              value="2" 
+              subtitle="Today" 
+              icon={AlertTriangle} 
+              status="error" 
+            />
+
+            <MetricCard 
+              title="Unsafe Incidents detected" 
+              value="5" 
+              subtitle="Detected today" 
+              icon={Zap} 
+              status="warning" 
+            />
+            
           </div>
 
           {/* Unsafe Behavior Detection Logs */}
@@ -713,15 +796,12 @@ export function ComputerVision() {
               <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b border-slate-100 bg-slate-50/50">
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Log ID</th>
                     <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Date</th>
                     <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Time</th>
                     <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Area</th>
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Personnel</th>
                     <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Unsafe Behavior Detected</th>
                     <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Risk Level</th>
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Status</th>
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Action Taken</th>
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Image</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -729,11 +809,9 @@ export function ComputerVision() {
                     <tr key={log.id} className={`border-b border-slate-50 hover:bg-slate-50/60 transition-colors ${
                       log.riskLevel === 'High' && log.status === 'Open' ? 'bg-red-50/20' : ''
                     }`}>
-                      <td className="px-4 py-2.5 font-mono text-slate-400 text-[10px]">{log.id}</td>
                       <td className="px-4 py-2.5 text-slate-500 whitespace-nowrap">{log.date}</td>
                       <td className="px-4 py-2.5 text-slate-500 whitespace-nowrap">{log.time}</td>
                       <td className="px-4 py-2.5 text-slate-600">{log.area}</td>
-                      <td className="px-4 py-2.5 text-slate-700 font-medium">{log.personnel}</td>
                       <td className="px-4 py-2.5 text-slate-600 max-w-xs">{log.behavior}</td>
                       <td className="px-4 py-2.5">
                         <Badge 
@@ -744,11 +822,10 @@ export function ComputerVision() {
                         </Badge>
                       </td>
                       <td className="px-4 py-2.5">
-                        <Badge variant={log.status === 'Open' ? 'error' : 'success'} size="sm">
-                          {log.status}
-                        </Badge>
+                        <div className="w-12 h-12 bg-slate-200 rounded-lg flex items-center justify-center overflow-hidden">
+                          <span className="text-[10px] text-slate-400">Image</span>
+                        </div>
                       </td>
-                      <td className="px-4 py-2.5 text-slate-600 text-[11px]">{log.action}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -780,45 +857,6 @@ export function ComputerVision() {
               </div>
             </CardWrapper>
 
-            <CardWrapper title="Fire & Smoke Detection — Recent Alerts" subtitle="Early-stage fire and smoke detection with AI video analytics">
-              <div className="space-y-2.5">
-                {FIRE_LOGS.slice(0, 5).map(log => (
-                  <div key={log.id} className={`p-2.5 border rounded-lg ${
-                    log.status === 'Confirmed' ? 'bg-red-50/60 border-red-200/40' : 'bg-slate-50/60 border-slate-200/40'
-                  }`}>
-                    <div className="flex items-start justify-between mb-1.5">
-                      <div className="flex items-center gap-2">
-                        <Flame className={`w-3.5 h-3.5 ${log.status === 'Confirmed' ? 'text-red-600' : 'text-slate-400'}`} />
-                        <span className="font-mono text-[10px] text-slate-400">{log.id}</span>
-                      </div>
-                      <Badge variant={log.status === 'Confirmed' ? 'error' : 'neutral'} size="sm">
-                        {log.status}
-                      </Badge>
-                    </div>
-                    <p className="text-xs font-medium text-slate-800 mb-1">{log.location}</p>
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[10px]">
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">Type:</span>
-                        <span className="font-medium text-slate-700">{log.detectionType}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">Temp:</span>
-                        <span className="font-medium text-slate-700">{log.temperature}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">Confidence:</span>
-                        <span className="font-medium text-slate-700">{log.confidence}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">Time:</span>
-                        <span className="font-medium text-slate-700">{log.time}</span>
-                      </div>
-                    </div>
-                    <p className="text-[10px] text-slate-600 mt-1.5 italic">{log.response}</p>
-                  </div>
-                ))}
-              </div>
-            </CardWrapper>
           </div>
         </div>
       )}
@@ -857,7 +895,7 @@ export function ComputerVision() {
                   <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Detail</th>
                   <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Severity</th>
                   <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Status</th>
-                  <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Action</th>
+                  <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Image</th>
                 </tr>
               </thead>
               <tbody>
@@ -877,11 +915,9 @@ export function ComputerVision() {
                       <Badge variant={statusBadge[ev.status]} size="sm">{ev.status}</Badge>
                     </td>
                     <td className="px-4 py-2.5">
-                      {ev.status === 'Open' ? (
-                        <button className="px-2.5 py-1 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-lg text-[10px] font-medium">Acknowledge</button>
-                      ) : (
-                        <button className="px-2.5 py-1 border border-slate-200 text-slate-500 rounded-lg text-[10px]">View</button>
-                      )}
+                      <div className="w-12 h-12 bg-slate-200 rounded-lg flex items-center justify-center overflow-hidden">
+                        <span className="text-[10px] text-slate-400">Image</span>
+                      </div>
                     </td>
                   </tr>
                 ))}

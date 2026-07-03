@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
 import { Layout } from './components/Layout';
 import { AIAssistant } from './components/pages/AIAssistant';
 import { ComputerVision } from './components/pages/ComputerVision';
-import { SmartInventory } from './components/pages/SmartInventory';
 import { SampleTracking } from './components/pages/SampleTracking';
 import { ChemicalManagement } from './components/pages/ChemicalManagement';
 import { GasCylinders } from './components/pages/GasCylinders';
@@ -19,7 +18,6 @@ export default function App() {
           <Route index element={<Navigate to="/ai-assistant" replace />} />
           <Route path="ai-assistant" element={<AIAssistant />} />
           <Route path="computer-vision" element={<ComputerVision />} />
-          <Route path="inventory" element={<SmartInventory />} />
           <Route path="sample-tracking" element={<SampleTracking />} />
           <Route path="chemical-management" element={<ChemicalManagement />} />
           <Route path="gas-cylinders" element={<GasCylinders />} />

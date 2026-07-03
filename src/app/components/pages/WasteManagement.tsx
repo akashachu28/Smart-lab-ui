@@ -5,7 +5,7 @@ import { Badge } from '../ui/Badge';
 import { Card } from '../ui/Card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from 'recharts';
 
-const tabs = ['Overview', 'AI Classification', 'Waste Tracking', 'Hazardous Waste', 'Vision Segregation', 'Smart Bins', 'Disposal Ops', 'Sustainability'];
+const tabs = ['Overview', 'Waste Tracking', 'Vision Segregation', 'Sustainability'];
 
 
 // ========== DATA STRUCTURES ==========
@@ -98,14 +98,6 @@ const segregationAlerts = [
   { id: 3, time: '2026-07-01 09:20', alert: 'Glass disposed into Chemical Waste Bin', location: 'Lab C - Bin-C08', severity: 'medium', resolved: true },
   { id: 4, time: '2026-07-01 08:15', alert: 'Needle detected outside Sharps Container', location: 'Lab D - Area 3', severity: 'critical', resolved: true },
 ];
-
-// Smart Bin Monitoring Data
-const smartBinStatus = {
-  onlineBins: 42,
-  offlineBins: 2,
-  nearlyFull: 6,
-  overflowRisk: 1,
-};
 
 const smartBins = [
   { id: 'BIN-A12', zone: 'Lab A', type: 'Chemical', fill: 82, temp: '22°C', weight: '45 kg', status: 'Normal', battery: 89, lidStatus: 'Closed', rfid: 'Active' },
@@ -205,14 +197,6 @@ const wasteSourceDistribution = [
   { source: 'Utilities', value: 10, color: '#64748b' },
 ];
 
-// Cost Analysis
-const costAnalysis = [
-  { category: 'Collection', value: 35, color: '#ef4444' },
-  { category: 'Treatment', value: 31, color: '#f59e0b' },
-  { category: 'Transportation', value: 19, color: '#8b5cf6' },
-  { category: 'Storage', value: 9, color: '#06b6d4' },
-  { category: 'Compliance', value: 6, color: '#10b981' },
-];
 
 // Alerts Data
 const criticalAlerts = [
@@ -225,19 +209,7 @@ const criticalAlerts = [
   { id: 7, severity: 'info', message: 'Recycling batch completed successfully', time: '2026-07-01 05:20', location: 'Recycling Facility' },
 ];
 
-// AI Recommendations
-const aiRecommendations = [
-  'Hazardous waste generation increased by 14% compared to last week.',
-  'Chemistry Laboratory contributes 39% of all chemical waste.',
-  'Three biomedical bins are expected to reach capacity within 6 hours.',
-  'Plastic recycling efficiency improved by 9% this month.',
-  'Average disposal turnaround decreased from 36 hours to 28 hours.',
-  'Four waste containers have exceeded the recommended storage duration.',
-  'Computer Vision detected 27 incorrect segregation events during the last 24 hours.',
-  'Predict hazardous waste volume to increase by 12% next week based on laboratory schedules.',
-  'Recommend scheduling an additional waste pickup tomorrow to prevent overflow.',
-  'Laboratory Building B has the highest segregation compliance score (99.4%).',
-];
+
 
 // Recent Activity
 const recentActivity = [
@@ -321,14 +293,14 @@ export function WasteManagement() {
       </div>
 
       {/* KPI Strip */}
-      <div className="grid grid-cols-8 gap-3">
+      <div className="grid grid-cols-4 gap-3">
         <MetricCard title="Total Waste" value="42.6 T" subtitle="This month" icon={Trash2} status="info" />
         <MetricCard title="Hazardous" value="11.8 T" subtitle="28% of total" icon={AlertTriangle} status="error" />
-        <MetricCard title="Non-Hazardous" value="26.4 T" subtitle="62% of total" icon={CheckCircle} status="success" />
-        <MetricCard title="Biomedical" value="4.4 T" subtitle="10% of total" icon={Package} status="warning" />
-        <MetricCard title="Pending Disposal" value="3.1 T" subtitle="Awaiting pickup" icon={Clock} status="warning" />
+        {/* <MetricCard title="Non-Hazardous" value="26.4 T" subtitle="62% of total" icon={CheckCircle} status="success" /> */}
+        {/* <MetricCard title="Biomedical" value="4.4 T" subtitle="10% of total" icon={Package} status="warning" /> */}
+        {/* <MetricCard title="Pending Disposal" value="3.1 T" subtitle="Awaiting pickup" icon={Clock} status="warning" /> */}
         <MetricCard title="Compliance" value="98.8%" subtitle="Target: 95%" icon={CheckCircle} status="success" trend="up" trendValue="+0.4%" />
-        <MetricCard title="Segregation Errors" value="12" subtitle="CV detected today" icon={Eye} status="error" />
+        {/* <MetricCard title="Segregation Errors" value="12" subtitle="CV detected today" icon={Eye} status="error" /> */}
         <MetricCard title="Recycled" value="9.4 T" subtitle="22% recycled" icon={Recycle} status="success" trend="up" trendValue="+9%" />
       </div>
 
@@ -404,20 +376,20 @@ export function WasteManagement() {
             </div>
           </Card>
 
-          <Card title="Cost Analysis" subtitle="Distribution breakdown" className="col-span-1 bg-white/70 border-slate-200/40">
+          <Card title="AI Classification Distribution" subtitle="By waste type" className="col-span-1 bg-white/70 border-slate-200/40">
             <div className="flex items-center gap-4">
-              <ResponsiveContainer width={130} height={130}>
+              <ResponsiveContainer width={140} height={140}>
                 <PieChart>
-                  <Pie data={costAnalysis} cx="50%" cy="50%" innerRadius={35} outerRadius={55} dataKey="value">
-                    {costAnalysis.map((entry, i) => <Cell key={i} fill={entry.color} />)}
+                  <Pie data={aiClassificationDistribution} cx="50%" cy="50%" innerRadius={40} outerRadius={60} dataKey="value">
+                    {aiClassificationDistribution.map((entry, i) => <Cell key={i} fill={entry.color} />)}
                   </Pie>
                 </PieChart>
               </ResponsiveContainer>
-              <div className="space-y-2 flex-1">
-                {costAnalysis.map(d => (
-                  <div key={d.category} className="flex items-center gap-2">
+              <div className="space-y-1.5 flex-1">
+                {aiClassificationDistribution.map(d => (
+                  <div key={d.name} className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full" style={{ background: d.color }}></div>
-                    <span className="text-[10px] text-slate-600 flex-1">{d.category}</span>
+                    <span className="text-[10px] text-slate-600 flex-1 truncate">{d.name}</span>
                     <span className="text-[10px] font-bold text-slate-700">{d.value}%</span>
                   </div>
                 ))}
@@ -445,95 +417,10 @@ export function WasteManagement() {
         </div>
       )}
 
-      {activeTab === 'AI Classification' && (
-        <div className="grid grid-cols-3 gap-4">
-          <Card title="AI Classification Distribution" subtitle="By waste type" className="col-span-1 bg-white/70 border-slate-200/40">
-            <div className="flex items-center gap-4">
-              <ResponsiveContainer width={140} height={140}>
-                <PieChart>
-                  <Pie data={aiClassificationDistribution} cx="50%" cy="50%" innerRadius={40} outerRadius={60} dataKey="value">
-                    {aiClassificationDistribution.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="space-y-1.5 flex-1">
-                {aiClassificationDistribution.map(d => (
-                  <div key={d.name} className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full" style={{ background: d.color }}></div>
-                    <span className="text-[10px] text-slate-600 flex-1 truncate">{d.name}</span>
-                    <span className="text-[10px] font-bold text-slate-700">{d.value}%</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Card>
-
-          <div className="col-span-2 grid grid-cols-3 gap-3">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200/40 rounded-xl p-4 shadow-sm">
-              <Brain className="w-5 h-5 text-blue-600 mb-2" />
-              <div className="text-2xl font-bold text-slate-800 mb-1">{aiPerformanceMetrics.objectsClassified.toLocaleString()}</div>
-              <p className="text-xs text-slate-600">Objects Classified</p>
-            </div>
-            <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200/40 rounded-xl p-4 shadow-sm">
-              <CheckCircle className="w-5 h-5 text-green-600 mb-2" />
-              <div className="text-2xl font-bold text-slate-800 mb-1">{aiPerformanceMetrics.accuracy}%</div>
-              <p className="text-xs text-slate-600">Classification Accuracy</p>
-            </div>
-            <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200/40 rounded-xl p-4 shadow-sm">
-              <AlertTriangle className="w-5 h-5 text-amber-600 mb-2" />
-              <div className="text-2xl font-bold text-slate-800 mb-1">{aiPerformanceMetrics.manualCorrections}</div>
-              <p className="text-xs text-slate-600">Manual Corrections</p>
-            </div>
-            <div className="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200/40 rounded-xl p-4 shadow-sm">
-              <Eye className="w-5 h-5 text-red-600 mb-2" />
-              <div className="text-2xl font-bold text-slate-800 mb-1">{aiPerformanceMetrics.unknownWaste}</div>
-              <p className="text-xs text-slate-600">Unknown Waste Items</p>
-            </div>
-            <div className="col-span-2 bg-gradient-to-br from-cyan-50 to-cyan-100/50 border border-cyan-200/40 rounded-xl p-4 shadow-sm">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs text-slate-600">Average Confidence</span>
-                <span className="text-lg font-bold text-cyan-700">{aiPerformanceMetrics.avgConfidence}%</span>
-              </div>
-              <div className="w-full h-3 bg-cyan-100 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-cyan-400 to-cyan-600 rounded-full" style={{ width: `${aiPerformanceMetrics.avgConfidence}%` }}></div>
-              </div>
-            </div>
-          </div>
-
-          <Card title="AI Insights & Analytics" subtitle="Key findings from classification data" className="col-span-3 bg-white/70 border-slate-200/40">
-            <div className="grid grid-cols-2 gap-3">
-              {aiInsights.map((insight, i) => (
-                <div key={i} className="flex items-start gap-2 p-3 bg-slate-50/60 border border-slate-200/40 rounded-lg">
-                  <div className="w-5 h-5 rounded-full bg-cyan-100 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-[10px] font-bold text-cyan-700">{i + 1}</span>
-                  </div>
-                  <p className="text-xs text-slate-700 leading-relaxed">{insight}</p>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </div>
-      )}
 
       {activeTab === 'Waste Tracking' && (
         <div className="space-y-4">
-          <Card title="Waste Lifecycle Timeline" subtitle="From generation to disposal" className="bg-white/70 border-slate-200/40">
-            <div className="flex items-center justify-between px-4">
-              {lifecycleStages.map((stage, i) => (
-                <div key={stage} className="flex flex-col items-center flex-1">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    i < 4 ? 'bg-cyan-500 text-white' : 'bg-slate-200 text-slate-400'
-                  }`}>
-                    <span className="text-[10px] font-bold">{i + 1}</span>
-                  </div>
-                  <p className="text-[9px] text-slate-600 mt-1 text-center">{stage}</p>
-                  {i < lifecycleStages.length - 1 && (
-                    <div className={`h-0.5 w-full mt-4 -mx-12 ${i < 3 ? 'bg-cyan-500' : 'bg-slate-200'}`}></div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </Card>
+
 
           <Card title="Waste Tracking Registry" subtitle="Complete waste movement tracking" className="bg-white/70 border-slate-200/40">
             <div className="overflow-hidden rounded-lg border border-slate-200/40">
@@ -597,111 +484,6 @@ export function WasteManagement() {
                   <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
                 </div>
               ))}
-            </div>
-          </Card>
-        </div>
-      )}
-
-      {activeTab === 'Hazardous Waste' && (
-        <div className="grid grid-cols-3 gap-4">
-          <div className="col-span-3 grid grid-cols-4 gap-3">
-            <div className="bg-gradient-to-br from-slate-50 to-slate-100/50 border border-slate-200/40 rounded-xl p-4 shadow-sm">
-              <Package className="w-5 h-5 text-slate-600 mb-2" />
-              <div className="text-2xl font-bold text-slate-800 mb-1">{hazardousCompliance.totalContainers}</div>
-              <p className="text-xs text-slate-600">Total Containers</p>
-            </div>
-            <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200/40 rounded-xl p-4 shadow-sm">
-              <CheckCircle className="w-5 h-5 text-green-600 mb-2" />
-              <div className="text-2xl font-bold text-slate-800 mb-1">{hazardousCompliance.compliant}</div>
-              <p className="text-xs text-slate-600">Compliant</p>
-            </div>
-            <div className="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200/40 rounded-xl p-4 shadow-sm">
-              <AlertTriangle className="w-5 h-5 text-red-600 mb-2" />
-              <div className="text-2xl font-bold text-slate-800 mb-1">{hazardousCompliance.violations}</div>
-              <p className="text-xs text-slate-600">Violations</p>
-            </div>
-            <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200/40 rounded-xl p-4 shadow-sm">
-              <Clock className="w-5 h-5 text-amber-600 mb-2" />
-              <div className="text-2xl font-bold text-slate-800 mb-1">{hazardousCompliance.immediateAttention}</div>
-              <p className="text-xs text-slate-600">Immediate Attention</p>
-            </div>
-          </div>
-
-          <Card title="Compliance Rate" subtitle="Current period performance" className="col-span-1 bg-white/70 border-slate-200/40">
-            <div className="flex flex-col items-center justify-center py-4">
-              <div className="relative w-32 h-32">
-                <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-                  <circle cx="50" cy="50" r="40" fill="none" stroke="#f1f5f9" strokeWidth="8" />
-                  <circle
-                    cx="50" cy="50" r="40" fill="none"
-                    stroke="#10b981"
-                    strokeWidth="8"
-                    strokeLinecap="round"
-                    strokeDasharray={`${hazardousCompliance.complianceRate * 2.513} 251.3`}
-                  />
-                </svg>
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-2xl font-bold text-slate-800">{hazardousCompliance.complianceRate}%</span>
-                  <span className="text-[10px] text-slate-500">Compliant</span>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          <Card title="Hazard Level Distribution" subtitle="Risk classification" className="col-span-1 bg-white/70 border-slate-200/40">
-            <div className="flex items-center gap-4">
-              <ResponsiveContainer width={110} height={110}>
-                <PieChart>
-                  <Pie data={hazardLevelDistribution} cx="50%" cy="50%" innerRadius={30} outerRadius={50} dataKey="value">
-                    {hazardLevelDistribution.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="space-y-1.5 flex-1">
-                {hazardLevelDistribution.map(d => (
-                  <div key={d.level} className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full" style={{ background: d.color }}></div>
-                    <span className="text-[10px] text-slate-600 flex-1">{d.level}</span>
-                    <span className="text-[10px] font-bold text-slate-700">{d.value}%</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Card>
-
-          <Card title="Compliance Checklist" subtitle="Required safety checks" className="col-span-1 bg-white/70 border-slate-200/40">
-            <div className="space-y-2.5">
-              {complianceChecklist.map((check, i) => (
-                <div key={i} className="flex items-center justify-between p-2 bg-slate-50/60 border border-slate-200/40 rounded-lg">
-                  <span className="text-xs text-slate-700">{check.item}</span>
-                  {check.status ? (
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                  ) : (
-                    <AlertTriangle className="w-4 h-4 text-red-500" />
-                  )}
-                </div>
-              ))}
-            </div>
-          </Card>
-
-          <Card title="Regulatory Compliance Status" subtitle="Audit and documentation" className="col-span-3 bg-white/70 border-slate-200/40">
-            <div className="grid grid-cols-4 gap-4">
-              <div className="text-center p-3 bg-green-50/60 border border-green-200/40 rounded-lg">
-                <div className="text-2xl font-bold text-green-700 mb-1">{regulatoryCompliance.auditsPassed}</div>
-                <p className="text-[10px] text-slate-600">Audits Passed</p>
-              </div>
-              <div className="text-center p-3 bg-red-50/60 border border-red-200/40 rounded-lg">
-                <div className="text-2xl font-bold text-red-700 mb-1">{regulatoryCompliance.auditsFailed}</div>
-                <p className="text-[10px] text-slate-600">Audits Failed</p>
-              </div>
-              <div className="text-center p-3 bg-blue-50/60 border border-blue-200/40 rounded-lg">
-                <div className="text-2xl font-bold text-blue-700 mb-1">{regulatoryCompliance.certificatesGenerated}</div>
-                <p className="text-[10px] text-slate-600">Certificates Generated</p>
-              </div>
-              <div className="text-center p-3 bg-amber-50/60 border border-amber-200/40 rounded-lg">
-                <div className="text-2xl font-bold text-amber-700 mb-1">{regulatoryCompliance.pendingDocumentation}</div>
-                <p className="text-[10px] text-slate-600">Pending Documentation</p>
-              </div>
             </div>
           </Card>
         </div>
@@ -781,258 +563,9 @@ export function WasteManagement() {
             </div>
           </Card>
 
-          <Card title="Smart Bin Monitoring" subtitle="Real-time bin status" className="col-span-3 bg-white/70 border-slate-200/40">
-            <div className="grid grid-cols-4 gap-3">
-              {bins.slice(0, 4).map(bin => (
-                <div key={bin.id} className={`border rounded-xl p-3 shadow-sm ${
-                  bin.status === 'violation' ? 'border-red-200 bg-red-50/30' : 'border-slate-200/40 bg-white/70'
-                }`}>
-                  <div className="flex items-center justify-between mb-2">
-                    <div>
-                      <p className="text-xs font-semibold text-slate-800">{bin.id}</p>
-                      <p className="text-[10px] text-slate-500">{bin.zone}</p>
-                    </div>
-                    <Badge variant={bin.status === 'violation' ? 'error' : 'success'} size="sm">
-                      {bin.type}
-                    </Badge>
-                  </div>
-                  <div className={`rounded-lg h-20 flex items-center justify-center mb-2 ${
-                    bin.status === 'violation' ? 'bg-red-900' : 'bg-slate-800'
-                  }`}>
-                    <div className="text-center">
-                      <div className={`w-6 h-6 rounded-full mx-auto mb-1 ${
-                        bin.status === 'violation' ? 'bg-red-500 animate-pulse' : 'bg-green-500'
-                      }`}></div>
-                      <p className="text-[9px] text-white/70">
-                        {bin.status === 'violation' ? '⚠ Violation' : 'CV: OK'}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="space-y-1">
-                    <div className="flex justify-between text-[10px]">
-                      <span className="text-slate-500">Fill level</span>
-                      <span className={`font-medium ${
-                        bin.fill > 90 ? 'text-red-600' : bin.fill > 70 ? 'text-amber-600' : 'text-green-600'
-                      }`}>{bin.fill}%</span>
-                    </div>
-                    <div className="w-full h-1.5 bg-slate-100 rounded-full">
-                      <div className={`h-full rounded-full ${
-                        bin.fill > 90 ? 'bg-red-400' : bin.fill > 70 ? 'bg-amber-400' : 'bg-green-400'
-                      }`} style={{ width: `${bin.fill}%` }}></div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
         </div>
       )}
 
-      {activeTab === 'Smart Bins' && (
-        <div className="grid grid-cols-1 gap-4">
-          <div className="grid grid-cols-4 gap-3">
-            <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200/40 rounded-xl p-4 shadow-sm">
-              <CheckCircle className="w-5 h-5 text-green-600 mb-2" />
-              <div className="text-2xl font-bold text-slate-800 mb-1">{smartBinStatus.onlineBins}</div>
-              <p className="text-xs text-slate-600">Online Bins</p>
-            </div>
-            <div className="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200/40 rounded-xl p-4 shadow-sm">
-              <AlertTriangle className="w-5 h-5 text-red-600 mb-2" />
-              <div className="text-2xl font-bold text-slate-800 mb-1">{smartBinStatus.offlineBins}</div>
-              <p className="text-xs text-slate-600">Offline Bins</p>
-            </div>
-            <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200/40 rounded-xl p-4 shadow-sm">
-              <Package className="w-5 h-5 text-amber-600 mb-2" />
-              <div className="text-2xl font-bold text-slate-800 mb-1">{smartBinStatus.nearlyFull}</div>
-              <p className="text-xs text-slate-600">Nearly Full</p>
-            </div>
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100/50 border border-orange-200/40 rounded-xl p-4 shadow-sm">
-              <Trash2 className="w-5 h-5 text-orange-600 mb-2" />
-              <div className="text-2xl font-bold text-slate-800 mb-1">{smartBinStatus.overflowRisk}</div>
-              <p className="text-xs text-slate-600">Overflow Risk</p>
-            </div>
-          </div>
-
-          <Card title="Smart Bin Registry" subtitle="IoT-enabled waste containers with real-time monitoring" className="bg-white/70 border-slate-200/40">
-            <div className="overflow-hidden rounded-lg border border-slate-200/40">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/50">
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Bin ID</th>
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Zone</th>
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Type</th>
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Fill Level</th>
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Temperature</th>
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Weight</th>
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Status</th>
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Battery</th>
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Lid</th>
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">RFID</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {smartBins.map(bin => (
-                    <tr key={bin.id} className={`border-b border-slate-50 hover:bg-slate-50/60 transition-colors ${
-                      bin.status === 'Nearly Full' ? 'bg-amber-50/20' : ''
-                    }`}>
-                      <td className="px-4 py-2.5 font-mono text-slate-400 text-[10px]">{bin.id}</td>
-                      <td className="px-4 py-2.5 text-slate-600">{bin.zone}</td>
-                      <td className="px-4 py-2.5">
-                        <Badge variant={bin.type === 'Chemical' || bin.type === 'Biomedical' ? 'error' : 'info'} size="sm">
-                          {bin.type}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-2.5">
-                        <div className="flex items-center gap-2">
-                          <div className="w-16 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                            <div className={`h-full rounded-full ${
-                              bin.fill > 90 ? 'bg-red-400' : bin.fill > 70 ? 'bg-amber-400' : 'bg-green-400'
-                            }`} style={{ width: `${bin.fill}%` }}></div>
-                          </div>
-                          <span className={`text-[10px] font-medium ${
-                            bin.fill > 90 ? 'text-red-600' : bin.fill > 70 ? 'text-amber-600' : 'text-green-600'
-                          }`}>{bin.fill}%</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-2.5 text-slate-600">{bin.temp}</td>
-                      <td className="px-4 py-2.5 text-slate-700 font-medium">{bin.weight}</td>
-                      <td className="px-4 py-2.5">
-                        <Badge variant={bin.status === 'Nearly Full' ? 'warning' : 'success'} size="sm">
-                          {bin.status}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-2.5">
-                        <div className="flex items-center gap-1">
-                          <div className="w-12 h-1 bg-slate-100 rounded-full overflow-hidden">
-                            <div className={`h-full rounded-full ${
-                              bin.battery > 80 ? 'bg-green-400' : bin.battery > 50 ? 'bg-amber-400' : 'bg-red-400'
-                            }`} style={{ width: `${bin.battery}%` }}></div>
-                          </div>
-                          <span className="text-[10px] text-slate-500">{bin.battery}%</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-2.5 text-slate-600 text-[10px]">{bin.lidStatus}</td>
-                      <td className="px-4 py-2.5">
-                        <Badge variant={bin.rfid === 'Active' ? 'success' : 'neutral'} size="sm">
-                          {bin.rfid}
-                        </Badge>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Card>
-
-          <Card title="Fill Level Heatmap" subtitle="Occupancy by location" className="bg-white/70 border-slate-200/40">
-            <div className="grid grid-cols-4 gap-4">
-              {fillLevelHeatmap.map(loc => (
-                <div key={loc.location} className="text-center p-4 bg-slate-50/60 border border-slate-200/40 rounded-lg">
-                  <p className="text-xs font-medium text-slate-700 mb-2">{loc.location}</p>
-                  <div className="relative w-20 h-20 mx-auto">
-                    <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90">
-                      <circle cx="50" cy="50" r="40" fill="none" stroke="#f1f5f9" strokeWidth="10" />
-                      <circle
-                        cx="50" cy="50" r="40" fill="none"
-                        stroke={loc.fillPercent > 80 ? '#f59e0b' : '#10b981'}
-                        strokeWidth="10"
-                        strokeLinecap="round"
-                        strokeDasharray={`${loc.fillPercent * 2.513} 251.3`}
-                      />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-lg font-bold text-slate-800">{loc.fillPercent}%</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </div>
-      )}
-
-      {activeTab === 'Disposal Ops' && (
-        <div className="grid grid-cols-2 gap-4">
-          <Card title="Disposal Operations" subtitle="Vendor pickup and disposal tracking" className="col-span-2 bg-white/70 border-slate-200/40">
-            <div className="overflow-hidden rounded-lg border border-slate-200/40">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/50">
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Waste ID</th>
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Vendor</th>
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Pickup Time</th>
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Disposal Method</th>
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Status</th>
-                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Cost</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {disposalOperations.map(op => (
-                    <tr key={op.id} className="border-b border-slate-50 hover:bg-slate-50/60 transition-colors">
-                      <td className="px-4 py-2.5 font-mono text-slate-400 text-[10px]">{op.id}</td>
-                      <td className="px-4 py-2.5 text-slate-700 font-medium">{op.vendor}</td>
-                      <td className="px-4 py-2.5 text-slate-600">{op.pickupTime}</td>
-                      <td className="px-4 py-2.5 text-slate-600">{op.method}</td>
-                      <td className="px-4 py-2.5">
-                        <Badge variant={
-                          op.status === 'Completed' ? 'success' :
-                          op.status === 'In Progress' ? 'info' :
-                          'warning'
-                        } size="sm">
-                          {op.status}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-2.5 text-slate-700 font-medium">{op.cost}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Card>
-
-          <Card title="Disposal Method Distribution" subtitle="Methods used for waste treatment" className="col-span-1 bg-white/70 border-slate-200/40">
-            <div className="flex items-center gap-4">
-              <ResponsiveContainer width={140} height={140}>
-                <PieChart>
-                  <Pie data={disposalMethodDistribution} cx="50%" cy="50%" innerRadius={40} outerRadius={60} dataKey="value">
-                    {disposalMethodDistribution.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                  </Pie>
-                </PieChart>
-              </ResponsiveContainer>
-              <div className="space-y-1.5 flex-1">
-                {disposalMethodDistribution.map(d => (
-                  <div key={d.method} className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full" style={{ background: d.color }}></div>
-                    <span className="text-[10px] text-slate-600 flex-1">{d.method}</span>
-                    <span className="text-[10px] font-bold text-slate-700">{d.value}%</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Card>
-
-          <Card title="Operational Performance" subtitle="Key performance indicators" className="col-span-1 bg-white/70 border-slate-200/40">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="text-center p-3 bg-cyan-50/60 border border-cyan-200/40 rounded-lg">
-                <div className="text-xl font-bold text-cyan-700 mb-1">{operationalMetrics.avgClassificationTime}s</div>
-                <p className="text-[9px] text-slate-600">Avg Classification</p>
-              </div>
-              <div className="text-center p-3 bg-blue-50/60 border border-blue-200/40 rounded-lg">
-                <div className="text-xl font-bold text-blue-700 mb-1">{operationalMetrics.avgPickupTime}h</div>
-                <p className="text-[9px] text-slate-600">Avg Pickup Time</p>
-              </div>
-              <div className="text-center p-3 bg-purple-50/60 border border-purple-200/40 rounded-lg">
-                <div className="text-xl font-bold text-purple-700 mb-1">{operationalMetrics.avgDisposalTime}h</div>
-                <p className="text-[9px] text-slate-600">Avg Disposal Time</p>
-              </div>
-              <div className="text-center p-3 bg-green-50/60 border border-green-200/40 rounded-lg">
-                <div className="text-xl font-bold text-green-700 mb-1">{operationalMetrics.avgComplianceAudit}%</div>
-                <p className="text-[9px] text-slate-600">Compliance Rate</p>
-              </div>
-            </div>
-          </Card>
-        </div>
-      )}
 
       {activeTab === 'Sustainability' && (
         <div className="grid grid-cols-3 gap-4">
@@ -1087,16 +620,6 @@ export function WasteManagement() {
             </ResponsiveContainer>
           </Card>
 
-          <Card title="AI Recommendations" subtitle="Sustainability insights and suggestions" className="col-span-3 bg-white/70 border-slate-200/40">
-            <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto">
-              {aiRecommendations.map((rec, i) => (
-                <div key={i} className="flex items-start gap-2 p-2.5 bg-slate-50/60 border border-slate-200/40 rounded-lg">
-                  <Brain className="w-3.5 h-3.5 text-cyan-600 flex-shrink-0 mt-0.5" />
-                  <p className="text-[10px] text-slate-700 leading-relaxed">{rec}</p>
-                </div>
-              ))}
-            </div>
-          </Card>
         </div>
       )}
     </div>

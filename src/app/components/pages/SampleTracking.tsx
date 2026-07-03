@@ -203,6 +203,14 @@ const actTypeColor: Record<string, string> = {
   info: 'bg-cyan-400', success: 'bg-green-500', warning: 'bg-amber-400', error: 'bg-red-500',
 };
 
+// ── Auto Reorder Recommendations Data ──────────────────────────────────────────────
+const reorderRows = [
+  { item: 'Lab Reagent Kit A', current: '12 units', minimum: '25 units', suggested: '50 units', priority: 'High', erp: 'Pending', reason: 'High request volume · Lead time 14 days' },
+  { item: 'Sample Containers (500ml)', current: '48 units', minimum: '100 units', suggested: '150 units', priority: 'Medium', erp: 'Approved', reason: 'Below safety stock threshold' },
+  { item: 'pH Test Strips', current: '5 boxes', minimum: '20 boxes', suggested: '30 boxes', priority: 'High', erp: 'Ordered', reason: 'Critical low — immediate reorder' },
+  { item: 'Sterilization Pouches', current: '0 packs', minimum: '10 packs', suggested: '20 packs', priority: 'High', erp: 'Pending', reason: 'Out of stock' },
+];
+
 // ── Shared sub-components ─────────────────────────────────────────────────────
 
 function SCard({ title, subtitle, children, className = '' }: {
@@ -272,15 +280,13 @@ export function SampleTracking() {
       </div>
 
       {/* ── KPI Strip — always visible ─────────────────────────────── */}
-      <div className="grid grid-cols-8 gap-2.5">
+      <div className="grid grid-cols-3 gap-2.5">
         <KpiChip icon={FlaskConical} label="Active Requests" value="682" sub="Open" color={C.cyan} />
         <KpiChip icon={FlaskConical} label="Total Samples" value="4,124" sub="Tracked" color={C.purple} />
-        <KpiChip icon={Truck} label="In Transit" value="132" sub="Moving" color={C.amber} />
         <KpiChip icon={TestTube} label="Under Testing" value="286" sub="Analysing" color={C.blue} />
         <KpiChip icon={Clock} label="Pending Approval" value="91" sub="Awaiting" color={C.orange} />
         <KpiChip icon={CheckCircle} label="Completed Today" value="73" sub="Finished" color={C.green} />
         <KpiChip icon={AlertTriangle} label="Overdue" value="11" sub="SLA breached" color={C.red} />
-        <KpiChip icon={ShieldCheck} label="CoC Compliance" value="99.7%" sub="Chain of custody" color={C.green} />
       </div>
 
       {/* ── Dashboard Workflow Flow ─────────────────────────────────── */}
@@ -573,6 +579,38 @@ export function SampleTracking() {
               </div>
             </SCard>
           </div>
+
+          {/* Auto Reorder Recommendations */}
+          <SCard title="Auto Reorder Recommendations — Lab Supplies" subtitle="AI-generated — pending ERP approval">
+            <div className="space-y-2.5 mb-3">
+              {reorderRows.map(r => (
+                <div key={r.item} className={`p-3 rounded-xl border ${r.priority === 'High' ? 'bg-red-50/40 border-red-100' : 'bg-slate-50 border-slate-100'}`}>
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <p className="text-xs font-semibold text-slate-800">{r.item}</p>
+                      <p className="text-[10px] text-slate-400">{r.reason}</p>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Badge variant={r.priority === 'High' ? 'error' : 'warning'} size="sm">{r.priority}</Badge>
+                      <Badge variant={r.erp === 'Pending' ? 'warning' : r.erp === 'Approved' ? 'success' : 'info'} size="sm">{r.erp}</Badge>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-3 gap-1 text-center">
+                    {[['Current', r.current], ['Minimum', r.minimum], ['Suggested', r.suggested]].map(([l, v]) => (
+                      <div key={l} className="bg-white/80 rounded-lg py-1.5">
+                        <p className="text-[9px] text-slate-400">{l}</p>
+                        <p className="text-[11px] font-bold text-slate-700">{v}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <button className="flex-1 py-1.5 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-lg text-xs font-medium shadow-sm">Approve All → ERP</button>
+              <button className="px-3 py-1.5 border border-slate-200 text-slate-600 rounded-lg text-xs hover:bg-slate-50">Review</button>
+            </div>
+          </SCard>
         </div>
       )}
 

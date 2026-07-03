@@ -19,16 +19,18 @@ export function LeakDetectionTab() {
     <div className="grid grid-cols-3 gap-4">
       {/* Leak Status Summary */}
       <div className="col-span-3 grid grid-cols-4 gap-3">
-        <div className="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200/40 rounded-xl p-4 shadow-sm">
-          <AlertTriangle className="w-5 h-5 text-red-600 mb-2" />
-          <div className="text-2xl font-bold text-slate-800 mb-1">2</div>
-          <p className="text-xs text-slate-600">Leak Events</p>
-        </div>
         <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200/40 rounded-xl p-4 shadow-sm">
           <Activity className="w-5 h-5 text-green-600 mb-2" />
           <div className="text-2xl font-bold text-slate-800 mb-1">124</div>
           <p className="text-xs text-slate-600">Active Sensors</p>
         </div>
+        
+        <div className="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200/40 rounded-xl p-4 shadow-sm">
+          <AlertTriangle className="w-5 h-5 text-red-600 mb-2" />
+          <div className="text-2xl font-bold text-slate-800 mb-1">2</div>
+          <p className="text-xs text-slate-600">Leak Events</p>
+        </div>
+        
         <div className="bg-gradient-to-br from-cyan-50 to-cyan-100/50 border border-cyan-200/40 rounded-xl p-4 shadow-sm">
           <Shield className="w-5 h-5 text-cyan-600 mb-2" />
           <div className="text-2xl font-bold text-slate-800 mb-1">97%</div>
@@ -105,30 +107,8 @@ export function LeakDetectionTab() {
         </div>
       </Card>
 
-      {/* Leak Severity Distribution */}
-      <Card title="Leak Severity" subtitle="Last 30 days" className="col-span-1 bg-white/70 border-slate-200/40">
-        <div className="space-y-3">
-          <div className="flex items-center justify-between p-2.5 bg-red-50/60 border border-red-200/40 rounded-lg">
-            <span className="text-xs text-slate-700">Critical</span>
-            <span className="text-sm font-bold text-red-700">1</span>
-          </div>
-          <div className="flex items-center justify-between p-2.5 bg-orange-50/60 border border-orange-200/40 rounded-lg">
-            <span className="text-xs text-slate-700">High</span>
-            <span className="text-sm font-bold text-orange-700">1</span>
-          </div>
-          <div className="flex items-center justify-between p-2.5 bg-amber-50/60 border border-amber-200/40 rounded-lg">
-            <span className="text-xs text-slate-700">Medium</span>
-            <span className="text-sm font-bold text-amber-700">3</span>
-          </div>
-          <div className="flex items-center justify-between p-2.5 bg-green-50/60 border border-green-200/40 rounded-lg">
-            <span className="text-xs text-slate-700">Resolved</span>
-            <span className="text-sm font-bold text-green-700">42</span>
-          </div>
-        </div>
-      </Card>
-
       {/* Leak Trend Chart */}
-      <Card title="Leak Trend" subtitle="Past 7 days" className="col-span-3 bg-white/70 border-slate-200/40">
+      <Card title="Leak Trend" subtitle="Past 7 days" className="col-span-1 bg-white/70 border-slate-200/40">
         <ResponsiveContainer width="100%" height={180}>
           <BarChart data={leakTrendData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />

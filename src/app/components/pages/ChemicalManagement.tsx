@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { TestTube, AlertTriangle, ShieldCheck, Clock, Search, Barcode, TrendingUp, Package, Activity, Eye, Thermometer, Droplet, Wind } from 'lucide-react';
+import { TestTube, AlertTriangle, ShieldCheck, Clock, Search, Barcode, TrendingUp, Package, Activity, Eye, Thermometer, Droplet, Wind, Brain, QrCode, ChevronRight, AlertOctagon } from 'lucide-react';
 import { MetricCard } from '../ui/MetricCard';
 import { Badge } from '../ui/Badge';
-import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area } from 'recharts';
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area, ReferenceLine } from 'recharts';
 
-const tabs = ['Chemical Register', 'Storage Map', 'Compliance', 'MSDS', 'Analytics', 'Tracking'];
+const tabs = ['Chemical Register', 'Storage Map', 'Compliance', 'MSDS', 'Analytics', 'Tracking', 'Consumption & Forecast', 'Expiry & Reorder', 'Chemical Compatibility'];
 
 const chemicals = [
   { id: 'CHM-001', name: 'Benzene', cas: '71-43-2', location: 'CAB-A-12', qty: '25 L', expiry: '2025-08-12', storageClass: 'Flammable Liquid', compliance: 'compliant', supplier: 'Merck KGaA', batch: 'BZ-2024-0847', barcode: 'BC001847293', rfid: 'RFID-A847', lastScanned: '2026-06-30 14:22', usage7d: '2.4 L', tempRange: '-5 to 25°C', flashPoint: '-11°C', density: '0.876 g/mL' },
@@ -126,9 +126,187 @@ const mapColors: Record<string, string> = {
   empty: 'bg-slate-100 border-slate-200',
 };
 
+// ── Consumption & Forecast Data ──────────────────────────────────────────────
+const C = {
+  cyan: '#06b6d4', purple: '#8b5cf6', green: '#10b981',
+  amber: '#f59e0b', red: '#ef4444', orange: '#f97316',
+  blue: '#3b82f6', slate: '#94a3b8',
+};
+
+const weeklyConsumption = [
+  { day: 'Mon', chemical: 42, department: 28, lab: 35, research: 18 },
+  { day: 'Tue', chemical: 68, department: 41, lab: 52, research: 24 },
+  { day: 'Wed', chemical: 55, department: 33, lab: 44, research: 20 },
+  { day: 'Thu', chemical: 78, department: 50, lab: 61, research: 30 },
+  { day: 'Fri', chemical: 63, department: 38, lab: 49, research: 22 },
+  { day: 'Sat', chemical: 28, department: 15, lab: 21, research: 9 },
+  { day: 'Sun', chemical: 18, department: 10, lab: 14, research: 6 },
+];
+
+const topConsumed = [
+  { chemical: 'Ethanol', used: '184 L', pct: 92 },
+  { chemical: 'Acetone', used: '152 L', pct: 76 },
+  { chemical: 'Methanol', used: '118 L', pct: 59 },
+  { chemical: 'IPA', used: '102 L', pct: 51 },
+];
+
+const forecastData = [
+  { date: 'Jun 1', actual: 18, forecast: null },
+  { date: 'Jun 8', actual: 15, forecast: null },
+  { date: 'Jun 15', actual: 12, forecast: null },
+  { date: 'Jun 22', actual: 9, forecast: 8 },
+  { date: 'Jun 29', actual: null, forecast: 6 },
+  { date: 'Jul 6', actual: null, forecast: 4 },
+  { date: 'Jul 13', actual: null, forecast: 5 },
+];
+
+const labComparison = [
+  { lab: 'Chemistry', inventory: 4200, consumption: 310, waste: 42, expiry: 8 },
+  { lab: 'Biotech', inventory: 2800, consumption: 180, waste: 25, expiry: 3 },
+  { lab: 'Microbiology', inventory: 3600, consumption: 260, waste: 38, expiry: 12 },
+  { lab: 'QA', inventory: 1900, consumption: 120, waste: 15, expiry: 2 },
+];
+
+// ── Container Tracking Data ──────────────────────────────────────────────
+const containerRows = [
+  { id: 'CH-1022', chemical: 'Acetone', location: 'Lab A', owner: 'Dr John', qty: '2.5 L', status: 'Active' },
+  { id: 'CH-1158', chemical: 'Ethanol', location: 'Storage B', owner: 'Lab Tech', qty: '1 L', status: 'Reserved' },
+  { id: 'CH-2209', chemical: 'Nitric Acid', location: 'Lab C', owner: 'Research', qty: '0.2 L', status: 'Low Stock' },
+  { id: 'CH-1441', chemical: 'Methanol', location: 'Lab A', owner: 'Dr Sarah', qty: '5 L', status: 'Active' },
+  { id: 'CH-0897', chemical: 'IPA', location: 'Storage A', owner: 'Lab Tech', qty: '3 L', status: 'Active' },
+  { id: 'CH-0782', chemical: 'HCl 37%', location: '—', owner: 'Lab B', qty: '1.2 L', status: 'Missing' },
+];
+
+const hourlyScans = [
+  { hour: '8AM', scans: 62 }, { hour: '9AM', scans: 128 },
+  { hour: '10AM', scans: 183 }, { hour: '11AM', scans: 114 },
+  { hour: '12PM', scans: 97 }, { hour: '1PM', scans: 88 },
+  { hour: '2PM', scans: 152 },
+];
+
+const movementTimeline = [
+  { time: '09:12', event: 'Container CH-1023 issued to Lab A', type: 'issue' },
+  { time: '09:34', event: 'Cylinder CY-33 returned from ICU Lab', type: 'return' },
+  { time: '09:48', event: 'Acetone batch received — 20 L', type: 'receive' },
+  { time: '10:20', event: 'QR scan × 14 items — Storage B audit', type: 'scan' },
+  { time: '11:02', event: 'Container CH-0991 relocated to Cold Storage', type: 'move' },
+  { time: '11:38', event: 'Low stock alert triggered — Ethanol', type: 'alert' },
+  { time: '12:05', event: 'Container CH-0782 marked missing', type: 'alert' },
+  { time: '12:40', event: 'Reorder auto-generated — Ethanol 40 L', type: 'receive' },
+];
+
+const eventTypeColor: Record<string, string> = {
+  issue: 'bg-cyan-500', return: 'bg-green-500',
+  receive: 'bg-purple-500', scan: 'bg-amber-500',
+  move: 'bg-blue-500', alert: 'bg-red-500',
+};
+
+// ── Expiry & Reorder Data ──────────────────────────────────────────────
+const expiryItems = [
+  { chemical: 'Acetone (Batch A)', expiry: '7 days', remaining: '2 L', risk: 'High' },
+  { chemical: 'NaOH Solution', expiry: '12 days', remaining: '0.5 L', risk: 'High' },
+  { chemical: 'Ethanol (Batch B)', expiry: '45 days', remaining: '8 L', risk: 'Medium' },
+  { chemical: 'HCl 37%', expiry: '21 days', remaining: '1.2 L', risk: 'Medium' },
+  { chemical: 'Methanol', expiry: '28 days', remaining: '3 L', risk: 'Medium' },
+];
+
+const reorderRows = [
+  { item: 'Ethanol', current: '8 L', minimum: '20 L', suggested: '40 L', priority: 'High', erp: 'Pending', reason: 'Usage increased · Delivery 12 days' },
+  { item: 'IPA', current: '18 L', minimum: '25 L', suggested: '30 L', priority: 'Medium', erp: 'Approved', reason: 'Below safety stock threshold' },
+  { item: 'Nitric Acid', current: '0.2 L', minimum: '2 L', suggested: '5 L', priority: 'High', erp: 'Ordered', reason: 'Critical low — immediate reorder' },
+  { item: 'pH Buffer 7.0', current: '0 packs', minimum: '5 packs', suggested: '10 packs', priority: 'High', erp: 'Pending', reason: 'Out of stock' },
+];
+
+// ── Chemical Compatibility Data ──────────────────────────────────────────────
+const compatibilityViolations = [
+  { id: 1, chemA: 'Acetone', chemB: 'Hydrogen Peroxide 30%', reason: 'Oxidiser + Flammable — Risk of spontaneous combustion', location: 'CAB-A-03', severity: 'error' as const, recommended: 'Move Acetone to dedicated flammables cabinet', timestamp: '09:14' },
+  { id: 2, chemA: 'Sodium Hydroxide', chemB: 'Hydrochloric Acid 37%', reason: 'Corrosive Base + Acid — Exothermic reaction hazard', location: 'Cabinet C/B corridor', severity: 'error' as const, recommended: 'Separate to dedicated acid/base cabinets', timestamp: '09:48' },
+  { id: 3, chemA: 'Ethanol', chemB: 'Potassium Permanganate', reason: 'Oxidiser + Flammable (proximity)', location: 'Rack E-3', severity: 'warning' as const, recommended: 'Increase separation distance or relocate', timestamp: '10:22' },
+];
+
+const compatibilityRackData = [
+  ['safe', 'safe', 'incompatible', 'safe', 'safe'],
+  ['safe', 'warning', 'safe', 'safe', 'empty'],
+  ['safe', 'safe', 'safe', 'incompatible', 'safe'],
+  ['empty', 'safe', 'safe', 'safe', 'safe'],
+  ['safe', 'safe', 'warning', 'empty', 'safe'],
+];
+
+const rackColors: Record<string, string> = {
+  safe: 'bg-green-100 border-green-300 text-green-700',
+  incompatible: 'bg-red-200 border-red-400 text-red-700 animate-pulse',
+  warning: 'bg-amber-100 border-amber-300 text-amber-700',
+  empty: 'bg-slate-50 border-slate-200 text-slate-300',
+};
+
+const compatibilityMatrix = [
+  { category: 'Acids', acids: 'Compatible', bases: 'Incompatible', oxidizers: 'Warning', flammables: 'Warning', organics: 'Warning' },
+  { category: 'Bases', acids: 'Incompatible', bases: 'Compatible', oxidizers: 'Warning', flammables: 'Compatible', organics: 'Compatible' },
+  { category: 'Oxidizers', acids: 'Warning', bases: 'Warning', oxidizers: 'Compatible', flammables: 'Incompatible', organics: 'Incompatible' },
+  { category: 'Flammables', acids: 'Warning', bases: 'Compatible', oxidizers: 'Incompatible', flammables: 'Compatible', organics: 'Warning' },
+  { category: 'Organics', acids: 'Warning', bases: 'Compatible', oxidizers: 'Incompatible', flammables: 'Warning', organics: 'Compatible' },
+];
+
+const highRiskChemicals = [
+  { chemical: 'Nitric Acid', riskScore: 96, location: 'Storage A', casNumber: '7697-37-2' },
+  { chemical: 'Hydrogen Peroxide', riskScore: 91, location: 'Oxidizer Room', casNumber: '7722-84-1' },
+  { chemical: 'Sodium Metal', riskScore: 89, location: 'Chemical Vault', casNumber: '7440-23-5' },
+  { chemical: 'Perchloric Acid', riskScore: 94, location: 'Acid Room', casNumber: '7601-90-3' },
+];
+
+const aiSafetyRecommendations = [
+  'Two incompatible chemical pairs require immediate separation to eliminate fire risk.',
+  'Most compatibility violations involve oxidizers stored near organic solvents.',
+  'AI predicts an increased compatibility risk in Storage B due to incoming deliveries scheduled today.',
+  'Correcting the current storage violations will improve the overall safety score from 98.9% to 99.6%.',
+  'Flammable Storage Room maintains the highest compliance score (99.5%).',
+  'Computer Vision detected six misplaced containers during the morning inspection.',
+];
+
+const compatibilityStatusBadge: Record<string, string> = {
+  Compatible: 'bg-green-100 text-green-700 border-green-200',
+  Incompatible: 'bg-red-100 text-red-700 border-red-200',
+  Warning: 'bg-amber-100 text-amber-700 border-amber-200',
+};
+
+function CircularGauge({ value, label, size = 120 }: { value: number; label: string; size?: number }) {
+  const r = 46;
+  const circ = 2 * Math.PI * r;
+  const dash = (value / 100) * circ;
+  const color = value >= 90 ? C.green : value >= 70 ? C.amber : C.red;
+  return (
+    <div className="flex flex-col items-center">
+      <svg width={size} height={size} viewBox="0 0 110 110">
+        <circle cx="55" cy="55" r={r} fill="none" stroke="#f1f5f9" strokeWidth="10" />
+        <circle cx="55" cy="55" r={r} fill="none" stroke={color} strokeWidth="10"
+          strokeLinecap="round" strokeDasharray={`${dash} ${circ}`} transform="rotate(-90 55 55)" />
+        <text x="55" y="50" textAnchor="middle" fontSize="18" fontWeight="700" fill="#1e293b">{value}%</text>
+        <text x="55" y="65" textAnchor="middle" fontSize="9" fill="#64748b">{label}</text>
+      </svg>
+    </div>
+  );
+}
+
+function SectionCard({ title, subtitle, children, className = '' }: {
+  title: string; subtitle?: string; children: React.ReactNode; className?: string;
+}) {
+  return (
+    <div className={`bg-white/70 border border-slate-200/40 rounded-xl shadow-sm p-4 ${className}`}>
+      <div className="mb-3">
+        <p className="text-xs font-semibold text-slate-800">{title}</p>
+        {subtitle && <p className="text-[10px] text-slate-400 mt-0.5">{subtitle}</p>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
 export function ChemicalManagement() {
   const [activeTab, setActiveTab] = useState('Chemical Register');
   const [search, setSearch] = useState('');
+  const [stockSearch, setStockSearch] = useState('');
+  const [stockSort, setStockSort] = useState<'none' | 'lowToHigh' | 'highToLow'>('none');
+  const [labMetric, setLabMetric] = useState<'inventory' | 'consumption' | 'waste' | 'expiry'>('inventory');
 
   const complianceBadge: Record<string, 'success' | 'error' | 'warning'> = {
     compliant: 'success',
@@ -501,13 +679,14 @@ export function ChemicalManagement() {
                 }`}>
                   <p className="text-2xl font-bold text-slate-800 mb-1">{et.count}</p>
                   <p className="text-[10px] text-slate-600 font-medium">{et.period}</p>
-                  <Badge 
-                    variant={et.severity === 'critical' || et.severity === 'high' ? 'error' : et.severity === 'medium' ? 'warning' : 'success'} 
-                    size="sm" 
-                    className="mt-2"
-                  >
-                    {et.severity}
-                  </Badge>
+                  <div className="mt-2">
+                    <Badge 
+                      variant={et.severity === 'critical' || et.severity === 'high' ? 'error' : et.severity === 'medium' ? 'warning' : 'success'} 
+                      size="sm"
+                    >
+                      {et.severity}
+                    </Badge>
+                  </div>
                 </div>
               ))}
             </div>
@@ -516,11 +695,46 @@ export function ChemicalManagement() {
           {/* Stock Levels */}
           <div className="bg-white/70 border border-slate-200/40 rounded-xl p-4 shadow-sm">
             <div className="mb-3">
-              <p className="text-sm font-semibold text-slate-800">Stock Level Monitoring</p>
-              <p className="text-[10px] text-slate-500 mt-0.5">Current inventory vs min/max thresholds</p>
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">Stock Level Monitoring</p>
+                  <p className="text-[10px] text-slate-500 mt-0.5">Current inventory vs min/max thresholds</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 bg-white border border-slate-200/60 rounded-lg px-2.5 py-1.5">
+                    <Search className="w-3 h-3 text-slate-400" />
+                    <input 
+                      value={stockSearch} 
+                      onChange={e => setStockSearch(e.target.value)} 
+                      placeholder="Search chemical..." 
+                      className="w-32 text-xs outline-none bg-transparent text-slate-700 placeholder:text-slate-400" 
+                    />
+                  </div>
+                  <select 
+                    value={stockSort} 
+                    onChange={e => setStockSort(e.target.value as 'none' | 'lowToHigh' | 'highToLow')}
+                    className="px-2.5 py-1.5 text-xs border border-slate-200 text-slate-600 rounded-lg bg-white hover:bg-slate-50 outline-none"
+                  >
+                    <option value="none">Default Order</option>
+                    <option value="lowToHigh">Lowest to Highest</option>
+                    <option value="highToLow">Highest to Lowest</option>
+                  </select>
+                </div>
+              </div>
             </div>
             <div className="space-y-3">
-              {stockLevels.map(sl => (
+              {(() => {
+                let filteredStocks = stockLevels.filter(sl => 
+                  !stockSearch || sl.chemical.toLowerCase().includes(stockSearch.toLowerCase())
+                );
+                
+                if (stockSort === 'lowToHigh') {
+                  filteredStocks = [...filteredStocks].sort((a, b) => a.current - b.current);
+                } else if (stockSort === 'highToLow') {
+                  filteredStocks = [...filteredStocks].sort((a, b) => b.current - a.current);
+                }
+                
+                return filteredStocks.map(sl => (
                 <div key={sl.chemical}>
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-xs font-medium text-slate-700">{sl.chemical}</span>
@@ -548,7 +762,8 @@ export function ChemicalManagement() {
                     <span className="text-[9px] text-slate-400">Max: {sl.max}</span>
                   </div>
                 </div>
-              ))}
+                ));
+              })()}
             </div>
           </div>
         </div>
@@ -556,22 +771,108 @@ export function ChemicalManagement() {
 
       {activeTab === 'Tracking' && (
         <div className="space-y-4">
-          <div className="bg-gradient-to-r from-cyan-50 to-blue-50 border border-cyan-200/60 rounded-xl p-3 flex items-center gap-3">
-            <div className="w-10 h-10 bg-cyan-500 rounded-lg flex items-center justify-center">
-              <Activity className="w-5 h-5 text-white" />
-            </div>
-            <div className="flex-1">
-              <p className="text-sm font-semibold text-slate-800">Real-Time Chemical Tracking Active</p>
-              <p className="text-[10px] text-slate-600 mt-0.5">Live tracking via RFID, Barcode, and Computer Vision · Last sync: 2s ago</p>
-            </div>
-            <Badge variant="success" size="sm">● Live</Badge>
+          {/* Container Metrics Row */}
+          <div className="grid grid-cols-4 gap-3">
+            {[
+              { label: 'Active Containers', value: '982', color: C.green, icon: Package },
+              { label: 'Idle Containers', value: '34', color: C.amber, icon: Clock },
+              { label: 'Lost / Missing', value: '1', color: C.red, icon: AlertTriangle },
+              { label: 'Total Scans Today', value: '824', color: C.cyan, icon: Barcode },
+            ].map(m => (
+              <div key={m.label} className="bg-white/70 border border-slate-200/40 rounded-xl p-3 shadow-sm flex items-center gap-3">
+                <div className="p-1.5 rounded-lg" style={{ background: m.color + '20' }}>
+                  <m.icon className="w-3.5 h-3.5" style={{ color: m.color }} />
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-500">{m.label}</p>
+                  <p className="text-sm font-bold text-slate-800">{m.value}</p>
+                </div>
+              </div>
+            ))}
           </div>
 
+          <div className="grid grid-cols-3 gap-4">
+            {/* Container Tracking Table */}
+            <SectionCard title="Chemical Container Tracking" subtitle="Live container status" className="col-span-2">
+              <table className="w-full text-xs mb-3">
+                <thead>
+                  <tr className="border-b border-slate-100 bg-slate-50/50">
+                    {['Container ID', 'Chemical', 'Location', 'Owner', 'Qty', 'Status'].map(h => (
+                      <th key={h} className="text-left py-2 px-3 text-[10px] text-slate-500 font-medium">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {containerRows.map(r => (
+                    <tr key={r.id} className={`border-b border-slate-50 hover:bg-slate-50/60 ${r.status === 'Missing' ? 'bg-red-50/40' : ''}`}>
+                      <td className="py-2.5 px-3 font-mono text-[10px] text-slate-400">{r.id}</td>
+                      <td className="py-2.5 px-3 font-medium text-slate-800">{r.chemical}</td>
+                      <td className="py-2.5 px-3 text-slate-600">{r.location}</td>
+                      <td className="py-2.5 px-3 text-slate-600">{r.owner}</td>
+                      <td className="py-2.5 px-3 text-slate-700">{r.qty}</td>
+                      <td className="py-2.5 px-3">
+                        <Badge
+                          variant={r.status === 'Active' ? 'success' : r.status === 'Low Stock' ? 'error' : r.status === 'Missing' ? 'error' : 'info'}
+                          size="sm"
+                        >{r.status}</Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="pt-3 border-t border-slate-100">
+                <p className="text-[10px] text-slate-400 mb-2">Container lifecycle flow</p>
+                <div className="flex items-center gap-1 flex-wrap">
+                  {['Created', 'Received', 'Stored', 'Issued', 'Returned', 'Disposed'].map((s, i, arr) => (
+                    <div key={s} className="flex items-center gap-1">
+                      <span className="text-[9px] bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded font-medium">{s}</span>
+                      {i < arr.length - 1 && <ChevronRight className="w-2.5 h-2.5 text-slate-300 flex-shrink-0" />}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </SectionCard>
+
+            {/* Barcode Scan Activity */}
+            <SectionCard title="Barcode Scan Activity" subtitle="Hourly scanning volume">
+              <ResponsiveContainer width="100%" height={160}>
+                <BarChart data={hourlyScans} barSize={20}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <XAxis dataKey="hour" tick={{ fontSize: 9 }} />
+                  <YAxis tick={{ fontSize: 9 }} />
+                  <Tooltip contentStyle={{ fontSize: 10 }} />
+                  <Bar dataKey="scans" fill={C.cyan} radius={[3, 3, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+              <div className="mt-3 pt-3 border-t border-slate-100">
+                <p className="text-[10px] text-slate-500 font-medium mb-2">Today's Scan Summary</p>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { label: 'Total', value: '824', color: C.slate },
+                    { label: 'Success', value: '811', color: C.green },
+                    { label: 'Failed', value: '13', color: C.red },
+                  ].map(m => (
+                    <div key={m.label} className="bg-slate-50 border border-slate-100 rounded-lg p-2 text-center">
+                      <p className="text-base font-bold" style={{ color: m.color }}>{m.value}</p>
+                      <p className="text-[9px] text-slate-500">{m.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </SectionCard>
+          </div>
+
+          {/* Recent Tracking Activity Table */}
           <div className="bg-white/70 border border-slate-200/40 rounded-xl overflow-hidden shadow-sm">
             <div className="px-4 py-3 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-              <p className="text-sm font-semibold text-slate-800">Recent Tracking Activity</p>
+              <div>
+                <p className="text-sm font-semibold text-slate-800">Recent Tracking Activity</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">Real-time chemical movement log</p>
+              </div>
               <div className="flex gap-2">
-                <button className="px-2.5 py-1 text-[10px] border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50">Filter</button>
+                <button className="px-2.5 py-1 text-[10px] border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50 flex items-center gap-1">
+                  <Search className="w-3 h-3" /> Filter
+                </button>
                 <button className="px-2.5 py-1 text-[10px] border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50">Export</button>
               </div>
             </div>
@@ -613,6 +914,328 @@ export function ChemicalManagement() {
               </table>
             </div>
           </div>
+
+          {/* Inventory Movement Timeline */}
+          <SectionCard title="Inventory Movement Timeline" subtitle="Live activity feed — today">
+            <div className="relative">
+              <div className="absolute left-2.5 top-0 bottom-0 w-0.5 bg-slate-100"></div>
+              <div className="space-y-3 pl-1">
+                {movementTimeline.map((ev, i) => (
+                  <div key={i} className="flex gap-3 items-start">
+                    <div className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center z-10 ${eventTypeColor[ev.type]}`}>
+                      <span className="w-1.5 h-1.5 rounded-full bg-white"></span>
+                    </div>
+                    <div className="flex-1">
+                      <span className="text-[10px] font-semibold text-slate-400">{ev.time}</span>
+                      <p className="text-xs text-slate-700">{ev.event}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </SectionCard>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════
+          NEW TAB — CONSUMPTION & FORECAST
+      ══════════════════════════════════════════════════════════════ */}
+      {activeTab === 'Consumption & Forecast' && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-3 gap-4">
+
+            {/* Weekly Consumption Area Chart */}
+            <SectionCard title="Weekly Consumption Trend" subtitle="Usage by category — current week" className="col-span-2">
+              <ResponsiveContainer width="100%" height={190}>
+                <AreaChart data={weeklyConsumption}>
+                  <defs>
+                    {[C.cyan, C.purple, C.amber, C.green].map((c, i) => (
+                      <linearGradient key={i} id={`cg${i}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={c} stopOpacity={0.18} />
+                        <stop offset="95%" stopColor={c} stopOpacity={0.01} />
+                      </linearGradient>
+                    ))}
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <XAxis dataKey="day" tick={{ fontSize: 9 }} />
+                  <YAxis tick={{ fontSize: 9 }} />
+                  <Tooltip contentStyle={{ fontSize: 10 }} />
+                  <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
+                  <Area type="monotone" dataKey="chemical" name="Chemical" stroke={C.cyan} fill="url(#cg0)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="department" name="Department" stroke={C.purple} fill="url(#cg1)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="lab" name="Lab" stroke={C.amber} fill="url(#cg2)" strokeWidth={2} />
+                  <Area type="monotone" dataKey="research" name="Research" stroke={C.green} fill="url(#cg3)" strokeWidth={2} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </SectionCard>
+
+            {/* Top Consumed */}
+            <SectionCard title="Top Consumed Chemicals" subtitle="This month">
+              <div className="space-y-4 pt-1">
+                {topConsumed.map(tc => (
+                  <div key={tc.chemical}>
+                    <div className="flex justify-between mb-1">
+                      <span className="text-xs font-medium text-slate-700">{tc.chemical}</span>
+                      <span className="text-xs font-bold text-slate-800">{tc.used}</span>
+                    </div>
+                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-full bg-gradient-to-r from-cyan-400 to-cyan-500 rounded-full" style={{ width: `${tc.pct}%` }}></div>
+                    </div>
+                  </div>
+                ))}
+                <div className="mt-3 p-2.5 bg-cyan-50 border border-cyan-200/50 rounded-lg flex gap-2">
+                  <Brain className="w-3.5 h-3.5 text-cyan-500 flex-shrink-0 mt-0.5" />
+                  <p className="text-[10px] text-cyan-700">
+                    Ethanol usage <strong>+18%</strong> vs last month. Likely Project X. Pre-order 40 L recommended.
+                  </p>
+                </div>
+              </div>
+            </SectionCard>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            {/* Forecast Chart */}
+            <SectionCard title="Forecast Demand — Acetone" subtitle="Actual (solid) vs AI prediction (dashed)">
+              <ResponsiveContainer width="100%" height={160}>
+                <LineChart data={forecastData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <XAxis dataKey="date" tick={{ fontSize: 9 }} />
+                  <YAxis tick={{ fontSize: 9 }} />
+                  <Tooltip contentStyle={{ fontSize: 10 }} />
+                  <ReferenceLine y={5} stroke={C.red} strokeDasharray="3 3"
+                    label={{ value: 'Safety Stock', position: 'right', fontSize: 8, fill: C.red }} />
+                  <Line type="monotone" dataKey="actual" name="Actual" stroke={C.cyan} strokeWidth={2} dot={{ r: 2 }} connectNulls={false} />
+                  <Line type="monotone" dataKey="forecast" name="Forecast" stroke={C.purple} strokeWidth={2} strokeDasharray="5 5" dot={false} connectNulls />
+                </LineChart>
+              </ResponsiveContainer>
+              <div className="grid grid-cols-4 gap-2 mt-3 pt-3 border-t border-slate-100">
+                {[['Current Stock', '18 L', 'text-slate-700'], ['Expected (30d)', '5 L', 'text-amber-600'], ['Recommended', '20 L', 'text-cyan-600'], ['Confidence', '92%', 'text-green-600']].map(([l, v, cls]) => (
+                  <div key={l} className="text-center">
+                    <p className="text-[9px] text-slate-400">{l}</p>
+                    <p className={`text-sm font-bold ${cls}`}>{v}</p>
+                  </div>
+                ))}
+              </div>
+            </SectionCard>
+
+            {/* Lab Comparison + Predictive */}
+            <div className="space-y-4">
+              <SectionCard title="Laboratory Comparison" subtitle="Inventory metrics by lab">
+                <div className="flex gap-1.5 mb-3">
+                  {(['inventory', 'consumption', 'waste', 'expiry'] as const).map(m => (
+                    <button key={m} onClick={() => setLabMetric(m)} className={`px-2.5 py-1 text-[10px] rounded-lg font-medium capitalize transition-colors ${labMetric === m ? 'bg-cyan-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>{m}</button>
+                  ))}
+                </div>
+                <ResponsiveContainer width="100%" height={110}>
+                  <BarChart data={labComparison} barSize={22}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                    <XAxis dataKey="lab" tick={{ fontSize: 9 }} />
+                    <YAxis tick={{ fontSize: 9 }} />
+                    <Tooltip contentStyle={{ fontSize: 10 }} />
+                    <Bar dataKey={labMetric} fill={C.cyan} radius={[3, 3, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </SectionCard>
+
+              <SectionCard title="Predictive Analytics" subtitle="Next 30 days — ML forecast">
+                <div className="grid grid-cols-4 gap-2 mb-3">
+                  {[
+                    { label: 'Demand', delta: '+18%', up: true },
+                    { label: 'Inventory', delta: '-11%', up: false },
+                    { label: 'Waste', delta: '-6%', up: false },
+                    { label: 'Reorder', delta: '+8%', up: true },
+                  ].map(p => (
+                    <div key={p.label} className="p-2 bg-slate-50 rounded-lg text-center border border-slate-100">
+                      <p className="text-[9px] text-slate-500 mb-0.5">{p.label}</p>
+                      <p className={`text-sm font-bold ${p.up ? 'text-red-500' : 'text-green-500'}`}>{p.delta}</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="space-y-1">
+                  {['Historical consumption trends', 'Seasonal demand patterns', 'Ongoing research projects', 'Supplier lead times', 'Minimum safety stock', 'Batch expiry dates'].map(m => (
+                    <div key={m} className="flex items-center gap-1.5">
+                      <ChevronRight className="w-2.5 h-2.5 text-slate-300" />
+                      <span className="text-[9px] text-slate-500">{m}</span>
+                    </div>
+                  ))}
+                </div>
+              </SectionCard>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════
+          NEW TAB — EXPIRY & REORDER
+      ══════════════════════════════════════════════════════════════ */}
+      {activeTab === 'Expiry & Reorder' && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+
+            {/* Expiry Intelligence */}
+            <SectionCard title="Expiry Intelligence" subtitle="AI-monitored shelf life tracking">
+              <div className="grid grid-cols-4 gap-2 mb-4">
+                {[
+                  { label: 'Expired', value: '12', bg: 'bg-red-50 border-red-100', text: 'text-red-600' },
+                  { label: 'Within 7 days', value: '8', bg: 'bg-orange-50 border-orange-100', text: 'text-orange-600' },
+                  { label: 'Within 30 days', value: '41', bg: 'bg-amber-50 border-amber-100', text: 'text-amber-600' },
+                  { label: 'Safe', value: '932', bg: 'bg-green-50 border-green-100', text: 'text-green-600' },
+                ].map(e => (
+                  <div key={e.label} className={`${e.bg} border rounded-xl p-3 text-center`}>
+                    <p className={`text-2xl font-bold ${e.text}`}>{e.value}</p>
+                    <p className="text-[9px] text-slate-500 mt-0.5">{e.label}</p>
+                  </div>
+                ))}
+              </div>
+              <table className="w-full text-xs mb-4">
+                <thead>
+                  <tr className="border-b border-slate-100">
+                    {['Chemical', 'Expiry', 'Remaining', 'Risk'].map(h => (
+                      <th key={h} className="text-left py-2 px-2 text-[10px] text-slate-400 font-medium">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {expiryItems.map(e => (
+                    <tr key={e.chemical} className={`border-b border-slate-50 hover:bg-slate-50/60 ${e.risk === 'High' ? 'bg-red-50/30' : ''}`}>
+                      <td className="py-2 px-2 font-medium text-slate-800">{e.chemical}</td>
+                      <td className={`py-2 px-2 font-semibold ${e.risk === 'High' ? 'text-red-600' : 'text-amber-600'}`}>{e.expiry}</td>
+                      <td className="py-2 px-2 text-slate-600">{e.remaining}</td>
+                      <td className="py-2 px-2">
+                        <Badge variant={e.risk === 'High' ? 'error' : 'warning'} size="sm">{e.risk}</Badge>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200/50 rounded-lg">
+                <Brain className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-[10px] text-amber-700"><strong>AI Suggestion:</strong> Use Batch B (Acetone) before Batch C to minimise waste.</p>
+                  <p className="text-[10px] text-amber-600 mt-0.5">Estimated waste reduction: <strong>14%</strong></p>
+                </div>
+              </div>
+            </SectionCard>
+
+            {/* Auto Reorder + Risk */}
+            <div className="space-y-4">
+              <SectionCard title="Auto Reorder Recommendations" subtitle="AI-generated — pending ERP approval">
+                <div className="space-y-2.5 mb-3">
+                  {reorderRows.map(r => (
+                    <div key={r.item} className={`p-3 rounded-xl border ${r.priority === 'High' ? 'bg-red-50/40 border-red-100' : 'bg-slate-50 border-slate-100'}`}>
+                      <div className="flex items-start justify-between mb-2">
+                        <div>
+                          <p className="text-xs font-semibold text-slate-800">{r.item}</p>
+                          <p className="text-[10px] text-slate-400">{r.reason}</p>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Badge variant={r.priority === 'High' ? 'error' : 'warning'} size="sm">{r.priority}</Badge>
+                          <Badge variant={r.erp === 'Pending' ? 'warning' : r.erp === 'Approved' ? 'success' : 'info'} size="sm">{r.erp}</Badge>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-1 text-center">
+                        {[['Current', r.current], ['Minimum', r.minimum], ['Suggested', r.suggested]].map(([l, v]) => (
+                          <div key={l} className="bg-white/80 rounded-lg py-1.5">
+                            <p className="text-[9px] text-slate-400">{l}</p>
+                            <p className="text-[11px] font-bold text-slate-700">{v}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <button className="flex-1 py-1.5 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-lg text-xs font-medium shadow-sm">Approve All → ERP</button>
+                  <button className="px-3 py-1.5 border border-slate-200 text-slate-600 rounded-lg text-xs hover:bg-slate-50">Review</button>
+                </div>
+              </SectionCard>
+
+              <SectionCard title="AI Inventory Risk Assessment" subtitle="Live risk percentages">
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { label: 'Overstock Risk', value: 12, color: C.amber },
+                    { label: 'Understock Risk', value: 7, color: C.orange },
+                    { label: 'Expiry Risk', value: 5, color: C.red },
+                    { label: 'Missing Container', value: 1, color: C.purple },
+                  ].map(r => (
+                    <div key={r.label} className="p-2.5 bg-slate-50 border border-slate-100 rounded-xl">
+                      <p className="text-[9px] text-slate-500 mb-1">{r.label}</p>
+                      <p className="text-2xl font-bold" style={{ color: r.color }}>{r.value}%</p>
+                      <div className="h-1.5 w-full bg-slate-100 rounded-full mt-1.5 overflow-hidden">
+                        <div className="h-full rounded-full" style={{ width: `${r.value * 5}%`, background: r.color }}></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </SectionCard>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════
+          NEW TAB — CHEMICAL COMPATIBILITY
+      ══════════════════════════════════════════════════════════════ */}
+      {activeTab === 'Chemical Compatibility' && (
+        <div className="space-y-4">
+          {/* Active Violations + Storage Rack Map */}
+          <div className="grid grid-cols-3 gap-4">
+            {/* Active Violations */}
+            <SectionCard title="Active Compatibility Violations" subtitle={`${compatibilityViolations.length} critical issues detected`} className="col-span-2">
+              <div className="space-y-2">
+                {compatibilityViolations.map(v => (
+                  <div key={v.id} className={`border rounded-lg p-3 ${v.severity === 'error' ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200'}`}>
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <AlertOctagon className={`w-4 h-4 ${v.severity === 'error' ? 'text-red-600' : 'text-amber-600'}`} />
+                        <Badge variant={v.severity} size="sm">{v.severity === 'error' ? 'Critical' : 'Warning'}</Badge>
+                      </div>
+                      <span className="text-[9px] text-slate-400">{v.timestamp}</span>
+                    </div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-semibold text-slate-800">{v.chemA}</span>
+                      <span className="text-xs text-slate-400">+</span>
+                      <span className="text-xs font-semibold text-slate-800">{v.chemB}</span>
+                    </div>
+                    <p className="text-[10px] text-slate-600 mb-2">{v.reason}</p>
+                    <div className="flex items-center justify-between text-[10px]">
+                      <span className="text-slate-500">Location: <span className="font-medium text-cyan-600">{v.location}</span></span>
+                      <div className="flex items-center gap-2">
+                        <ShieldCheck className="w-3 h-3 text-green-600" />
+                        <span className="text-slate-500">{v.recommended}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </SectionCard>
+
+            {/* Storage Rack Compatibility Map */}
+            <SectionCard title="Storage Rack Map" subtitle="Section A–E" className="col-span-1">
+              <div className="grid gap-2" style={{ gridTemplateColumns: 'repeat(5, 1fr)' }}>
+                {compatibilityRackData.flat().map((cell, i) => {
+                  const row = Math.floor(i / 5);
+                  const col = i % 5;
+                  return (
+                    <div key={i} className={`h-12 rounded-lg border-2 flex flex-col items-center justify-center cursor-pointer hover:opacity-80 transition-opacity ${rackColors[cell]}`}>
+                      <span className="text-[9px] font-bold">{String.fromCharCode(65 + row)}{col + 1}</span>
+                      <span className="text-[8px]">{cell !== 'empty' ? cell.charAt(0).toUpperCase() + cell.slice(1) : '—'}</span>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {Object.entries(rackColors).map(([k, _]) => (
+                  <div key={k} className="flex items-center gap-1.5">
+                    <div className={`w-3 h-3 rounded border ${rackColors[k].replace(' animate-pulse', '')}`}></div>
+                    <span className="text-[10px] text-slate-500 capitalize">{k}</span>
+                  </div>
+                ))}
+              </div>
+            </SectionCard>
+          </div>
+
+
         </div>
       )}
     </div>

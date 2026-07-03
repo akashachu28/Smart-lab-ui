@@ -17,17 +17,30 @@ import {
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import logo from '../../imports/mialoLogo-1.png';
 
-const navigation = [
-  { name: 'AI Assistant', path: '/ai-assistant', icon: Bot, description: 'Lab Copilot' },
-  { name: 'Computer Vision', path: '/computer-vision', icon: Camera, description: 'Live Monitoring' },
-  { name: 'Smart Inventory', path: '/inventory', icon: Package, description: 'Stock Management' },
-  { name: 'Sample Tracking', path: '/sample-tracking', icon: FlaskConical, description: 'Chain of Custody' },
-  { name: 'Chemical Mgmt', path: '/chemical-management', icon: TestTube, description: 'Lifecycle & Compliance' },
-  { name: 'Gas Cylinders', path: '/gas-cylinders', icon: Gauge, description: 'IoT Monitoring' },
-  { name: 'Waste Management', path: '/waste-management', icon: Trash2, description: 'Disposal Tracking' },
-  { name: 'Demand Forecasting', path: '/demand-forecasting', icon: TrendingUp, description: 'AI Predictions' },
-  { name: 'Compatibility', path: '/compatibility-monitoring', icon: AlertOctagon, description: 'Storage Safety' },
-  { name: 'Root Cause', path: '/root-cause-analysis', icon: Search, description: 'Incident Analysis' },
+// Navigation structure with groups
+const navigationGroups = [
+  {
+    items: [
+      { name: 'AI Assistant', path: '/ai-assistant', icon: Bot, description: 'Lab Copilot' },
+      { name: 'Computer Vision', path: '/computer-vision', icon: Camera, description: 'Live Monitoring' },
+    ]
+  },
+  {
+    groupName: 'Smart Inventory',
+    items: [
+      { name: 'Sample Tracking', path: '/sample-tracking', icon: FlaskConical, description: 'Chain of Custody' },
+      { name: 'Chemical Management', path: '/chemical-management', icon: TestTube, description: 'Lifecycle & Compliance' },
+      { name: 'Gas Cylinders', path: '/gas-cylinders', icon: Gauge, description: 'IoT Monitoring' },
+    ]
+  },
+  {
+    items: [
+      { name: 'Waste Management', path: '/waste-management', icon: Trash2, description: 'Disposal Tracking' },
+      { name: 'Demand Forecasting', path: '/demand-forecasting', icon: TrendingUp, description: 'AI Predictions' },
+      { name: 'Compatibility', path: '/compatibility-monitoring', icon: AlertOctagon, description: 'Storage Safety' },
+      { name: 'Root Cause', path: '/root-cause-analysis', icon: Search, description: 'Incident Analysis' },
+    ]
+  },
 ];
 
 export function Layout() {
@@ -42,24 +55,41 @@ export function Layout() {
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-4 px-3">
-          {navigation.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-            >
-              {({ isActive }) => (
-                <div className={`flex items-center gap-2.5 px-3 py-2 rounded-lg mb-0.5 transition-all duration-200 ${
-                  isActive
-                    ? 'bg-gradient-to-r from-cyan-500/90 to-cyan-600/90 text-white shadow-md backdrop-blur-sm'
-                    : 'text-slate-600 hover:bg-slate-100/60'
-                }`}>
-                  <item.icon className="w-4 h-4 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium truncate text-xs">{item.name}</div>
+          {navigationGroups.map((group, groupIndex) => (
+            <div key={groupIndex}>
+              {group.groupName && (
+                <div className="px-3 py-2 mb-1">
+                  <div className="flex items-center gap-2">
+                    <Package className="w-3.5 h-3.5 text-slate-400" />
+                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
+                      {group.groupName}
+                    </span>
                   </div>
                 </div>
               )}
-            </NavLink>
+              {group.items.map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                >
+                  {({ isActive }) => (
+                    <div className={`flex items-center gap-2.5 px-3 py-2 rounded-lg mb-0.5 transition-all duration-200 ${
+                      isActive
+                        ? 'bg-gradient-to-r from-cyan-500/90 to-cyan-600/90 text-white shadow-md backdrop-blur-sm'
+                        : 'text-slate-600 hover:bg-slate-100/60'
+                    } ${group.groupName ? 'ml-2' : ''}`}>
+                      <item.icon className="w-4 h-4 flex-shrink-0" />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium truncate text-xs">{item.name}</div>
+                      </div>
+                    </div>
+                  )}
+                </NavLink>
+              ))}
+              {groupIndex < navigationGroups.length - 1 && (
+                <div className="my-3 border-t border-slate-200/40"></div>
+              )}
+            </div>
           ))}
         </nav>
 

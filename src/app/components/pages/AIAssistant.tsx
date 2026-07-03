@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bot, Send, Mic, Paperclip, Plus, Clock, FileText, ChevronRight, Settings, Beaker, ClipboardList, Package } from 'lucide-react';
+import { Bot, Send, Mic, Paperclip, Plus, Clock, FileText, ChevronRight, Settings, Beaker, ClipboardList, Package, BookOpen, FlaskConical, AlertTriangle, Languages, BarChart3 } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 
 const sessions = [
@@ -8,6 +8,58 @@ const sessions = [
   { id: 3, title: 'SOP for Sample Disposal', time: 'Yesterday' },
   { id: 4, title: 'Chemical Compatibility Check', time: 'Yesterday' },
   { id: 5, title: 'Fire Safety Procedures', time: '2 days ago' },
+];
+
+const aiModels = [
+  {
+    id: 'copilot',
+    name: 'Laboratory AI Copilot',
+    description: 'A conversational AI assistant that helps laboratory personnel access information, perform routine tasks, and make informed decisions.',
+    icon: Bot,
+    color: 'from-cyan-500 to-cyan-600'
+  },
+  {
+    id: 'sop',
+    name: 'SOP Search',
+    description: 'Quickly retrieve Standard Operating Procedures (SOPs) using natural language queries.',
+    icon: FileText,
+    color: 'from-blue-500 to-blue-600'
+  },
+  {
+    id: 'manual',
+    name: 'Laboratory Manual Search',
+    description: 'Search equipment manuals, technical documents, and operational guidelines with AI-powered semantic search.',
+    icon: BookOpen,
+    color: 'from-purple-500 to-purple-600'
+  },
+  {
+    id: 'chemical',
+    name: 'Chemical Handling Guidance',
+    description: 'Provides instant guidance on chemical handling, storage, safety precautions, and regulatory practices.',
+    icon: FlaskConical,
+    color: 'from-orange-500 to-orange-600'
+  },
+  {
+    id: 'msds',
+    name: 'MSDS Search',
+    description: 'Instantly access Material Safety Data Sheets (MSDS/SDS) for hazard, handling, PPE, and emergency information.',
+    icon: AlertTriangle,
+    color: 'from-red-500 to-red-600'
+  },
+  {
+    id: 'report',
+    name: 'Report Summarization',
+    description: 'Automatically summarizes laboratory reports, audits, and inspection findings into concise insights.',
+    icon: BarChart3,
+    color: 'from-green-500 to-green-600'
+  },
+  {
+    id: 'multilingual',
+    name: 'Arabic & English Support',
+    description: 'Communicate in both Arabic and English with full language support for all queries.',
+    icon: Languages,
+    color: 'from-indigo-500 to-indigo-600'
+  }
 ];
 
 const suggestionCards = [
@@ -43,6 +95,8 @@ export function AIAssistant() {
   const [messages, setMessages] = useState(initialMessages);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [selectedModel, setSelectedModel] = useState('copilot');
+  const [showModelSelector, setShowModelSelector] = useState(false);
 
   const handleSuggestionClick = (suggestion: string) => {
     setInput(suggestion);
@@ -98,18 +152,75 @@ export function AIAssistant() {
         {/* Header */}
         <div className="px-5 py-3 border-b border-slate-200/40 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-r from-cyan-500 to-cyan-600flex items-center justify-center">
-              <Bot className="w-4 h-4 text-white" />
-            </div>
-            <div>
-              <p className="text-xs font-semibold text-slate-800">Lab AI Copilot</p>
-              <p className="text-[10px] text-green-600 font-medium">● Online</p>
-            </div>
+            {(() => {
+              const currentModel = aiModels.find(m => m.id === selectedModel) || aiModels[0];
+              const IconComponent = currentModel.icon;
+              return (
+                <>
+                  <div className={`w-7 h-7 rounded-lg bg-gradient-to-r ${currentModel.color} flex items-center justify-center`}>
+                    <IconComponent className="w-4 h-4 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-800">{currentModel.name}</p>
+                    <p className="text-[10px] text-green-600 font-medium">● Online</p>
+                  </div>
+                </>
+              );
+            })()}
           </div>
-          <div className="flex gap-1.5">
-            {['SOP', 'MSDS', 'Report'].map(t => (
-              <span key={t} className="px-2 py-0.5 text-[10px] bg-slate-100 text-slate-600 rounded-full font-medium">{t}</span>
-            ))}
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <button
+                onClick={() => setShowModelSelector(!showModelSelector)}
+                className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+              >
+                <Settings className="w-3.5 h-3.5 text-slate-600" />
+                <span className="text-xs text-slate-700 font-medium">Change Model</span>
+              </button>
+              
+              {showModelSelector && (
+                <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-slate-200 rounded-xl shadow-xl z-50 max-h-96 overflow-y-auto">
+                  <div className="p-3 border-b border-slate-100">
+                    <p className="text-xs font-semibold text-slate-800">Select AI Model</p>
+                    <p className="text-[10px] text-slate-500 mt-0.5">Choose the specialized assistant for your task</p>
+                  </div>
+                  <div className="p-2">
+                    {aiModels.map((model) => {
+                      const IconComponent = model.icon;
+                      return (
+                        <button
+                          key={model.id}
+                          onClick={() => {
+                            setSelectedModel(model.id);
+                            setShowModelSelector(false);
+                          }}
+                          className={`w-full text-left p-3 rounded-lg hover:bg-slate-50 transition-colors mb-1 ${
+                            selectedModel === model.id ? 'bg-cyan-50 border border-cyan-200' : ''
+                          }`}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${model.color} flex items-center justify-center flex-shrink-0`}>
+                              <IconComponent className="w-4 h-4 text-white" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <p className="text-xs font-semibold text-slate-800">{model.name}</p>
+                                {selectedModel === model.id && (
+                                  <Badge variant="success" size="sm">Active</Badge>
+                                )}
+                              </div>
+                              <p className="text-[10px] text-slate-500 leading-relaxed">
+                                {model.description}
+                              </p>
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
