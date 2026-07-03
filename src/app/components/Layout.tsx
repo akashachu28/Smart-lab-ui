@@ -50,7 +50,7 @@ export function Layout() {
               {({ isActive }) => (
                 <div className={`flex items-center gap-2.5 px-3 py-2 rounded-lg mb-0.5 transition-all duration-200 ${
                   isActive
-                    ? 'bg-gradient-to-r from-cyan-500/90 to-cyan-600/90 text-white shadow-md shadow-cyan-500/20 backdrop-blur-sm'
+                    ? 'bg-gradient-to-r from-cyan-500/90 to-cyan-600/90 text-white shadow-md backdrop-blur-sm'
                     : 'text-slate-600 hover:bg-slate-100/60'
                 }`}>
                   <item.icon className="w-4 h-4 flex-shrink-0" />
@@ -86,13 +86,13 @@ export function Layout() {
               <Globe className="w-3.5 h-3.5" />
               EN
             </button>
-            <button className="p-1.5 text-slate-600 hover:bg-slate-100/60 rounded-lg transition-all duration-200 relative">
+            {/* <button className="p-1.5 text-slate-600 hover:bg-slate-100/60 rounded-lg transition-all duration-200 relative">
               <Bell className="w-4 h-4" />
               <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-red-500 rounded-full ring-1 ring-white"></span>
             </button>
             <button className="p-1.5 text-slate-600 hover:bg-slate-100/60 rounded-lg transition-all duration-200">
               <Settings className="w-4 h-4" />
-            </button>
+            </button> */}
             <button className="flex items-center gap-2 px-2.5 py-1.5 text-slate-700 hover:bg-slate-100/60 rounded-lg transition-all duration-200">
               <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center text-white text-xs font-medium">
                 A

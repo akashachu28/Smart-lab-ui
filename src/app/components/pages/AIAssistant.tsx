@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bot, Send, Mic, Paperclip, Plus, Clock, FileText, ChevronRight } from 'lucide-react';
+import { Bot, Send, Mic, Paperclip, Plus, Clock, FileText, ChevronRight, Settings, Beaker, ClipboardList, Package } from 'lucide-react';
 import { Badge } from '../ui/Badge';
 
 const sessions = [
@@ -10,39 +10,44 @@ const sessions = [
   { id: 5, title: 'Fire Safety Procedures', time: '2 days ago' },
 ];
 
-const quickActions = ['Find SOP', 'Get MSDS', 'Summarize Report', 'Chemical Guidance', 'PPE Requirements'];
-
-const initialMessages = [
+const suggestionCards = [
   {
-    id: 1,
-    role: 'user',
-    content: 'What are the storage requirements for Acetone in Lab Section C?'
+    icon: FileText,
+    title: 'Find SOP',
+    description: 'Retrieve protocol for Centrifuge C-4',
+    color: 'from-cyan-400 to-cyan-600'
   },
   {
-    id: 2,
-    role: 'ai',
-    content: 'Acetone (CAS 67-64-1) must be stored in a flammable materials cabinet away from oxidisers and heat sources. Key requirements for Lab Section C:\n\n• Temperature: Below 25°C in a ventilated, cool area\n• Segregation: Keep away from acids, oxidisers, and ignition sources\n• Container: Approved flammable storage containers only\n• Quantity limit: Maximum 10L per storage unit',
-    source: 'SDS — Acetone Rev 3',
-    sourceType: 'MSDS'
+    icon: Beaker,
+    title: 'Chemical Guidance',
+    description: 'Compatibility check for Acetone and Nitric Acid',
+    color: 'from-cyan-400 to-cyan-600'
   },
   {
-    id: 3,
-    role: 'user',
-    content: 'What PPE is required when handling Acetone?'
+    icon: ClipboardList,
+    title: 'Summarize Report',
+    description: 'Key findings from yesterday\'s batch run',
+    color: 'from-cyan-400 to-cyan-600'
   },
   {
-    id: 4,
-    role: 'ai',
-    content: 'When handling Acetone, the following PPE is mandatory according to SOP-LAB-PPE-007:\n\n• **Eye Protection:** Chemical splash goggles\n• **Hand Protection:** Nitrile gloves (min. 0.1mm thickness)\n• **Respiratory:** Ensure adequate ventilation; organic vapour respirator if ventilation is insufficient\n• **Clothing:** Lab coat and closed-toe shoes',
-    source: 'SOP-LAB-PPE-007 Rev 2',
-    sourceType: 'SOP'
+    icon: Package,
+    title: 'Inventory Check',
+    description: 'Current stock of Class 3 Flammables',
+    color: 'from-cyan-400 to-cyan-600'
   }
 ];
+
+const initialMessages: any[] = [];
 
 export function AIAssistant() {
   const [messages, setMessages] = useState(initialMessages);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+
+  const handleSuggestionClick = (suggestion: string) => {
+    setInput(suggestion);
+    sendMessage();
+  };
 
   const sendMessage = () => {
     if (!input.trim()) return;
@@ -93,7 +98,7 @@ export function AIAssistant() {
         {/* Header */}
         <div className="px-5 py-3 border-b border-slate-200/40 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-r from-cyan-500 to-cyan-600flex items-center justify-center">
               <Bot className="w-4 h-4 text-white" />
             </div>
             <div>
@@ -108,58 +113,102 @@ export function AIAssistant() {
           </div>
         </div>
 
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-          {messages.map((msg) => (
-            <div key={msg.id} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-              {msg.role === 'ai' && (
-                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Bot className="w-3.5 h-3.5 text-white" />
+        {/* Messages or Empty State */}
+        <div className="flex-1 overflow-y-auto px-5 py-4">
+          {messages.length === 0 ? (
+            // Empty State
+            <div className="flex flex-col items-center justify-center h-full max-w-4xl mx-auto">
+              
+              {/* Central Icon and Heading */}
+              <div className="flex flex-col items-center mb-10">
+                <div className="w-24 h-24 rounded-2xl bg-cyan-50/80 flex items-center justify-center mb-6">
+                  <div className="relative">
+                    <Bot className="w-12 h-12 text-cyan-600" />
+                    <Settings className="w-5 h-5 text-cyan-600 absolute -bottom-1 -right-1" />
+                  </div>
+                </div>
+                <h2 className="text-2xl font-bold text-slate-800 mb-3">
+                  How can I assist your research today?
+                </h2>
+                <p className="text-sm text-slate-500 text-center max-w-xl">
+                  Access standard operating procedures, analyze material safety data sheets, or query the lab's sensor array data.
+                </p>
+              </div>
+
+              {/* Suggestion Cards */}
+              <div className="grid grid-cols-2 gap-4 w-full max-w-3xl">
+                {suggestionCards.map((card, index) => {
+                  const IconComponent = card.icon;
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => setInput(card.description)}
+                      className="group p-5 bg-white border border-slate-200/60 rounded-xl hover:border-cyan-300 hover:shadow-md transition-all text-left"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${card.color} flex items-center justify-center flex-shrink-0`}>
+                          <IconComponent className="w-5 h-5 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-sm font-semibold text-slate-800 mb-1">
+                            {card.title}
+                          </h3>
+                          <p className="text-xs text-slate-500 leading-relaxed">
+                            {card.description}
+                          </p>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            // Messages
+            <div className="space-y-4">
+              {messages.map((msg) => (
+                <div key={msg.id} className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                  {msg.role === 'ai' && (
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Bot className="w-3.5 h-3.5 text-white" />
+                    </div>
+                  )}
+                  <div className={`max-w-lg ${msg.role === 'user' ? 'items-end' : 'items-start'} flex flex-col gap-1.5`}>
+                    <div className={`px-4 py-3 rounded-2xl text-xs leading-relaxed whitespace-pre-line ${
+                      msg.role === 'user'
+                        ? 'bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-tr-sm'
+                        : 'bg-white border border-slate-200/60 text-slate-700 rounded-tl-sm shadow-sm'
+                    }`}>
+                      {msg.content}
+                    </div>
+                    {msg.role === 'ai' && msg.source && (
+                      <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-50 border border-slate-200/60 rounded-lg">
+                        <FileText className="w-3 h-3 text-cyan-500" />
+                        <span className="text-[10px] text-slate-600 font-medium">{msg.source}</span>
+                        <Badge variant="info" size="sm">{msg.sourceType}</Badge>
+                        <button className="text-[10px] text-cyan-600 flex items-center gap-0.5 hover:underline">
+                          View <ChevronRight className="w-2.5 h-2.5" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+              {isTyping && (
+                <div className="flex gap-3 items-center">
+                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center flex-shrink-0">
+                    <Bot className="w-3.5 h-3.5 text-white" />
+                  </div>
+                  <div className="px-4 py-3 bg-white border border-slate-200/60 rounded-2xl rounded-tl-sm shadow-sm flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                    <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                  </div>
                 </div>
               )}
-              <div className={`max-w-lg ${msg.role === 'user' ? 'items-end' : 'items-start'} flex flex-col gap-1.5`}>
-                <div className={`px-4 py-3 rounded-2xl text-xs leading-relaxed whitespace-pre-line ${
-                  msg.role === 'user'
-                    ? 'bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-tr-sm'
-                    : 'bg-white border border-slate-200/60 text-slate-700 rounded-tl-sm shadow-sm'
-                }`}>
-                  {msg.content}
-                </div>
-                {msg.role === 'ai' && (msg as any).source && (
-                  <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-50 border border-slate-200/60 rounded-lg">
-                    <FileText className="w-3 h-3 text-cyan-500" />
-                    <span className="text-[10px] text-slate-600 font-medium">{(msg as any).source}</span>
-                    <Badge variant="info" size="sm">{(msg as any).sourceType}</Badge>
-                    <button className="text-[10px] text-cyan-600 flex items-center gap-0.5 hover:underline">
-                      View <ChevronRight className="w-2.5 h-2.5" />
-                    </button>
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
-
-          {isTyping && (
-            <div className="flex gap-3 items-center">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center flex-shrink-0">
-                <Bot className="w-3.5 h-3.5 text-white" />
-              </div>
-              <div className="px-4 py-3 bg-white border border-slate-200/60 rounded-2xl rounded-tl-sm shadow-sm flex items-center gap-1">
-                <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                <span className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
-              </div>
             </div>
           )}
-        </div>
-
-        {/* Quick Actions */}
-        <div className="px-5 pb-2 flex gap-2 flex-wrap">
-          {quickActions.map((a) => (
-            <button key={a} onClick={() => setInput(a)} className="px-3 py-1 bg-slate-100/80 hover:bg-cyan-50 hover:border-cyan-200 border border-slate-200/60 rounded-full text-xs text-slate-600 hover:text-cyan-700 transition-colors">
-              {a}
-            </button>
-          ))}
         </div>
 
         {/* Input */}
@@ -173,7 +222,7 @@ export function AIAssistant() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && sendMessage()}
-              placeholder="Ask about SOPs, MSDS, chemicals, safety procedures..."
+              placeholder="Message Lab AI Assistant..."
               className="flex-1 text-xs text-slate-700 outline-none placeholder:text-slate-400 bg-transparent"
             />
             <button className="p-1 text-slate-400 hover:text-slate-600 transition-colors">
@@ -181,7 +230,8 @@ export function AIAssistant() {
             </button>
             <button
               onClick={sendMessage}
-              className="p-1.5 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-lg hover:shadow-md transition-all"
+              className="p-1.5 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-lg hover:shadow-md transition-all disabled:opacity-50"
+              disabled={!input.trim()}
             >
               <Send className="w-3.5 h-3.5" />
             </button>

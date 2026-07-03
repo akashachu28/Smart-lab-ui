@@ -1,48 +1,20 @@
-import { AlertOctagon, ShieldCheck, Search, Clock } from 'lucide-react';
+import { useState } from 'react';
+import { AlertOctagon, ShieldCheck, Search, Clock, Activity, AlertTriangle, Eye, CheckCircle } from 'lucide-react';
 import { MetricCard } from '../ui/MetricCard';
 import { Badge } from '../ui/Badge';
-import { Card } from '../ui/Card';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { OverviewTab } from './compatibilityMonitoring/OverviewTab';
+import { ValidationTab } from './compatibilityMonitoring/ValidationTab';
+import { StorageMonitoringTab } from './compatibilityMonitoring/StorageMonitoringTab';
+import { VisionMonitoringTab } from './compatibilityMonitoring/VisionMonitoringTab';
+import { ComplianceTab } from './compatibilityMonitoring/ComplianceTab';
+import { AIInsightsTab } from './compatibilityMonitoring/AIInsightsTab';
+import { violations } from './compatibilityMonitoring/data';
 
-// 5x5 storage rack map
-const rackData = [
-  ['safe', 'safe', 'incompatible', 'safe', 'safe'],
-  ['safe', 'warning', 'safe', 'safe', 'empty'],
-  ['safe', 'safe', 'safe', 'incompatible', 'safe'],
-  ['empty', 'safe', 'safe', 'safe', 'safe'],
-  ['safe', 'safe', 'warning', 'empty', 'safe'],
-];
-
-const rackLabels: Record<string, string> = {
-  safe: 'Safe',
-  incompatible: 'Incompatible',
-  warning: 'Warning',
-  empty: 'Empty',
-};
-
-const rackColors: Record<string, string> = {
-  safe: 'bg-green-100 border-green-300 text-green-700',
-  incompatible: 'bg-red-200 border-red-400 text-red-700 animate-pulse',
-  warning: 'bg-amber-100 border-amber-300 text-amber-700',
-  empty: 'bg-slate-50 border-slate-200 text-slate-300',
-};
-
-const violations = [
-  { id: 1, chemA: 'Acetone', chemB: 'Hydrogen Peroxide 30%', reason: 'Oxidiser + Flammable', location: 'Rack A-3', severity: 'error' as const, recommended: 'Move Acetone to Cabinet F (flammables)' },
-  { id: 2, chemA: 'Sodium Hydroxide', chemB: 'Hydrochloric Acid', reason: 'Acid + Base', location: 'Rack B-2', severity: 'error' as const, recommended: 'Separate to dedicated acid/base cabinets' },
-  { id: 3, chemA: 'Ethanol', chemB: 'Potassium Permanganate', reason: 'Oxidiser + Flammable (proximity)', location: 'Rack E-3', severity: 'warning' as const, recommended: 'Increase separation distance or relocate' },
-];
-
-const trendData = [
-  { date: 'Jun 1', violations: 4 },
-  { date: 'Jun 5', violations: 3 },
-  { date: 'Jun 10', violations: 5 },
-  { date: 'Jun 15', violations: 2 },
-  { date: 'Jun 20', violations: 3 },
-  { date: 'Jun 25', violations: 2 },
-];
+const tabs = ['Overview', 'Validation', 'Storage Monitoring', 'Vision Detection', 'Compliance', 'AI Insights'];
 
 export function CompatibilityMonitoring() {
+  const [activeTab, setActiveTab] = useState('Overview');
+
   return (
     <div className="p-5 min-h-full flex flex-col gap-4">
       <div className="flex items-center justify-between mb-1">
@@ -54,88 +26,64 @@ export function CompatibilityMonitoring() {
       </div>
 
       {/* KPI Strip */}
-      <div className="grid grid-cols-4 gap-3">
-        <MetricCard title="Chemicals Monitored" value="128" subtitle="All locations scanned" icon={ShieldCheck} status="info" />
-        <MetricCard title="Active Violations" value="2" subtitle="Critical incompatibilities" icon={AlertOctagon} status="error" />
-        <MetricCard title="Storage Warnings" value="1" subtitle="Non-critical, monitor" icon={Search} status="warning" />
-        <MetricCard title="Last Full Scan" value="4 min ago" subtitle="All racks validated" icon={Clock} status="success" />
+      <div className="grid grid-cols-8 gap-3">
+        <MetricCard title="Chemicals Monitored" value="4,826" subtitle="Registered" icon={ShieldCheck} status="info" />
+        <MetricCard title="Storage Areas" value="126" subtitle="Active locations" icon={Activity} status="info" />
+        <MetricCard title="Checks Today" value="18,642" subtitle="AI validations" icon={Search} status="success" />
+        <MetricCard title="Active Violations" value="9" subtitle="Critical issues" icon={AlertOctagon} status="error" />
+        <MetricCard title="Critical Alerts" value="2" subtitle="Immediate action" icon={AlertTriangle} status="error" />
+        <MetricCard title="Compliance Score" value="98.7%" subtitle="Target: 95%" icon={CheckCircle} status="success" trend="up" trendValue="+0.3%" />
+        <MetricCard title="AI Recommendations" value="14" subtitle="Pending actions" icon={Search} status="warning" />
+        <MetricCard title="High Risk Zones" value="3" subtitle="Needs attention" icon={Eye} status="warning" />
       </div>
 
-      <div className="flex gap-4 flex-1">
-        {/* Storage Matrix */}
-        <div className="flex-1">
-          <p className="text-xs font-semibold text-slate-700 mb-3">Storage Rack Compatibility Map — Section A–E</p>
-          <div className="grid gap-2" style={{ gridTemplateColumns: 'repeat(5, 1fr)' }}>
-            {rackData.flat().map((cell, i) => {
-              const row = Math.floor(i / 5);
-              const col = i % 5;
-              return (
-                <div key={i} className={`h-12 rounded-lg border-2 flex flex-col items-center justify-center cursor-pointer hover:opacity-80 transition-opacity ${rackColors[cell]}`}>
-                  <span className="text-[9px] font-bold">{String.fromCharCode(65 + row)}{col + 1}</span>
-                  <span className="text-[8px]">{cell !== 'empty' ? rackLabels[cell] : '—'}</span>
+      {/* Tabs */}
+      <div className="flex gap-1 border-b border-slate-200/40">
+        {tabs.map(t => (
+          <button 
+            key={t} 
+            onClick={() => setActiveTab(t)} 
+            className={`px-4 py-2 text-xs font-medium border-b-2 transition-colors ${
+              activeTab === t ? 'border-cyan-500 text-cyan-700' : 'border-transparent text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            {t}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === 'Overview' && <OverviewTab />}
+      {activeTab === 'Validation' && <ValidationTab />}
+      {activeTab === 'Storage Monitoring' && <StorageMonitoringTab />}
+      {activeTab === 'Vision Detection' && <VisionMonitoringTab />}
+      {activeTab === 'Compliance' && <ComplianceTab />}
+      {activeTab === 'AI Insights' && <AIInsightsTab />}
+
+      {/* Floating Violations Panel */}
+      {violations.length > 0 && (
+        <div className="fixed bottom-4 right-4 w-80 bg-white border-2 border-red-200 rounded-xl shadow-2xl p-4 max-h-96 overflow-y-auto">
+          <p className="text-xs font-semibold text-slate-700 mb-3 flex items-center gap-2">
+            <AlertOctagon className="w-4 h-4 text-red-600" />
+            Active Violations ({violations.length})
+          </p>
+          <div className="space-y-2">
+            {violations.map(v => (
+              <div key={v.id} className={`border rounded-lg p-2.5 ${v.severity === 'error' ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200'}`}>
+                <div className="flex items-start justify-between mb-1">
+                  <Badge variant={v.severity} size="sm">{v.severity === 'error' ? 'Critical' : 'Warning'}</Badge>
+                  <span className="text-[9px] text-slate-400">{v.timestamp}</span>
                 </div>
-              );
-            })}
-          </div>
-          <div className="mt-3 flex gap-3">
-            {Object.entries(rackColors).map(([k, v]) => (
-              <div key={k} className="flex items-center gap-1.5">
-                <div className={`w-3 h-3 rounded border ${v.replace(' animate-pulse', '')}`}></div>
-                <span className="text-[10px] text-slate-500 capitalize">{k}</span>
+                <div className="flex items-center gap-1 mb-1">
+                  <span className="text-[10px] font-semibold text-slate-800">{v.chemA}</span>
+                  <span className="text-[9px] text-slate-400">+</span>
+                  <span className="text-[10px] font-semibold text-slate-800">{v.chemB}</span>
+                </div>
+                <p className="text-[9px] text-slate-500">{v.location}</p>
               </div>
             ))}
           </div>
-
-          {/* AI Widget */}
-          <div className="mt-4 bg-gradient-to-r from-cyan-50 to-slate-50 border border-cyan-200/60 rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-5 h-5 rounded bg-cyan-500 flex items-center justify-center">
-                <Search className="w-3 h-3 text-white" />
-              </div>
-              <p className="text-xs font-semibold text-slate-700">AI Safety Assistant</p>
-            </div>
-            <input placeholder="Ask: Can I store Acetone next to Hydrogen Peroxide?" className="w-full text-xs bg-white border border-cyan-200/60 rounded-lg px-3 py-2 outline-none text-slate-700 placeholder:text-slate-400" />
-          </div>
         </div>
-
-        {/* Violations Panel */}
-        <div className="w-72 flex flex-col gap-3">
-          <p className="text-xs font-semibold text-slate-700">Active Violations & Alerts</p>
-          {violations.map(v => (
-            <div key={v.id} className={`bg-white/70 border rounded-xl p-3.5 shadow-sm ${v.severity === 'error' ? 'border-red-200' : 'border-amber-200'}`}>
-              <div className="flex items-start justify-between mb-2">
-                <Badge variant={v.severity} size="sm">{v.severity === 'error' ? 'Critical' : 'Warning'}</Badge>
-                <button className="text-[10px] text-cyan-600 hover:underline">Ack</button>
-              </div>
-              <div className="flex items-center gap-1 mb-1.5">
-                <span className="text-xs font-semibold text-slate-800">{v.chemA}</span>
-                <span className="text-[10px] text-slate-400">+</span>
-                <span className="text-xs font-semibold text-slate-800">{v.chemB}</span>
-              </div>
-              <div className="inline-flex px-2 py-0.5 bg-red-50 border border-red-100 rounded-full text-[10px] text-red-700 font-medium mb-2">{v.reason}</div>
-              <p className="text-[10px] text-slate-500 mb-1">Location: {v.location}</p>
-              <p className="text-[10px] text-slate-600">Recommended: {v.recommended}</p>
-              <div className="flex gap-1.5 mt-2.5">
-                <button className="flex-1 px-2 py-1 bg-gradient-to-r from-red-500 to-red-600 text-white text-[10px] rounded-lg font-medium">Reassign</button>
-                <button className="flex-1 px-2 py-1 border border-slate-200 text-slate-600 text-[10px] rounded-lg">Log Action</button>
-              </div>
-            </div>
-          ))}
-
-          {/* Trend */}
-          <div className="bg-white/70 border border-slate-200/40 rounded-xl p-3">
-            <p className="text-xs font-semibold text-slate-700 mb-2">Violations Trend</p>
-            <ResponsiveContainer width="100%" height={80}>
-              <LineChart data={trendData}>
-                <XAxis dataKey="date" tick={{ fontSize: 8 }} />
-                <YAxis tick={{ fontSize: 8 }} width={15} />
-                <Tooltip contentStyle={{ fontSize: 10 }} />
-                <Line type="monotone" dataKey="violations" stroke="#ef4444" strokeWidth={1.5} dot={false} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

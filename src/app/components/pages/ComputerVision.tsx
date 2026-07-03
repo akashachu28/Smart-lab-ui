@@ -73,6 +73,53 @@ const ALL_LOGS = [
 
 const CATEGORY_FILTER = ['All', 'PPE', 'Restricted', 'Access', 'Occupancy', 'Behaviour', 'Fire'];
 
+// ── PPE Detection Logs ───────────────────────────────────────────────────────
+
+const PPE_LOGS = [
+  { id: 'PPE-0142', date: '2026-07-02', time: '11:38:42', area: 'Lab A — Bench 3', personnel: 'John Smith', helmet: true, gloves: true, goggles: true, labCoat: true, faceShield: false, status: 'Violation' },
+  { id: 'PPE-0141', date: '2026-07-02', time: '11:05:03', area: 'Lab B — Entry', personnel: 'Sarah Johnson', helmet: true, gloves: true, goggles: false, labCoat: true, faceShield: true, status: 'Violation' },
+  { id: 'PPE-0140', date: '2026-07-02', time: '10:28:55', area: 'Lab A — Bench 1', personnel: 'Mike Davis', helmet: true, gloves: false, goggles: true, labCoat: true, faceShield: true, status: 'Violation' },
+  { id: 'PPE-0139', date: '2026-07-02', time: '09:30:25', area: 'Lab B — Bench 2', personnel: 'Emily Chen', helmet: false, gloves: true, goggles: true, labCoat: true, faceShield: true, status: 'Violation' },
+  { id: 'PPE-0138', date: '2026-07-02', time: '08:40:11', area: 'Lab A — Entry', personnel: 'David Wilson', helmet: true, gloves: true, goggles: true, labCoat: false, faceShield: true, status: 'Violation' },
+  { id: 'PPE-0137', date: '2026-07-02', time: '08:15:30', area: 'Chemical Bay', personnel: 'Lisa Anderson', helmet: true, gloves: true, goggles: true, labCoat: true, faceShield: true, status: 'Compliant' },
+  { id: 'PPE-0136', date: '2026-07-02', time: '07:52:18', area: 'Lab B — Bench 1', personnel: 'Robert Brown', helmet: true, gloves: true, goggles: true, labCoat: true, faceShield: true, status: 'Compliant' },
+  { id: 'PPE-0135', date: '2026-07-02', time: '07:30:45', area: 'Lab A — Bench 2', personnel: 'Jennifer Lee', helmet: true, gloves: false, goggles: true, labCoat: true, faceShield: false, status: 'Violation' },
+  { id: 'PPE-0134', date: '2026-07-01', time: '16:45:22', area: 'Radiation Lab', personnel: 'Thomas Garcia', helmet: true, gloves: true, goggles: true, labCoat: true, faceShield: true, status: 'Compliant' },
+  { id: 'PPE-0133', date: '2026-07-01', time: '15:20:10', area: 'Lab A — Entry', personnel: 'Amanda Martinez', helmet: true, gloves: true, goggles: false, labCoat: true, faceShield: true, status: 'Violation' },
+];
+
+// ── Restricted Area Monitoring Logs ──────────────────────────────────────────
+
+const RESTRICTED_LOGS = [
+  { id: 'RES-0045', date: '2026-07-02', time: '11:22:15', zone: 'Chemical Bay', personnel: 'Unknown', badge: 'N/A', authorized: false, duration: '2m 15s', status: 'Critical', action: 'Security notified' },
+  { id: 'RES-0044', date: '2026-07-02', time: '09:44:02', zone: 'Radiation Lab', personnel: 'James Clark', badge: 'EMP-4521', authorized: true, duration: '45s', status: 'Warning', action: 'Door held open — tailgating detected' },
+  { id: 'RES-0043', date: '2026-07-02', time: '08:12:30', zone: 'Chemical Bay', personnel: 'Maria Rodriguez', badge: 'EMP-3387', authorized: true, duration: '15m 22s', status: 'Normal', action: 'Authorized access' },
+  { id: 'RES-0042', date: '2026-07-01', time: '16:30:45', zone: 'Server Room Annex', personnel: 'Unknown', badge: 'N/A', authorized: false, duration: '30s', status: 'Critical', action: 'Access denied — proximity alert' },
+  { id: 'RES-0041', date: '2026-07-01', time: '14:22:10', zone: 'Radiation Lab', personnel: 'Christopher Lee', badge: 'EMP-2156', authorized: true, duration: '8m 45s', status: 'Normal', action: 'Authorized access' },
+  { id: 'RES-0040', date: '2026-07-01', time: '11:55:33', zone: 'Chemical Bay', personnel: 'Patricia White', badge: 'EMP-5689', authorized: false, duration: '1m 05s', status: 'Warning', action: 'Clearance level insufficient' },
+];
+
+// ── Unsafe Behavior Logs ──────────────────────────────────────────────────────
+
+const UNSAFE_LOGS = [
+  { id: 'UNS-0078', date: '2026-07-02', time: '10:54:30', area: 'Corridor C', personnel: 'Michael Turner', behavior: 'Running near hazardous materials', riskLevel: 'Medium', status: 'Open', action: 'Pending review' },
+  { id: 'UNS-0077', date: '2026-07-02', time: '09:58:10', area: 'Chemical Bay', personnel: 'Jessica Adams', behavior: 'Improper handling of pressurized container', riskLevel: 'High', status: 'Resolved', action: 'Safety briefing completed' },
+  { id: 'UNS-0076', date: '2026-07-02', time: '08:35:20', area: 'Lab A — Bench 4', personnel: 'Daniel Harris', behavior: 'Working without proper ventilation', riskLevel: 'High', status: 'Resolved', action: 'Supervisor notified' },
+  { id: 'UNS-0075', date: '2026-07-02', time: '07:45:15', area: 'Lab B — Storage', personnel: 'Laura Thompson', behavior: 'Improper chemical storage', riskLevel: 'Medium', status: 'Open', action: 'Warning issued' },
+  { id: 'UNS-0074', date: '2026-07-01', time: '16:20:40', area: 'Chemical Bay', personnel: 'Kevin Moore', behavior: 'Not using fume hood during transfer', riskLevel: 'High', status: 'Resolved', action: 'Retrained on procedures' },
+  { id: 'UNS-0073', date: '2026-07-01', time: '14:10:25', area: 'Lab A — Bench 1', personnel: 'Nancy Walker', behavior: 'Eating in laboratory area', riskLevel: 'Low', status: 'Resolved', action: 'Verbal warning' },
+];
+
+// ── Fire & Smoke Detection Logs ───────────────────────────────────────────────
+
+const FIRE_LOGS = [
+  { id: 'FIRE-0012', date: '2026-07-02', time: '08:55:44', location: 'Lab A — Fume Hood', detectionType: 'Smoke', confidence: '92%', temperature: '28°C', status: 'False Positive', response: 'Investigated — cooking residue on hot plate' },
+  { id: 'FIRE-0011', date: '2026-06-28', time: '14:32:18', location: 'Chemical Bay — Zone 3', detectionType: 'Smoke', confidence: '98%', temperature: '45°C', status: 'Confirmed', response: 'Fire suppression activated — minor chemical reaction' },
+  { id: 'FIRE-0010', date: '2026-06-25', time: '11:15:30', location: 'Lab B — Electrical Panel', detectionType: 'Heat', confidence: '87%', temperature: '62°C', status: 'Confirmed', response: 'Electrician called — overheating transformer' },
+  { id: 'FIRE-0009', date: '2026-06-22', time: '09:40:55', location: 'Corridor C', detectionType: 'Smoke', confidence: '76%', temperature: '24°C', status: 'False Positive', response: 'Steam from autoclave' },
+  { id: 'FIRE-0008', date: '2026-06-18', time: '16:22:10', location: 'Lab A — Bench 2', detectionType: 'Flame', confidence: '95%', temperature: '180°C', status: 'Confirmed', response: 'Bunsen burner left on — secured by personnel' },
+];
+
 const severityBadge: Record<string, 'error' | 'warning' | 'info' | 'success' | 'neutral'> = {
   critical: 'error',
   high: 'warning',
@@ -92,6 +139,24 @@ const statusBadge: Record<string, 'error' | 'warning' | 'info' | 'success' | 'ne
   Acknowledged: 'warning',
   Resolved: 'success',
 };
+
+// ── Card Wrapper Component ──────────────────────────────────────────────────
+
+function CardWrapper({ title, subtitle, children, className = '' }: {
+  title: string; subtitle?: string; children: React.ReactNode; className?: string;
+}) {
+  return (
+    <Card className={`bg-white/70 border-slate-200/40 shadow-sm ${className}`}>
+      <div className="p-4">
+        <div className="mb-3">
+          <h3 className="text-sm font-semibold text-slate-800">{title}</h3>
+          {subtitle && <p className="text-[10px] text-slate-400 mt-0.5">{subtitle}</p>}
+        </div>
+        <div>{children}</div>
+      </div>
+    </Card>
+  );
+}
 
 // ── Area occupancy caps ──────────────────────────────────────────────────────
 
@@ -113,7 +178,7 @@ export function ComputerVision() {
     ? ALL_LOGS
     : ALL_LOGS.filter(l => l.category === categoryFilter);
 
-  const sections = ['Overview', 'PPE Detection', 'Occupancy', 'Events Log'];
+  const sections = ['Overview', 'PPE Detection', 'Occupancy', 'Restricted Areas', 'Unsafe Behavior', 'Events Log'];
 
   return (
     <div className="p-5 min-h-full flex flex-col gap-4">
@@ -157,8 +222,8 @@ export function ComputerVision() {
       {activeSection === 'Overview' && (
         <div className="grid grid-cols-3 gap-4">
           {/* Detection counts table */}
-          <div className="col-span-1">
-            <Card title="Detection Summary" subtitle="Today vs yesterday">
+          <div className="col-span-1 flex flex-col gap-4">
+            <CardWrapper title="Detection Summary" subtitle="Today vs yesterday" className="flex-1">
               <div className="divide-y divide-slate-50">
                 {detectionCounts.map(d => (
                   <div key={d.category} className="flex items-center justify-between py-2.5">
@@ -175,10 +240,10 @@ export function ComputerVision() {
                   </div>
                 ))}
               </div>
-            </Card>
+            </CardWrapper>
 
             {/* Behaviour breakdown pie */}
-            <Card title="Behaviour Breakdown" subtitle="Current session" className="mt-4">
+            <CardWrapper title="Behaviour Breakdown" subtitle="Current session" className="flex-1">
               <div className="flex items-center gap-3">
                 <ResponsiveContainer width={100} height={100}>
                   <PieChart>
@@ -197,12 +262,12 @@ export function ComputerVision() {
                   ))}
                 </div>
               </div>
-            </Card>
+            </CardWrapper>
           </div>
 
           {/* Bar chart — weekly detection counts */}
-          <div className="col-span-2">
-            <Card title="Detection Events — This Week" subtitle="By category per day">
+          <div className="col-span-2 flex flex-col gap-4">
+            <CardWrapper title="Detection Events — This Week" subtitle="By category per day" className="flex-1">
               <ResponsiveContainer width="100%" height={200}>
                 <BarChart data={[
                   { day: 'Mon', ppe: 18, breach: 2, behaviour: 7, entry: 0, fire: 0 },
@@ -225,10 +290,10 @@ export function ComputerVision() {
                   <Bar dataKey="fire" name="Fire / Smoke" fill="#dc2626" radius={[2, 2, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
-            </Card>
+            </CardWrapper>
 
             {/* Occupancy area overview */}
-            <Card title="Area Occupancy — Now" subtitle="Current vs maximum capacity" className="mt-4">
+            <CardWrapper title="Area Occupancy — Now" subtitle="Current vs maximum capacity" className="flex-1">
               <div className="grid grid-cols-5 gap-3">
                 {areaStatus.map(a => {
                   const pct = Math.round((a.current / a.max) * 100);
@@ -256,7 +321,7 @@ export function ComputerVision() {
                   );
                 })}
               </div>
-            </Card>
+            </CardWrapper>
           </div>
         </div>
       )}
@@ -264,7 +329,7 @@ export function ComputerVision() {
       {/* ── PPE Detection ── */}
       {activeSection === 'PPE Detection' && (
         <div className="grid grid-cols-2 gap-4">
-          <Card title="PPE Compliance Rate — Today" subtitle="Hourly trend by equipment type">
+          <CardWrapper title="PPE Compliance Rate — Today" subtitle="Hourly trend by equipment type">
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={ppeComplianceTrend}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
@@ -279,9 +344,9 @@ export function ComputerVision() {
                 <Line type="monotone" dataKey="faceShield" name="Face Shield" stroke="#ef4444" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
-          </Card>
+          </CardWrapper>
 
-          <Card title="Compliance by PPE Item" subtitle="Today — compliant vs violations">
+          <CardWrapper title="Compliance by PPE Item" subtitle="Today — compliant vs violations">
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={ppeBreakdown} layout="vertical" barSize={14}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
@@ -292,7 +357,7 @@ export function ComputerVision() {
                 <Bar dataKey="violation" name="Violation" stackId="a" fill="#ef4444" radius={[0, 2, 2, 0]} />
               </BarChart>
             </ResponsiveContainer>
-          </Card>
+          </CardWrapper>
 
           {/* PPE violation summary cards */}
           <div className="col-span-2 grid grid-cols-5 gap-3">
@@ -317,13 +382,91 @@ export function ComputerVision() {
               </div>
             ))}
           </div>
+
+          {/* PPE Detection Logs Table */}
+          <div className="col-span-2">
+            <CardWrapper title="PPE Detection Logs" subtitle="Recent personnel scans with equipment status">
+              <div className="overflow-hidden rounded-lg border border-slate-200/40">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-100 bg-slate-50/50">
+                      <th className="text-left px-3 py-2 text-slate-500 font-medium">Log ID</th>
+                      <th className="text-left px-3 py-2 text-slate-500 font-medium">Date</th>
+                      <th className="text-left px-3 py-2 text-slate-500 font-medium">Time</th>
+                      <th className="text-left px-3 py-2 text-slate-500 font-medium">Area</th>
+                      <th className="text-left px-3 py-2 text-slate-500 font-medium">Personnel</th>
+                      <th className="text-center px-3 py-2 text-slate-500 font-medium">Helmet</th>
+                      <th className="text-center px-3 py-2 text-slate-500 font-medium">Gloves</th>
+                      <th className="text-center px-3 py-2 text-slate-500 font-medium">Goggles</th>
+                      <th className="text-center px-3 py-2 text-slate-500 font-medium">Lab Coat</th>
+                      <th className="text-center px-3 py-2 text-slate-500 font-medium">Face Shield</th>
+                      <th className="text-left px-3 py-2 text-slate-500 font-medium">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {PPE_LOGS.map(log => (
+                      <tr key={log.id} className={`border-b border-slate-50 hover:bg-slate-50/60 transition-colors ${
+                        log.status === 'Violation' ? 'bg-red-50/20' : ''
+                      }`}>
+                        <td className="px-3 py-2.5 font-mono text-slate-400 text-[10px]">{log.id}</td>
+                        <td className="px-3 py-2.5 text-slate-500 whitespace-nowrap">{log.date}</td>
+                        <td className="px-3 py-2.5 text-slate-500 whitespace-nowrap">{log.time}</td>
+                        <td className="px-3 py-2.5 text-slate-600">{log.area}</td>
+                        <td className="px-3 py-2.5 text-slate-700 font-medium">{log.personnel}</td>
+                        <td className="px-3 py-2.5 text-center">
+                          {log.helmet ? (
+                            <CheckCircle className="w-3.5 h-3.5 text-green-500 inline-block" />
+                          ) : (
+                            <AlertTriangle className="w-3.5 h-3.5 text-red-500 inline-block" />
+                          )}
+                        </td>
+                        <td className="px-3 py-2.5 text-center">
+                          {log.gloves ? (
+                            <CheckCircle className="w-3.5 h-3.5 text-green-500 inline-block" />
+                          ) : (
+                            <AlertTriangle className="w-3.5 h-3.5 text-red-500 inline-block" />
+                          )}
+                        </td>
+                        <td className="px-3 py-2.5 text-center">
+                          {log.goggles ? (
+                            <CheckCircle className="w-3.5 h-3.5 text-green-500 inline-block" />
+                          ) : (
+                            <AlertTriangle className="w-3.5 h-3.5 text-red-500 inline-block" />
+                          )}
+                        </td>
+                        <td className="px-3 py-2.5 text-center">
+                          {log.labCoat ? (
+                            <CheckCircle className="w-3.5 h-3.5 text-green-500 inline-block" />
+                          ) : (
+                            <AlertTriangle className="w-3.5 h-3.5 text-red-500 inline-block" />
+                          )}
+                        </td>
+                        <td className="px-3 py-2.5 text-center">
+                          {log.faceShield ? (
+                            <CheckCircle className="w-3.5 h-3.5 text-green-500 inline-block" />
+                          ) : (
+                            <AlertTriangle className="w-3.5 h-3.5 text-red-500 inline-block" />
+                          )}
+                        </td>
+                        <td className="px-3 py-2.5">
+                          <Badge variant={log.status === 'Compliant' ? 'success' : 'error'} size="sm">
+                            {log.status}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardWrapper>
+          </div>
         </div>
       )}
 
       {/* ── Occupancy ── */}
       {activeSection === 'Occupancy' && (
         <div className="grid grid-cols-2 gap-4">
-          <Card title="Occupancy Trend — Today" subtitle="Personnel count per area (hourly)" className="col-span-2">
+          <CardWrapper title="Occupancy Trend — Today" subtitle="Personnel count per area (hourly)" className="col-span-2">
             <ResponsiveContainer width="100%" height={200}>
               <AreaChart data={occupancyData}>
                 <defs>
@@ -345,9 +488,9 @@ export function ComputerVision() {
                 <Area type="monotone" dataKey="corridor" name="Corridor C (max 20)" stroke="#10b981" fill="url(#occ3)" strokeWidth={2} />
               </AreaChart>
             </ResponsiveContainer>
-          </Card>
+          </CardWrapper>
 
-          <Card title="Current Occupancy by Area" subtitle="Live — updated every 30s">
+          <CardWrapper title="Current Occupancy by Area" subtitle="Live — updated every 30s">
             <div className="space-y-3 pt-1">
               {areaStatus.map(a => {
                 const pct = Math.round((a.current / a.max) * 100);
@@ -373,9 +516,9 @@ export function ComputerVision() {
                 );
               })}
             </div>
-          </Card>
+          </CardWrapper>
 
-          <Card title="Occupancy Alerts — Today" subtitle="Capacity threshold breaches">
+          <CardWrapper title="Occupancy Alerts — Today" subtitle="Capacity threshold breaches">
             <div className="space-y-2 pt-1">
               {[
                 { area: 'Lab A', time: '10:41', count: 20, max: 18, resolved: true },
@@ -391,7 +534,292 @@ export function ComputerVision() {
                 </div>
               ))}
             </div>
-          </Card>
+          </CardWrapper>
+        </div>
+      )}
+
+      {/* ── Restricted Areas ── */}
+      {activeSection === 'Restricted Areas' && (
+        <div className="grid grid-cols-1 gap-4">
+          {/* Summary Cards */}
+          <div className="grid grid-cols-4 gap-3">
+            <div className="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200/40 rounded-xl p-4 shadow-sm">
+              <div className="flex items-center justify-between mb-2">
+                <MapPin className="w-5 h-5 text-red-600" />
+                <Badge variant="error" size="sm">Critical</Badge>
+              </div>
+              <div className="text-2xl font-bold text-slate-800 mb-1">3</div>
+              <p className="text-xs text-slate-600">Unauthorized breaches today</p>
+            </div>
+            <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200/40 rounded-xl p-4 shadow-sm">
+              <div className="flex items-center justify-between mb-2">
+                <AlertTriangle className="w-5 h-5 text-amber-600" />
+                <Badge variant="warning" size="sm">Warning</Badge>
+              </div>
+              <div className="text-2xl font-bold text-slate-800 mb-1">2</div>
+              <p className="text-xs text-slate-600">Tailgating incidents</p>
+            </div>
+            <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200/40 rounded-xl p-4 shadow-sm">
+              <div className="flex items-center justify-between mb-2">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <Badge variant="success" size="sm">Active</Badge>
+              </div>
+              <div className="text-2xl font-bold text-slate-800 mb-1">8</div>
+              <p className="text-xs text-slate-600">Restricted zones monitored</p>
+            </div>
+            <div className="bg-gradient-to-br from-cyan-50 to-cyan-100/50 border border-cyan-200/40 rounded-xl p-4 shadow-sm">
+              <div className="flex items-center justify-between mb-2">
+                <Users className="w-5 h-5 text-cyan-600" />
+                <Badge variant="info" size="sm">Live</Badge>
+              </div>
+              <div className="text-2xl font-bold text-slate-800 mb-1">127</div>
+              <p className="text-xs text-slate-600">Authorized access events</p>
+            </div>
+          </div>
+
+          {/* Restricted Area Access Logs */}
+          <CardWrapper title="Restricted Area Monitoring — Access Logs" subtitle="Real-time monitoring of designated restricted zones with unauthorized access detection">
+            <div className="overflow-hidden rounded-lg border border-slate-200/40">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-slate-100 bg-slate-50/50">
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Log ID</th>
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Date</th>
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Time</th>
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Restricted Zone</th>
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Personnel</th>
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Badge ID</th>
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Authorization</th>
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Duration</th>
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Status</th>
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Action Taken</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {RESTRICTED_LOGS.map(log => (
+                    <tr key={log.id} className={`border-b border-slate-50 hover:bg-slate-50/60 transition-colors ${
+                      log.status === 'Critical' ? 'bg-red-50/30' : log.status === 'Warning' ? 'bg-amber-50/20' : ''
+                    }`}>
+                      <td className="px-4 py-2.5 font-mono text-slate-400 text-[10px]">{log.id}</td>
+                      <td className="px-4 py-2.5 text-slate-500 whitespace-nowrap">{log.date}</td>
+                      <td className="px-4 py-2.5 text-slate-500 whitespace-nowrap">{log.time}</td>
+                      <td className="px-4 py-2.5 text-slate-700 font-medium">{log.zone}</td>
+                      <td className="px-4 py-2.5 text-slate-600">{log.personnel}</td>
+                      <td className="px-4 py-2.5 font-mono text-[10px] text-slate-500">{log.badge}</td>
+                      <td className="px-4 py-2.5">
+                        <Badge variant={log.authorized ? 'success' : 'error'} size="sm">
+                          {log.authorized ? 'Authorized' : 'Unauthorized'}
+                        </Badge>
+                      </td>
+                      <td className="px-4 py-2.5 text-slate-600">{log.duration}</td>
+                      <td className="px-4 py-2.5">
+                        <Badge 
+                          variant={log.status === 'Critical' ? 'error' : log.status === 'Warning' ? 'warning' : 'success'} 
+                          size="sm"
+                        >
+                          {log.status}
+                        </Badge>
+                      </td>
+                      <td className="px-4 py-2.5 text-slate-600 text-[11px]">{log.action}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardWrapper>
+
+          {/* Zone Status Overview */}
+          <CardWrapper title="Restricted Zones — Current Status" subtitle="Live monitoring status of all restricted areas">
+            <div className="grid grid-cols-4 gap-3">
+              {[
+                { zone: 'Chemical Bay', status: 'Secure', occupancy: 5, maxOccupancy: 6, lastBreach: '11:22:15', alerts: 1 },
+                { zone: 'Radiation Lab', status: 'Secure', occupancy: 2, maxOccupancy: 4, lastBreach: '09:44:02', alerts: 0 },
+                { zone: 'Server Room Annex', status: 'Alert', occupancy: 0, maxOccupancy: 2, lastBreach: '16:30:45', alerts: 1 },
+                { zone: 'Biocontainment Suite', status: 'Secure', occupancy: 3, maxOccupancy: 3, lastBreach: 'None', alerts: 0 },
+                { zone: 'Cryogenic Storage', status: 'Secure', occupancy: 1, maxOccupancy: 2, lastBreach: 'None', alerts: 0 },
+                { zone: 'Explosive Materials', status: 'Secure', occupancy: 0, maxOccupancy: 2, lastBreach: 'None', alerts: 0 },
+                { zone: 'High Voltage Room', status: 'Secure', occupancy: 2, maxOccupancy: 4, lastBreach: 'None', alerts: 0 },
+                { zone: 'Pressure Test Bay', status: 'Secure', occupancy: 1, maxOccupancy: 3, lastBreach: 'None', alerts: 0 },
+              ].map(z => (
+                <div key={z.zone} className="bg-white/70 border border-slate-200/40 rounded-lg p-3 shadow-sm">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-xs font-semibold text-slate-800">{z.zone}</h4>
+                    <Badge variant={z.status === 'Alert' ? 'error' : 'success'} size="sm">{z.status}</Badge>
+                  </div>
+                  <div className="space-y-1.5 text-[10px]">
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Occupancy:</span>
+                      <span className="font-medium text-slate-700">{z.occupancy}/{z.maxOccupancy}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-500">Last breach:</span>
+                      <span className="font-medium text-slate-700">{z.lastBreach}</span>
+                    </div>
+                    {z.alerts > 0 && (
+                      <div className="mt-2 px-2 py-1 bg-red-50 border border-red-200 rounded text-red-700 font-medium text-center">
+                        {z.alerts} active alert{z.alerts > 1 ? 's' : ''}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardWrapper>
+        </div>
+      )}
+
+      {/* ── Unsafe Behavior ── */}
+      {activeSection === 'Unsafe Behavior' && (
+        <div className="grid grid-cols-1 gap-4">
+          {/* Summary Cards */}
+          <div className="grid grid-cols-4 gap-3">
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100/50 border border-orange-200/40 rounded-xl p-4 shadow-sm">
+              <div className="flex items-center justify-between mb-2">
+                <Zap className="w-5 h-5 text-orange-600" />
+                <Badge variant="warning" size="sm">Today</Badge>
+              </div>
+              <div className="text-2xl font-bold text-slate-800 mb-1">5</div>
+              <p className="text-xs text-slate-600">Unsafe incidents detected</p>
+            </div>
+            <div className="bg-gradient-to-br from-red-50 to-red-100/50 border border-red-200/40 rounded-xl p-4 shadow-sm">
+              <div className="flex items-center justify-between mb-2">
+                <AlertTriangle className="w-5 h-5 text-red-600" />
+                <Badge variant="error" size="sm">High Risk</Badge>
+              </div>
+              <div className="text-2xl font-bold text-slate-800 mb-1">2</div>
+              <p className="text-xs text-slate-600">High-risk behaviors</p>
+            </div>
+            <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200/40 rounded-xl p-4 shadow-sm">
+              <div className="flex items-center justify-between mb-2">
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <Badge variant="success" size="sm">Resolved</Badge>
+              </div>
+              <div className="text-2xl font-bold text-slate-800 mb-1">3</div>
+              <p className="text-xs text-slate-600">Issues resolved today</p>
+            </div>
+            <div className="bg-gradient-to-br from-cyan-50 to-cyan-100/50 border border-cyan-200/40 rounded-xl p-4 shadow-sm">
+              <div className="flex items-center justify-between mb-2">
+                <Flame className="w-5 h-5 text-cyan-600" />
+                <Badge variant="info" size="sm">This Week</Badge>
+              </div>
+              <div className="text-2xl font-bold text-slate-800 mb-1">38</div>
+              <p className="text-xs text-slate-600">Total incidents</p>
+            </div>
+          </div>
+
+          {/* Unsafe Behavior Detection Logs */}
+          <CardWrapper title="Unsafe Behavior Detection — Activity Logs" subtitle="AI-powered detection of unsafe actions and laboratory safety protocol violations">
+            <div className="overflow-hidden rounded-lg border border-slate-200/40">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-slate-100 bg-slate-50/50">
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Log ID</th>
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Date</th>
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Time</th>
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Area</th>
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Personnel</th>
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Unsafe Behavior Detected</th>
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Risk Level</th>
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Status</th>
+                    <th className="text-left px-4 py-2.5 text-slate-500 font-medium">Action Taken</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {UNSAFE_LOGS.map(log => (
+                    <tr key={log.id} className={`border-b border-slate-50 hover:bg-slate-50/60 transition-colors ${
+                      log.riskLevel === 'High' && log.status === 'Open' ? 'bg-red-50/20' : ''
+                    }`}>
+                      <td className="px-4 py-2.5 font-mono text-slate-400 text-[10px]">{log.id}</td>
+                      <td className="px-4 py-2.5 text-slate-500 whitespace-nowrap">{log.date}</td>
+                      <td className="px-4 py-2.5 text-slate-500 whitespace-nowrap">{log.time}</td>
+                      <td className="px-4 py-2.5 text-slate-600">{log.area}</td>
+                      <td className="px-4 py-2.5 text-slate-700 font-medium">{log.personnel}</td>
+                      <td className="px-4 py-2.5 text-slate-600 max-w-xs">{log.behavior}</td>
+                      <td className="px-4 py-2.5">
+                        <Badge 
+                          variant={log.riskLevel === 'High' ? 'error' : log.riskLevel === 'Medium' ? 'warning' : 'info'} 
+                          size="sm"
+                        >
+                          {log.riskLevel}
+                        </Badge>
+                      </td>
+                      <td className="px-4 py-2.5">
+                        <Badge variant={log.status === 'Open' ? 'error' : 'success'} size="sm">
+                          {log.status}
+                        </Badge>
+                      </td>
+                      <td className="px-4 py-2.5 text-slate-600 text-[11px]">{log.action}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardWrapper>
+
+          {/* Behavior Categories Breakdown */}
+          <div className="grid grid-cols-2 gap-4">
+            <CardWrapper title="Common Unsafe Behaviors — This Week" subtitle="Frequency of detected behavior types">
+              <div className="space-y-2.5">
+                {[
+                  { behavior: 'Improper chemical handling', count: 12, trend: 'up' },
+                  { behavior: 'Missing ventilation usage', count: 8, trend: 'down' },
+                  { behavior: 'Running near hazards', count: 7, trend: 'neutral' },
+                  { behavior: 'Improper storage procedures', count: 6, trend: 'down' },
+                  { behavior: 'Eating/drinking in lab', count: 5, trend: 'up' },
+                ].map(item => (
+                  <div key={item.behavior} className="flex items-center justify-between p-2.5 bg-slate-50/60 border border-slate-200/40 rounded-lg">
+                    <div className="flex-1">
+                      <p className="text-xs font-medium text-slate-800">{item.behavior}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-slate-700">{item.count}</span>
+                      <span className="text-[10px] text-slate-400">incidents</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardWrapper>
+
+            <CardWrapper title="Fire & Smoke Detection — Recent Alerts" subtitle="Early-stage fire and smoke detection with AI video analytics">
+              <div className="space-y-2.5">
+                {FIRE_LOGS.slice(0, 5).map(log => (
+                  <div key={log.id} className={`p-2.5 border rounded-lg ${
+                    log.status === 'Confirmed' ? 'bg-red-50/60 border-red-200/40' : 'bg-slate-50/60 border-slate-200/40'
+                  }`}>
+                    <div className="flex items-start justify-between mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <Flame className={`w-3.5 h-3.5 ${log.status === 'Confirmed' ? 'text-red-600' : 'text-slate-400'}`} />
+                        <span className="font-mono text-[10px] text-slate-400">{log.id}</span>
+                      </div>
+                      <Badge variant={log.status === 'Confirmed' ? 'error' : 'neutral'} size="sm">
+                        {log.status}
+                      </Badge>
+                    </div>
+                    <p className="text-xs font-medium text-slate-800 mb-1">{log.location}</p>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[10px]">
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Type:</span>
+                        <span className="font-medium text-slate-700">{log.detectionType}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Temp:</span>
+                        <span className="font-medium text-slate-700">{log.temperature}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Confidence:</span>
+                        <span className="font-medium text-slate-700">{log.confidence}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-slate-500">Time:</span>
+                        <span className="font-medium text-slate-700">{log.time}</span>
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-slate-600 mt-1.5 italic">{log.response}</p>
+                  </div>
+                ))}
+              </div>
+            </CardWrapper>
+          </div>
         </div>
       )}
 
