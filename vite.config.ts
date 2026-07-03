@@ -37,6 +37,9 @@ export default defineConfig({
     },
   },
   build: {
+    // Optimize for production builds
+    sourcemap: false,
+    minify: 'esbuild',
     rollupOptions: {
       output: {
         manualChunks: {
