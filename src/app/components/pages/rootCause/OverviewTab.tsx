@@ -1,4 +1,4 @@
-import { Card } from '../../ui/Card';
+import { Card } from '../../ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar } from 'recharts';
 import { incidentDistribution, incidentSeverity, incidentTrend, incidentByDepartment } from './data';
 

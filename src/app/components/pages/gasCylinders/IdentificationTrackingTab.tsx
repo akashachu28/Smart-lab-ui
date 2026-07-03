@@ -1,6 +1,6 @@
 import { QrCode, MapPin, Activity, Search, Barcode as BarcodeIcon, Radio } from 'lucide-react';
-import { Card } from '../../ui/Card';
-import { Badge } from '../../ui/Badge';
+import { Card } from '../../ui/card';
+import { Badge } from '../../ui/badge';
 import { useState } from 'react';
 
 // Tracking Data

@@ -1,6 +1,6 @@
 import { Clock, CheckCircle, AlertTriangle, Package, Calendar, Activity } from 'lucide-react';
-import { Card } from '../../ui/Card';
-import { Badge } from '../../ui/Badge';
+import { Card } from '../../ui/card';
+import { Badge } from '../../ui/badge';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 // Lifecycle Management Data

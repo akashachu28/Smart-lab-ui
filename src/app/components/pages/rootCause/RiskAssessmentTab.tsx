@@ -1,5 +1,5 @@
-import { Card } from '../../ui/Card';
-import { Badge } from '../../ui/Badge';
+import { Card } from '../../ui/card';
+import { Badge } from '../../ui/badge';
 import { riskAssessment } from './data';
 
 export function RiskAssessmentTab() {

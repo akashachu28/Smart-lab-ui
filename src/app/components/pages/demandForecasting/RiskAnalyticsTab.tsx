@@ -1,4 +1,4 @@
-import { Card } from '../../ui/Card';
+import { Card } from '../../ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { stockoutPredictions, supplierPerformance } from './data';
 import { AlertTriangle, TrendingUp, Package } from 'lucide-react';

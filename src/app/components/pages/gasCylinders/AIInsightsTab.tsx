@@ -1,5 +1,5 @@
 import { Brain, Activity, TrendingUp } from 'lucide-react';
-import { Card } from '../../ui/Card';
+import { Card } from '../../ui/card';
 import { aiInsights, recentActivity, sensorHealth, sensorTypes } from './data';
 
 export function AIInsightsTab() {

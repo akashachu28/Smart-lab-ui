@@ -1,6 +1,6 @@
 import { AlertTriangle, Shield, Activity, Flame } from 'lucide-react';
-import { Card } from '../../ui/Card';
-import { Badge } from '../../ui/Badge';
+import { Card } from '../../ui/card';
+import { Badge } from '../../ui/badge';
 import { leakEvents } from './data';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
