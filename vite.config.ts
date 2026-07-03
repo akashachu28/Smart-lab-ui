@@ -40,48 +40,38 @@ export default defineConfig({
     // Optimize for production builds
     sourcemap: false,
     minify: 'esbuild',
+    target: 'es2020',
+    // Reduce memory usage
     rollupOptions: {
+      // Increase max parallel fileOps to speed up build
+      maxParallelFileOps: 20,
       output: {
-        manualChunks: {
-          // Split React and React Router into separate chunks
-          'react-vendor': ['react', 'react-dom', 'react-router'],
-          // Split UI library dependencies
-          'ui-vendor': [
-            '@radix-ui/react-accordion',
-            '@radix-ui/react-alert-dialog',
-            '@radix-ui/react-avatar',
-            '@radix-ui/react-checkbox',
-            '@radix-ui/react-collapsible',
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-dropdown-menu',
-            '@radix-ui/react-label',
-            '@radix-ui/react-popover',
-            '@radix-ui/react-progress',
-            '@radix-ui/react-scroll-area',
-            '@radix-ui/react-select',
-            '@radix-ui/react-separator',
-            '@radix-ui/react-slider',
-            '@radix-ui/react-switch',
-            '@radix-ui/react-tabs',
-            '@radix-ui/react-tooltip',
-          ],
-          // Split MUI into separate chunk
-          'mui-vendor': [
-            '@mui/material',
-            '@mui/icons-material',
-            '@emotion/react',
-            '@emotion/styled',
-          ],
-          // Split Recharts into separate chunk
-          'charts-vendor': ['recharts'],
-          // Split other utility libraries
-          'utils-vendor': [
-            'lucide-react',
-            'clsx',
-            'class-variance-authority',
-            'tailwind-merge',
-            'date-fns',
-          ],
+        manualChunks: (id) => {
+          // More efficient chunking strategy
+          if (id.includes('node_modules')) {
+            if (id.includes('recharts')) {
+              return 'charts-vendor';
+            }
+            if (id.includes('react-dom')) {
+              return 'react-vendor';
+            }
+            if (id.includes('react-router')) {
+              return 'react-vendor';
+            }
+            if (id.includes('react/') || id.includes('react\\') || id.endsWith('react')) {
+              return 'react-vendor';
+            }
+            if (id.includes('@radix-ui')) {
+              return 'ui-vendor';
+            }
+            if (id.includes('@mui') || id.includes('@emotion')) {
+              return 'mui-vendor';
+            }
+            if (id.includes('lucide-react') || id.includes('clsx') || id.includes('date-fns') || 
+                id.includes('tailwind') || id.includes('class-variance-authority')) {
+              return 'utils-vendor';
+            }
+          }
         },
       },
     },
