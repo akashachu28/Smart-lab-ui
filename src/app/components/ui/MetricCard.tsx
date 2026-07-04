@@ -20,10 +20,10 @@ export function MetricCard({
   status = 'info'
 }: MetricCardProps) {
   const statusColors = {
-    success: 'bg-white/70 border-green-200/40 text-green-700',
-    warning: 'bg-white/70 border-amber-200/40 text-amber-700',
-    error: 'bg-white/70 border-red-200/40 text-red-700',
-    info: 'bg-white/70 border-cyan-200/40 text-cyan-700'
+    success: 'bg-gradient-to-br from-green-100/60 to-green-50/60 border-green-200/40 text-green-700',
+    warning: 'bg-gradient-to-br from-amber-100 to-amber-50 text-amber-700',
+    error: 'bg-gradient-to-br from-red-100 to-red-50 text-red-700',
+    info: 'bg-gradient-to-br from-cyan-100 to-cyan-50 text-cyan-700'
   };
 
   const iconBg = {

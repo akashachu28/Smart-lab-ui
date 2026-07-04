@@ -176,6 +176,51 @@ function CardWrapper({ title, subtitle, children, className = '' }: {
   );
 }
 
+// ── Pagination Component ────────────────────────────────────────────────────
+
+function Pagination({ currentPage, totalPages, onPageChange }: {
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between mt-3 pt-3 border-t border-slate-200/40">
+      <div className="text-[10px] text-slate-500">
+        Page {currentPage} of {totalPages}
+      </div>
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="px-2 py-1 text-[10px] font-medium text-slate-600 border border-slate-200 rounded hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          Previous
+        </button>
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+          <button
+            key={page}
+            onClick={() => onPageChange(page)}
+            className={`px-2 py-1 text-[10px] font-medium border rounded ${
+              currentPage === page
+                ? 'bg-cyan-500 text-white border-cyan-500'
+                : 'text-slate-600 border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            {page}
+          </button>
+        ))}
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="px-2 py-1 text-[10px] font-medium text-slate-600 border border-slate-200 rounded hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ── Area occupancy caps ──────────────────────────────────────────────────────
 
 const areaStatus = [
@@ -192,6 +237,15 @@ export function ComputerVision() {
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [activeSection, setActiveSection] = useState('Overview');
   const [ppeAreaFilter, setPpeAreaFilter] = useState('All Areas');
+  
+  // Pagination states
+  const [ppeLogsPage, setPpeLogsPage] = useState(1);
+  const [restrictedLogsPage, setRestrictedLogsPage] = useState(1);
+  const [unsafeLogsPage, setUnsafeLogsPage] = useState(1);
+  const [fireLogsPage, setFireLogsPage] = useState(1);
+  const [eventsPage, setEventsPage] = useState(1);
+  
+  const ITEMS_PER_PAGE = 5;
 
   const filteredLogs = categoryFilter === 'All'
     ? ALL_LOGS
@@ -201,6 +255,33 @@ export function ComputerVision() {
     ? PPE_LOGS
     : PPE_LOGS.filter(l => l.area.startsWith(ppeAreaFilter));
 
+  // Pagination calculations
+  const paginatedPpeLogs = filteredPpeLogs.slice((ppeLogsPage - 1) * ITEMS_PER_PAGE, ppeLogsPage * ITEMS_PER_PAGE);
+  const ppeTotalPages = Math.ceil(filteredPpeLogs.length / ITEMS_PER_PAGE);
+  
+  const paginatedRestrictedLogs = RESTRICTED_LOGS.slice((restrictedLogsPage - 1) * ITEMS_PER_PAGE, restrictedLogsPage * ITEMS_PER_PAGE);
+  const restrictedTotalPages = Math.ceil(RESTRICTED_LOGS.length / ITEMS_PER_PAGE);
+  
+  const paginatedUnsafeLogs = UNSAFE_LOGS.slice((unsafeLogsPage - 1) * ITEMS_PER_PAGE, unsafeLogsPage * ITEMS_PER_PAGE);
+  const unsafeTotalPages = Math.ceil(UNSAFE_LOGS.length / ITEMS_PER_PAGE);
+  
+  const paginatedFireLogs = FIRE_LOGS.slice((fireLogsPage - 1) * ITEMS_PER_PAGE, fireLogsPage * ITEMS_PER_PAGE);
+  const fireTotalPages = Math.ceil(FIRE_LOGS.length / ITEMS_PER_PAGE);
+  
+  const paginatedEvents = filteredLogs.slice((eventsPage - 1) * ITEMS_PER_PAGE, eventsPage * ITEMS_PER_PAGE);
+  const eventsTotalPages = Math.ceil(filteredLogs.length / ITEMS_PER_PAGE);
+
+  // Reset pagination when filters change
+  const handleCategoryFilterChange = (filter: string) => {
+    setCategoryFilter(filter);
+    setEventsPage(1);
+  };
+
+  const handlePpeAreaFilterChange = (area: string) => {
+    setPpeAreaFilter(area);
+    setPpeLogsPage(1);
+  };
+
   const sections = ['Overview', 'PPE Detection', 'Occupancy', 'Restricted Areas', 'Unsafe Behavior', 'Events Log'];
 
   return (
@@ -208,7 +289,7 @@ export function ComputerVision() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-bold text-slate-800 mb-1">Computer Vision</h2>
+          <h2 className="text-lg font-bold text-slate-800 mb-1">Safety and Security</h2>
           <p className="text-xs text-slate-500">AI-powered monitoring — PPE, restricted zones, occupancy, behaviour & fire detection</p>
         </div>
         <div className="flex items-center gap-2">
@@ -224,7 +305,7 @@ export function ComputerVision() {
 
       {/* KPI Strip — one per detection type */}
       <div className="grid grid-cols-5 gap-3">
-        <MetricCard title="PPE Compliance" value="84%" subtitle="Overall today" icon={ShieldCheck} status="warning" trend="up" trendValue="+4% vs yesterday" />
+        <MetricCard title="PPE Compliance" value="84%" subtitle="Overall today" icon={ShieldCheck} status="success" trend="up" trendValue="+4% vs yesterday" />
         <MetricCard title="Restricted Breaches" value="3" subtitle="Today" icon={MapPin} status="error" />
         <MetricCard title="Unauthorized Entries" value="1" subtitle="Today" icon={UserX} status="error" />
         <MetricCard title="Unsafe Behaviour" value="5" subtitle="Incidents today" icon={Zap} status="warning" />
@@ -336,23 +417,81 @@ export function ComputerVision() {
           {/* PPE violation summary cards */}
           <div className="col-span-3 grid grid-cols-5 gap-3">
             {[
-              { item: 'Lab Coat', icon: '🥼', compliant: 95, violations: 5, trend: 'down' },
-              { item: 'Gloves', icon: '🧤', compliant: 91, violations: 9, trend: 'up' },
-              { item: 'Helmet', icon: '⛑️', compliant: 86, violations: 14, trend: 'neutral' },
-              { item: 'Goggles', icon: '🥽', compliant: 83, violations: 17, trend: 'down' },
-              { item: 'Face Shield', icon: '🛡️', compliant: 77, violations: 23, trend: 'up' },
+              { item: 'Lab Coat', icon: '🥼', compliant: 95, violations: 5, trend: 'up', trendValue: 7, color: 'bg-blue-500' },
+              { item: 'Gloves', icon: '🧤', compliant: 91, violations: 9, trend: 'up', trendValue: 3, color: 'bg-purple-500' },
+              { item: 'Helmet', icon: '⛑️', compliant: 86, violations: 14, trend: 'down', trendValue: 2, color: 'bg-orange-500' },
+              { item: 'Goggles', icon: '🥽', compliant: 83, violations: 17, trend: 'down', trendValue: 1, color: 'bg-cyan-500' },
+              { item: 'Face Shield', icon: '🛡️', compliant: 77, violations: 23, trend: 'up', trendValue: 4, color: 'bg-emerald-500' },
             ].map(p => (
-              <div key={p.item} className="bg-white/70 border border-slate-200/40 rounded-xl p-3 shadow-sm text-center">
-                <div className="text-2xl mb-1">{p.icon}</div>
-                <p className="text-xs font-semibold text-slate-800 mb-2">{p.item}</p>
-                <div className="text-xl font-bold text-slate-800">{p.compliant}%</div>
-                <p className="text-[10px] text-slate-400 mb-2">compliance</p>
-                <div className="w-full h-1.5 bg-red-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-green-400 rounded-full" style={{ width: `${p.compliant}%` }}></div>
+              <div key={p.item} className="bg-white/90 border border-slate-200/40 rounded-2xl p-4 shadow-sm">
+                {/* Header */}
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-1">
+                    <div className={`w-10 h-10  flex items-center justify-center text-white text-3xl`}>
+                      {p.icon}
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-800">{p.item}</h3>
+                    </div>
+                  </div>
+                  
                 </div>
-                <p className={`text-[10px] mt-1.5 font-medium ${p.violations > 15 ? 'text-red-600' : p.violations > 8 ? 'text-amber-600' : 'text-green-600'}`}>
-                  {p.violations} violations today
-                </p>
+
+                {/* Progress Circle and Stats */}
+                <div className="flex items-center justify-between mb-4">
+                  <div className="relative w-20 h-20">
+                    <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
+                      <path
+                        d="M18 2.0845
+                          a 15.9155 15.9155 0 0 1 0 31.831
+                          a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        stroke="#f1f5f9"
+                        strokeWidth="2"
+                      />
+                      <path
+                        d="M18 2.0845
+                          a 15.9155 15.9155 0 0 1 0 31.831
+                          a 15.9155 15.9155 0 0 1 0 -31.831"
+                        fill="none"
+                        stroke={p.compliant >= 90 ? '#10b981' : p.compliant >= 80 ? '#f59e0b' : '#ef4444'}
+                        strokeWidth="2"
+                        strokeDasharray={`${p.compliant}, 100`}
+                        strokeLinecap="round"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                      <span className="text-lg font-bold text-slate-800">{p.compliant}%</span>
+                      <span className="text-[9px] text-slate-500">Compliance</span>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                        <CheckCircle className="w-3.5 h-3.5 text-green-600" />
+                      </div>
+                      <div>
+                        {/* <p className="text-[10px] text-slate-500">Compliance Status</p> */}
+                        <p className="text-xs font-medium text-green-600">
+                          {p.compliant >= 90 ? 'Excellent' : p.compliant >= 80 ? 'Good' : 'Needs Improvement'}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center">
+                        <AlertTriangle className="w-3.5 h-3.5 text-orange-600" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-slate-500">Violations Today</p>
+                        <p className="text-sm font-bold text-orange-600">{p.violations}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                
               </div>
             ))}
           </div>
@@ -367,7 +506,7 @@ export function ComputerVision() {
                 {['All Areas', 'Lab A', 'Lab B', 'Chemical Bay', 'Radiation Lab'].map(area => (
                   <button
                     key={area}
-                    onClick={() => setPpeAreaFilter(area)}
+                    onClick={() => handlePpeAreaFilterChange(area)}
                     className={`px-3 py-1 text-[11px] rounded-full border font-medium transition-colors ${
                       ppeAreaFilter === area
                         ? 'bg-cyan-500 text-white border-cyan-500'
@@ -390,7 +529,7 @@ export function ComputerVision() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredPpeLogs.map(log => {
+                    {paginatedPpeLogs.map(log => {
                       const violations = [];
                       if (!log.helmet) violations.push('Helmet');
                       if (!log.gloves) violations.push('Gloves');
@@ -431,77 +570,11 @@ export function ComputerVision() {
                   </tbody>
                 </table>
               </div>
+              <Pagination currentPage={ppeLogsPage} totalPages={ppeTotalPages} onPageChange={setPpeLogsPage} />
             </CardWrapper>
           </div>
 
-          {/* PPE Recent Alerts Card */}
-          <CardWrapper title="Recent PPE Violations" subtitle="Latest 5 violation alerts" className="col-span-1">
-            <div className="space-y-2">
-              {PPE_RECENT_ALERTS.map((alert, idx) => (
-                <div key={idx} className={`p-2.5 rounded-lg border ${
-                  alert.severity === 'high' ? 'bg-red-50/60 border-red-200/40' : 'bg-amber-50/60 border-amber-200/40'
-                }`}>
-                  <div className="flex items-start justify-between mb-1">
-                    <div className="flex items-center gap-1.5">
-                      <AlertTriangle className={`w-3 h-3 ${alert.severity === 'high' ? 'text-red-500' : 'text-amber-500'}`} />
-                      <span className="text-[10px] text-slate-500">{alert.time}</span>
-                    </div>
-                    <Badge variant={alert.severity === 'high' ? 'error' : 'warning'} size="sm">
-                      {alert.severity === 'high' ? 'High' : 'Medium'}
-                    </Badge>
-                  </div>
-                  <p className="text-xs font-medium text-slate-800 mb-0.5">{alert.personnel}</p>
-                  <p className="text-[10px] text-slate-600">{alert.area}</p>
-                  <p className="text-[10px] text-slate-500 mt-1">{alert.violation}</p>
-                </div>
-              ))}
-            </div>
-          </CardWrapper>
 
-          {/* PPE Compliance by Area */}
-          <CardWrapper title="PPE Compliance by Area" subtitle="Breakdown per laboratory zone" className="col-span-2">
-            <div className="space-y-3">
-              {PPE_COMPLIANCE_BY_AREA.map(area => (
-                <div key={area.area} className="border border-slate-200/40 rounded-lg p-3">
-                  <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-xs font-semibold text-slate-800">{area.area}</h4>
-                    <div className="flex items-center gap-3">
-                      <div className="text-right">
-                        <span className={`text-lg font-bold ${
-                          area.compliance >= 90 ? 'text-green-600' : 
-                          area.compliance >= 80 ? 'text-amber-600' : 
-                          'text-red-600'
-                        }`}>{area.compliance}%</span>
-                        <span className="text-[9px] text-slate-400 ml-1">compliance</span>
-                      </div>
-                      <div className="text-right">
-                        <span className="text-xs text-slate-600">{area.violations} violations</span>
-                        <span className="text-[9px] text-slate-400 block">{area.totalScans} scans</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-5 gap-2">
-                    {[
-                      { label: '⛑️ Helmet', value: area.helmet },
-                      { label: '🧤 Gloves', value: area.gloves },
-                      { label: '🥽 Goggles', value: area.goggles },
-                      { label: '🥼 Lab Coat', value: area.labCoat },
-                      { label: '🛡️ Face Shield', value: area.faceShield },
-                    ].map(item => (
-                      <div key={item.label} className="text-center">
-                        <div className="text-[10px] text-slate-500 mb-1">{item.label}</div>
-                        <div className={`text-sm font-bold ${
-                          item.value >= 90 ? 'text-green-600' : 
-                          item.value >= 80 ? 'text-amber-600' : 
-                          'text-red-600'
-                        }`}>{item.value}%</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardWrapper>
 
           {/* PPE Recent Alerts Card */}
           <CardWrapper title="Recent PPE Violations" subtitle="Latest 5 violation alerts" className="col-span-1">
@@ -692,7 +765,7 @@ export function ComputerVision() {
                   </tr>
                 </thead>
                 <tbody>
-                  {RESTRICTED_LOGS.map(log => (
+                  {paginatedRestrictedLogs.map(log => (
                     <tr key={log.id} className={`border-b border-slate-50 hover:bg-slate-50/60 transition-colors ${
                       log.status === 'Critical' ? 'bg-red-50/30' : log.status === 'Warning' ? 'bg-amber-50/20' : ''
                     }`}>
@@ -717,6 +790,7 @@ export function ComputerVision() {
                 </tbody>
               </table>
             </div>
+            <Pagination currentPage={restrictedLogsPage} totalPages={restrictedTotalPages} onPageChange={setRestrictedLogsPage} />
           </CardWrapper>
 
           {/* Zone Status Overview */}
@@ -805,7 +879,7 @@ export function ComputerVision() {
                   </tr>
                 </thead>
                 <tbody>
-                  {UNSAFE_LOGS.map(log => (
+                  {paginatedUnsafeLogs.map(log => (
                     <tr key={log.id} className={`border-b border-slate-50 hover:bg-slate-50/60 transition-colors ${
                       log.riskLevel === 'High' && log.status === 'Open' ? 'bg-red-50/20' : ''
                     }`}>
@@ -831,6 +905,7 @@ export function ComputerVision() {
                 </tbody>
               </table>
             </div>
+            <Pagination currentPage={unsafeLogsPage} totalPages={unsafeTotalPages} onPageChange={setUnsafeLogsPage} />
           </CardWrapper>
 
           {/* Behavior Categories Breakdown */}
@@ -870,7 +945,7 @@ export function ComputerVision() {
             {CATEGORY_FILTER.map(f => (
               <button
                 key={f}
-                onClick={() => setCategoryFilter(f)}
+                onClick={() => handleCategoryFilterChange(f)}
                 className={`px-3 py-1 text-[11px] rounded-full border font-medium transition-colors ${
                   categoryFilter === f
                     ? 'bg-cyan-500 text-white border-cyan-500'
@@ -899,7 +974,7 @@ export function ComputerVision() {
                 </tr>
               </thead>
               <tbody>
-                {filteredLogs.map(ev => (
+                {paginatedEvents.map(ev => (
                   <tr key={ev.id} className={`border-b border-slate-50 hover:bg-slate-50/60 transition-colors ${
                     ev.severity === 'critical' && ev.status === 'Open' ? 'bg-red-50/30' : ''
                   }`}>
@@ -924,6 +999,7 @@ export function ComputerVision() {
               </tbody>
             </table>
           </div>
+          <Pagination currentPage={eventsPage} totalPages={eventsTotalPages} onPageChange={setEventsPage} />
         </div>
       )}
     </div>
