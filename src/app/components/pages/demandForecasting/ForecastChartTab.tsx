@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Card } from '../../ui/Card';
+import { Card } from '../../ui/card';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, PieChart, Pie, Cell } from 'recharts';
 import { forecastData, categoryData } from './data';
 

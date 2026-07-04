@@ -1,4 +1,4 @@
-import { Card } from '../../ui/Card';
+import { Card } from '../../ui/card';
 import { Brain, Clock, CheckCircle } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { aiInsights, recentSafetyEvents, riskDistribution, highRiskChemicals, environmentalReadings } from './data';

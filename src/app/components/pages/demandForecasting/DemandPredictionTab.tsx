@@ -1,5 +1,5 @@
-import { Badge } from '../../ui/Badge';
-import { Card } from '../../ui/Card';
+import { Badge } from '../../ui/badge';
+import { Card } from '../../ui/card';
 import { chemicalDemands } from './data';
 
 export function DemandPredictionTab() {

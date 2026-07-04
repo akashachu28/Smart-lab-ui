@@ -1,7 +1,7 @@
-import { Card } from '../../ui/Card';
+import { Card } from '../../ui/card';
 import { CheckCircle, AlertTriangle } from 'lucide-react';
 import { complianceMetrics, complianceChecklist, correctiveActions } from './data';
-import { Badge } from '../../ui/Badge';
+import { Badge } from '../../ui/badge';
 
 export function ComplianceTab() {
   return (

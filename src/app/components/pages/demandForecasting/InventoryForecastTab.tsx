@@ -1,4 +1,4 @@
-import { Card } from '../../ui/Card';
+import { Card } from '../../ui/card';
 import { inventoryHealth } from './data';
 
 export function InventoryForecastTab() {
