@@ -30,8 +30,7 @@ import brainLogo from '../../imports/brainLogo.png';
 const navigationGroups = [
   {
     items: [
-      { name: 'AI Assistant', path: '/ai-assistant', icon: Bot, description: 'Lab Copilot' },
-      { name: 'Safety and Security', path: '/computer-vision', icon: Camera, description: 'Live Monitoring' },
+      { name: 'Safety and Security', path: '/safety-and-security', icon: Camera, description: 'Live Monitoring' },
     ]
   },
   {
@@ -45,9 +44,10 @@ const navigationGroups = [
   {
     items: [
       { name: 'Waste Management', path: '/waste-management', icon: Trash2, description: 'Disposal Tracking' },
-      { name: 'Demand Forecasting', path: '/demand-forecasting', icon: TrendingUp, description: 'AI Predictions' },
+      // { name: 'Demand Forecasting', path: '/demand-forecasting', icon: TrendingUp, description: 'AI Predictions' },
       { name: 'Compatibility', path: '/compatibility-monitoring', icon: AlertOctagon, description: 'Storage Safety' },
       { name: 'Root Cause', path: '/root-cause-analysis', icon: Search, description: 'Incident Analysis' },
+      { name: 'AI Assistant', path: '/ai-assistant', icon: Bot, description: 'Lab Copilot' },
     ]
   },
 ];

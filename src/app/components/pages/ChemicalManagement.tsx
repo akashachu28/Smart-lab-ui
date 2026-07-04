@@ -4,7 +4,7 @@ import { MetricCard } from '../ui/MetricCard';
 import { Badge } from '../ui/badge';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area, ReferenceLine } from 'recharts';
 
-const tabs = ['Chemical Register', 'Storage Map', 'Compliance', 'MSDS', 'Analytics', 'Tracking', 'Consumption & Forecast', 'Expiry & Reorder', 'Chemical Compatibility'];
+const tabs = ['Chemical Register', 'Storage Map', 'MSDS', 'Analytics', 'Tracking', 'Consumption & Forecast', 'Expiry & Reorder', 'Chemical Compatibility'];
 
 const chemicals = [
   { id: 'CHM-001', name: 'Benzene', cas: '71-43-2', location: 'CAB-A-12', qty: '25 L', expiry: '2025-08-12', storageClass: 'Flammable Liquid', compliance: 'compliant', supplier: 'Merck KGaA', batch: 'BZ-2024-0847', barcode: 'BC001847293', rfid: 'RFID-A847', lastScanned: '2026-06-30 14:22', usage7d: '2.4 L', tempRange: '-5 to 25°C', flashPoint: '-11°C', density: '0.876 g/mL' },
@@ -482,61 +482,6 @@ export function ChemicalManagement() {
               </div>
             </div>
           </div>
-        </div>
-      )}
-
-      {activeTab === 'Compliance' && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-slate-500 font-medium">
-              <span className="text-red-600 font-bold">{violations.length}</span> active violation(s) detected — immediate corrective action required
-            </p>
-            <button className="px-3 py-1.5 text-xs border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50">Generate Report</button>
-          </div>
-          {violations.map(v => (
-            <div key={v.id} className={`bg-white/70 border rounded-xl p-4 shadow-sm ${v.severity === 'error' ? 'border-red-200 bg-red-50/30' : 'border-amber-200 bg-amber-50/30'}`}>
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className={`w-4 h-4 ${v.severity === 'error' ? 'text-red-500' : 'text-amber-500'}`} />
-                  <div>
-                    <p className="text-xs font-semibold text-slate-800">Incompatible Chemical Storage Detected</p>
-                    <p className="text-[10px] text-slate-500 mt-0.5">
-                      Detected: {v.detected} · Method: {v.detection} · Distance: {v.distance}
-                    </p>
-                  </div>
-                  <Badge variant={v.severity} size="sm">{v.severity === 'error' ? 'Critical' : 'Warning'}</Badge>
-                </div>
-                <button className="text-xs text-cyan-600 font-medium hover:underline">Acknowledge</button>
-              </div>
-              <div className="flex gap-4 mb-3">
-                <div className="flex-1 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                  <p className="text-[10px] text-red-500 font-medium mb-1">Chemical A</p>
-                  <p className="text-xs text-red-700 font-semibold">{v.chemA}</p>
-                </div>
-                <div className="flex items-center justify-center px-2">
-                  <AlertTriangle className="w-4 h-4 text-red-500" />
-                </div>
-                <div className="flex-1 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                  <p className="text-[10px] text-red-500 font-medium mb-1">Chemical B</p>
-                  <p className="text-xs text-red-700 font-semibold">{v.chemB}</p>
-                </div>
-              </div>
-              <div className="bg-white/80 border border-slate-200 rounded-lg px-3 py-2 mb-3">
-                <p className="text-[10px] text-slate-500 mb-1">Incompatibility Reason:</p>
-                <p className="text-xs text-slate-800 font-medium">{v.reason}</p>
-                <p className="text-[10px] text-slate-500 mt-1">
-                  <span className="font-medium">Location:</span> {v.location} · 
-                  <span className="font-medium ml-1">Proximity:</span> {v.distance}
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <button className="px-3 py-1.5 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs rounded-lg font-medium hover:shadow-md transition-shadow">Reassign Storage Location</button>
-                <button className="px-3 py-1.5 border border-slate-200 text-slate-600 text-xs rounded-lg hover:bg-slate-50">Notify Lab Manager</button>
-                <button className="px-3 py-1.5 border border-slate-200 text-slate-600 text-xs rounded-lg hover:bg-slate-50">Log Corrective Action</button>
-                <button className="px-3 py-1.5 border border-slate-200 text-slate-600 text-xs rounded-lg hover:bg-slate-50">View MSDS</button>
-              </div>
-            </div>
-          ))}
         </div>
       )}
 

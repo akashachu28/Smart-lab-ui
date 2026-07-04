@@ -244,7 +244,7 @@ function KpiChip({ icon: Icon, label, value, sub, color }: {
   );
 }
 
-const SECTIONS = ['Overview', 'Request & Approval', 'Sample Tracking', 'SLA & Performance', 'Audit & Integration'];
+const SECTIONS = ['Overview', 'Request & Approval', 'Sample Tracking',  'Audit & Integration'];
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
@@ -289,15 +289,7 @@ export function SampleTracking() {
         <KpiChip icon={AlertTriangle} label="Overdue" value="11" sub="SLA breached" color={C.red} />
       </div>
 
-      {/* ── Dashboard Workflow Flow ─────────────────────────────────── */}
-      <div className="flex items-center gap-1 overflow-x-auto pb-1">
-        {['Request Raised', 'Approval Workflow', 'Sample Collection', 'Barcode Generated', 'Transportation', 'Lab Reception', 'Testing', 'Review', 'Approval', 'Archive / Disposal'].map((s, i, arr) => (
-          <div key={s} className="flex items-center gap-1 flex-shrink-0">
-            <span className="px-2.5 py-1 bg-slate-100/80 border border-slate-200/60 rounded-full text-[9px] text-slate-600 font-medium whitespace-nowrap">{s}</span>
-            {i < arr.length - 1 && <ChevronRight className="w-2.5 h-2.5 text-slate-300 flex-shrink-0" />}
-          </div>
-        ))}
-      </div>
+     
 
       {/* ── Section Tabs ────────────────────────────────────────────── */}
       <div className="flex gap-1 border-b border-slate-200/40">
@@ -316,7 +308,7 @@ export function SampleTracking() {
           <div className="grid grid-cols-3 gap-4">
 
             {/* Request Pipeline Kanban */}
-            <SCard title="Laboratory Request Pipeline" subtitle="Kanban — click a stage to filter" className="col-span-2">
+            <SCard title="Laboratory Request Pipeline" subtitle="" className="col-span-2">
               <div className="grid grid-cols-6 gap-2">
                 {kanbanColumns.map(col => (
                   <div key={col.label} className="flex flex-col items-center gap-1.5 cursor-pointer group">
@@ -619,66 +611,78 @@ export function SampleTracking() {
       ══════════════════════════════════════════════════════════════ */}
       {section === 'Sample Tracking' && (
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
 
             {/* Sample Table */}
-            <SCard title="Active Sample Tracking" subtitle="Click a row to view chain of custody">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="flex-1 flex items-center gap-2 bg-white border border-slate-200/60 rounded-lg px-2.5 py-1.5">
-                  <Search className="w-3 h-3 text-slate-400" />
-                  <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search sample ID, request type..." className="flex-1 text-xs outline-none bg-transparent text-slate-700 placeholder:text-slate-400" />
-                </div>
-                <button className="flex items-center gap-1 px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs text-slate-600 hover:bg-slate-50">
-                  <Download className="w-3 h-3" /> CSV
-                </button>
-              </div>
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="border-b border-slate-100">
-                    {['Sample ID', 'Request', 'Stage', 'Location', 'Owner', 'SLA'].map(h => (
-                      <th key={h} className="text-left py-2 px-2 text-[10px] text-slate-400 font-medium">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {sampleRows.filter(s => !search || s.id.toLowerCase().includes(search.toLowerCase()) || s.request.toLowerCase().includes(search.toLowerCase())).map(s => (
-                    <tr key={s.id} onClick={() => setSelectedSample(s)} className={`border-b border-slate-50 cursor-pointer transition-colors ${selectedSample.id === s.id ? 'bg-cyan-50/60' : 'hover:bg-slate-50/60'}`}>
-                      <td className="py-2 px-2 font-mono text-[10px] text-slate-500">{s.id}</td>
-                      <td className="py-2 px-2 font-medium text-slate-800">{s.request}</td>
-                      <td className="py-2 px-2"><span className={`px-1.5 py-0.5 rounded-full text-[10px] font-medium ${stageColor[s.stage] || 'bg-slate-100 text-slate-600'}`}>{s.stage}</span></td>
-                      <td className="py-2 px-2 text-slate-600 text-[10px]">{s.location}</td>
-                      <td className="py-2 px-2 text-slate-600">{s.owner}</td>
-                      <td className="py-2 px-2"><Badge variant={s.sla === 'On Time' ? 'success' : s.sla === 'Delayed' ? 'error' : 'warning'} size="sm">{s.sla}</Badge></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </SCard>
-
-            {/* Digital Chain of Custody */}
-            <SCard title="Digital Chain of Custody" subtitle={`Sample ${selectedSample.id} — click a row on the left`}>
-              <div className="relative">
-                <div className="absolute left-3 top-1 bottom-1 w-0.5 bg-slate-100"></div>
-                <div className="space-y-3">
-                  {custodyTimeline.map((ev, i) => (
-                    <div key={i} className="flex gap-4 items-start">
-                      <div className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center z-10 ${i === custodyTimeline.length - 1 ? 'bg-green-500' : 'bg-cyan-500'}`}>
-                        <CheckCircle className="w-3.5 h-3.5 text-white" />
+            <SCard title="Sample Tracking & Chain of Custody" subtitle="Click a row to view chain of custody details">
+              <div className="grid grid-cols-2 gap-6">
+                {/* Left Column - Active Sample Tracking */}
+                <div>
+                  <div className="mb-2">
+                    <h4 className="text-xs font-semibold text-slate-800 mb-2">Active Sample Tracking</h4>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1 flex items-center gap-2 bg-white border border-slate-200/60 rounded-lg px-2.5 py-1.5">
+                        <Search className="w-3 h-3 text-slate-400" />
+                        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search sample ID, request type..." className="flex-1 text-xs outline-none bg-transparent text-slate-700 placeholder:text-slate-400" />
                       </div>
-                      <div className="flex-1 pb-1">
-                        <div className="flex items-center gap-2 mb-0.5">
-                          <span className="text-[10px] font-bold text-slate-800">{ev.event}</span>
-                          <span className="text-[9px] text-slate-400">{ev.time}</span>
-                          {ev.signed && <span className="text-[9px] text-green-600">✓ Signed</span>}
-                        </div>
-                        <div className="flex items-center gap-3 text-[9px] text-slate-400">
-                          <span>👤 {ev.user}</span>
-                          <span>📍 {ev.location}</span>
-                          <span>💻 {ev.device}</span>
-                        </div>
-                      </div>
+                      <button className="flex items-center gap-1 px-2.5 py-1.5 border border-slate-200 rounded-lg text-xs text-slate-600 hover:bg-slate-50">
+                        <Download className="w-3 h-3" /> CSV
+                      </button>
                     </div>
-                  ))}
+                  </div>
+                  <div className="max-h-[500px] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-slate-100 [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-slate-400">
+                    <table className="w-full text-xs">
+                      <thead className="sticky top-0 bg-white/95 backdrop-blur-sm">
+                        <tr className="border-b border-slate-100">
+                          {['Sample ID', 'Request', 'Stage', 'Location', 'Owner', 'SLA'].map(h => (
+                            <th key={h} className="text-left py-2 px-2 text-[10px] text-slate-400 font-medium">{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sampleRows.filter(s => !search || s.id.toLowerCase().includes(search.toLowerCase()) || s.request.toLowerCase().includes(search.toLowerCase())).map(s => (
+                          <tr key={s.id} onClick={() => setSelectedSample(s)} className={`border-b border-slate-50 cursor-pointer transition-colors ${selectedSample.id === s.id ? 'bg-cyan-50/60' : 'hover:bg-slate-50/60'}`}>
+                            <td className="py-2 px-2 font-mono text-[10px] text-slate-500">{s.id}</td>
+                            <td className="py-2 px-2 font-medium text-slate-800">{s.request}</td>
+                            <td className="py-2 px-2"><span className={`px-1.5 py-0.5 rounded-full text-[10px] font-medium ${stageColor[s.stage] || 'bg-slate-100 text-slate-600'}`}>{s.stage}</span></td>
+                            <td className="py-2 px-2 text-slate-600 text-[10px]">{s.location}</td>
+                            <td className="py-2 px-2 text-slate-600">{s.owner}</td>
+                            <td className="py-2 px-2"><Badge variant={s.sla === 'On Time' ? 'success' : s.sla === 'Delayed' ? 'error' : 'warning'} size="sm">{s.sla}</Badge></td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Right Column - Digital Chain of Custody */}
+                <div className="border-l border-slate-200/40 pl-6">
+                  <h4 className="text-xs font-semibold text-slate-800 mb-3">Digital Chain of Custody</h4>
+                  <p className="text-[10px] text-slate-500 mb-4">Sample {selectedSample.id}</p>
+                  <div className="relative max-h-[500px] overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-slate-100 [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-slate-400">
+                    <div className="absolute left-3 top-1 bottom-1 w-0.5 bg-slate-100"></div>
+                    <div className="space-y-3">
+                      {custodyTimeline.map((ev, i) => (
+                        <div key={i} className="flex gap-4 items-start">
+                          <div className={`w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center z-10 ${i === custodyTimeline.length - 1 ? 'bg-green-500' : 'bg-cyan-500'}`}>
+                            <CheckCircle className="w-3.5 h-3.5 text-white" />
+                          </div>
+                          <div className="flex-1 pb-1">
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <span className="text-[10px] font-bold text-slate-800">{ev.event}</span>
+                              <span className="text-[9px] text-slate-400">{ev.time}</span>
+                              {ev.signed && <span className="text-[9px] text-green-600">✓ Signed</span>}
+                            </div>
+                            <div className="flex items-center gap-3 text-[9px] text-slate-400">
+                              <span>👤 {ev.user}</span>
+                              <span>📍 {ev.location}</span>
+                              <span>💻 {ev.device}</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </SCard>
@@ -735,164 +739,6 @@ export function SampleTracking() {
         </div>
       )}
 
-      {/* ══════════════════════════════════════════════════════════════
-          SECTION 4 — SLA & PERFORMANCE
-      ══════════════════════════════════════════════════════════════ */}
-      {section === 'SLA & Performance' && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-3 gap-4">
-
-            {/* SLA Gauge */}
-            <SCard title="SLA Monitoring" subtitle="Within SLA vs overdue">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="relative">
-                  <svg width={110} height={110} viewBox="0 0 110 110">
-                    <circle cx="55" cy="55" r="46" fill="none" stroke="#f1f5f9" strokeWidth="10" />
-                    <circle cx="55" cy="55" r="46" fill="none" stroke={C.green} strokeWidth="10"
-                      strokeLinecap="round" strokeDasharray={`${0.96 * 289.0} 289.0`} transform="rotate(-90 55 55)" />
-                    <text x="55" y="50" textAnchor="middle" fontSize="18" fontWeight="700" fill="#1e293b">96%</text>
-                    <text x="55" y="64" textAnchor="middle" fontSize="9" fill="#64748b">Within SLA</text>
-                  </svg>
-                </div>
-                <div className="space-y-2">
-                  <div><p className="text-[10px] text-slate-400">Within SLA</p><p className="text-xl font-bold text-green-600">96%</p></div>
-                  <div><p className="text-[10px] text-slate-400">Overdue</p><p className="text-xl font-bold text-red-600">4%</p></div>
-                </div>
-              </div>
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="border-b border-slate-100">
-                    {['Sample', 'Stage', 'Delay', 'Priority'].map(h => (
-                      <th key={h} className="text-left py-2 px-2 text-[10px] text-slate-400 font-medium">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {slaOverdue.map(s => (
-                    <tr key={s.sample} className="border-b border-slate-50 bg-red-50/30">
-                      <td className="py-2 px-2 font-mono text-[10px] text-slate-500">{s.sample}</td>
-                      <td className="py-2 px-2 text-slate-700">{s.stage}</td>
-                      <td className="py-2 px-2 font-medium text-red-600">{s.delay}</td>
-                      <td className="py-2 px-2"><Badge variant={s.priority === 'Critical' ? 'error' : s.priority === 'High' ? 'warning' : 'info'} size="sm">{s.priority}</Badge></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </SCard>
-
-            {/* Turnaround Time */}
-            <SCard title="Turnaround Time Analytics" subtitle="Request → completion breakdown">
-              <div className="grid grid-cols-3 gap-2 mb-4">
-                {[
-                  { label: 'Last Week Avg', value: '18 hrs', color: 'text-slate-600' },
-                  { label: 'This Week Avg', value: '15 hrs', color: 'text-cyan-600' },
-                  { label: 'Improvement', value: '16%', color: 'text-green-600' },
-                ].map(m => (
-                  <div key={m.label} className="bg-slate-50 border border-slate-100 rounded-lg p-2 text-center">
-                    <p className={`text-sm font-bold ${m.color}`}>{m.value}</p>
-                    <p className="text-[9px] text-slate-400">{m.label}</p>
-                  </div>
-                ))}
-              </div>
-              <p className="text-[10px] text-slate-500 mb-2">Stage breakdown (hrs)</p>
-              <div className="space-y-2">
-                {turnaroundBreakdown.map(t => (
-                  <div key={t.stage}>
-                    <div className="flex justify-between mb-0.5">
-                      <span className="text-[10px] text-slate-600">{t.stage}</span>
-                      <span className="text-[10px] font-semibold text-slate-700">{t.hours} hrs</span>
-                    </div>
-                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                      <div className="h-full rounded-full" style={{ width: `${(t.hours / 15) * 100}%`, background: t.color }}></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </SCard>
-
-            {/* Workflow Bottlenecks */}
-            <SCard title="Workflow Bottlenecks" subtitle="AI-identified delay distribution">
-              <div className="space-y-3 mb-4">
-                {bottlenecks.map(b => (
-                  <div key={b.stage}>
-                    <div className="flex justify-between mb-0.5">
-                      <span className="text-[10px] font-medium text-slate-700">{b.stage}</span>
-                      <span className="text-[10px] font-bold" style={{ color: b.color }}>{b.pct}%</span>
-                    </div>
-                    <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
-                      <div className="h-full rounded-full" style={{ width: `${b.pct}%`, background: b.color }}></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="p-2.5 bg-amber-50 border border-amber-200/50 rounded-lg flex gap-2">
-                <Brain className="w-3.5 h-3.5 text-amber-500 flex-shrink-0 mt-0.5" />
-                <p className="text-[10px] text-amber-700"><strong>AI Recommendation:</strong> Increase technician availability between <strong>10AM–1PM</strong> to clear testing queue.</p>
-              </div>
-            </SCard>
-          </div>
-
-          {/* Notifications + Escalations */}
-          <div className="grid grid-cols-2 gap-4">
-            <SCard title="Notification Center" subtitle="Live alerts & system notifications">
-              <div className="grid grid-cols-4 gap-2 mb-3">
-                {notifications.map(n => (
-                  <div key={n.type} className={`${n.bg} border border-slate-100 rounded-xl p-2.5 text-center`}>
-                    <p className={`text-xl font-bold ${n.color}`}>{n.count}</p>
-                    <p className="text-[9px] text-slate-500 mt-0.5">{n.type}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="space-y-2">
-                {notifFeed.map((n, i) => (
-                  <div key={i} className="flex items-start gap-2 p-2 rounded-lg bg-slate-50 border border-slate-100">
-                    <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 mt-1.5 ${actTypeColor[n.type]}`}></div>
-                    <div>
-                      <p className="text-[10px] text-slate-700">{n.msg}</p>
-                      <p className="text-[9px] text-slate-400">{n.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </SCard>
-
-            <SCard title="Escalation Dashboard" subtitle="Breached SLAs escalated to management">
-              <div className="grid grid-cols-3 gap-2 mb-3">
-                {[
-                  { label: 'Total Escalations', value: '12', color: 'text-red-600' },
-                  { label: 'Resolved', value: '9', color: 'text-green-600' },
-                  { label: 'Pending', value: '3', color: 'text-amber-600' },
-                ].map(m => (
-                  <div key={m.label} className="bg-slate-50 border border-slate-100 rounded-xl p-2.5 text-center">
-                    <p className={`text-xl font-bold ${m.color}`}>{m.value}</p>
-                    <p className="text-[9px] text-slate-500">{m.label}</p>
-                  </div>
-                ))}
-              </div>
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="border-b border-slate-100">
-                    {['Request', 'SLA Limit', 'Escalated To', 'Since', 'Status'].map(h => (
-                      <th key={h} className="text-left py-2 px-2 text-[10px] text-slate-400 font-medium">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {escalations.map(e => (
-                    <tr key={e.request} className={`border-b border-slate-50 hover:bg-slate-50/60 ${!e.resolved ? 'bg-red-50/20' : ''}`}>
-                      <td className="py-2 px-2 font-mono text-[10px] text-slate-500">{e.request}</td>
-                      <td className="py-2 px-2 text-slate-600">{e.sla}</td>
-                      <td className="py-2 px-2 font-medium text-slate-800">{e.escalatedTo}</td>
-                      <td className="py-2 px-2 text-red-500 font-medium">{e.since}</td>
-                      <td className="py-2 px-2"><Badge variant={e.resolved ? 'success' : 'error'} size="sm">{e.resolved ? 'Resolved' : 'Pending'}</Badge></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </SCard>
-          </div>
-        </div>
-      )}
 
       {/* ══════════════════════════════════════════════════════════════
           SECTION 5 — AUDIT & INTEGRATION

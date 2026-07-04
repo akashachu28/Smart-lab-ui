@@ -28,7 +28,7 @@ export default function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Navigate to="/ai-assistant" replace />} />
             <Route path="ai-assistant" element={<AIAssistant />} />
-            <Route path="computer-vision" element={<ComputerVision />} />
+            <Route path="safety-and-security" element={<ComputerVision />} />
             <Route path="sample-tracking" element={<SampleTracking />} />
             <Route path="chemical-management" element={<ChemicalManagement />} />
             <Route path="gas-cylinders" element={<GasCylinders />} />
