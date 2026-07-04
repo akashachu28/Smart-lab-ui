@@ -13,7 +13,14 @@ import {
   Search,
   Globe,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ListCollapse,
+  Expand,
+  LucideListCollapse,
+  PanelRightClose,
+  PanelRightOpen,
+  PanelLeftOpen,
+  PanelLeftClose
 } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import logo from '../../imports/mialoLogo-1.png';
@@ -53,20 +60,35 @@ export function Layout() {
       {/* Sidebar */}
       <aside className={`${isCollapsed ? 'w-16' : 'w-60'} bg-white/60 backdrop-blur-md flex flex-col rounded-2xl shadow-sm border border-white/40 transition-all duration-300`}>
         {/* Logo */}
-        <div className="h-14 flex items-center justify-between px-3 border-b border-slate-200/40 relative">
+        <div className="h-14 flex items-center justify-between px-3 border-b border-slate-200/40 relative group">
           {!isCollapsed && (
-            <ImageWithFallback src={logo} alt="mialo" className="h-10 object-contain mx-auto" />
+            <>
+              <ImageWithFallback src={logo} alt="mialo" className="h-10 object-contain mx-auto" />
+              <button
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                className="absolute right-2 flex items-center justify-center text-slate-600 hover:text-cyan-600 transition-all duration-200 z-10"
+                title="Collapse sidebar"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+            </>
           )}
           {isCollapsed && (
-            <ImageWithFallback src={brainLogo} alt="brain" className="h-8 object-contain mx-auto" />
+            <div className="w-full h-full flex items-center justify-center">
+              <ImageWithFallback 
+                src={brainLogo} 
+                alt="brain" 
+                className="h-8 object-contain group-hover:opacity-0 transition-opacity duration-200" 
+              />
+              <button
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                className="absolute inset-0 flex items-center justify-center text-slate-600 opacity-0 group-hover:opacity-100 hover:text-cyan-600 transition-all duration-200 z-10"
+                title="Expand sidebar"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
           )}
-          <button
-            onClick={() => setIsCollapsed(!isCollapsed)}
-            className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-white rounded-full shadow-md border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-slate-50 hover:text-cyan-600 transition-all duration-200 z-10"
-            title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          >
-            {isCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
-          </button>
         </div>
 
         {/* Navigation */}
