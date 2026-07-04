@@ -58,7 +58,7 @@ export function Layout() {
   return (
     <div className="flex h-screen bg-slate-100 p-4 gap-4">
       {/* Sidebar */}
-      <aside className={`${isCollapsed ? 'w-16' : 'w-60'} bg-white/60 backdrop-blur-md flex flex-col rounded-2xl shadow-sm border border-white/40 transition-all duration-300`}>
+      <aside className={`${isCollapsed ? 'w-16' : 'w-60'} bg-white/60 backdrop-blur-md flex flex-col rounded-2xl shadow-sm border border-white/40 transition-all duration-300 overflow-x-hidden`}>
         {/* Logo */}
         <div className="h-14 flex items-center justify-between px-3 border-b border-slate-200/40 relative group">
           {!isCollapsed && (
@@ -69,7 +69,7 @@ export function Layout() {
                 className="absolute right-2 flex items-center justify-center text-slate-600 hover:text-cyan-600 transition-all duration-200 z-10"
                 title="Collapse sidebar"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <PanelLeftClose className="w-5 h-5" />
               </button>
             </>
           )}
@@ -85,14 +85,14 @@ export function Layout() {
                 className="absolute inset-0 flex items-center justify-center text-slate-600 opacity-0 group-hover:opacity-100 hover:text-cyan-600 transition-all duration-200 z-10"
                 title="Expand sidebar"
               >
-                <ChevronRight className="w-5 h-5" />
+                <PanelRightClose className="w-5 h-5" />
               </button>
             </div>
           )}
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3">
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-3">
           {navigationGroups.map((group, groupIndex) => (
             <div key={groupIndex}>
               {group.groupName && !isCollapsed && (
