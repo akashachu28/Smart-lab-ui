@@ -7,7 +7,7 @@ import {
 import { Badge } from '../ui/badge';
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, FunnelChart, Funnel, LabelList
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 
 // ── Palette ──────────────────────────────────────────────────────────────────
@@ -108,77 +108,6 @@ const hourlyScans = [
   { hour: '2PM', scans: 144 },
 ];
 
-const slaOverdue = [
-  { sample: 'SMP-0220', stage: 'Testing', delay: '2 hrs', priority: 'High' },
-  { sample: 'SMP-0441', stage: 'Approval', delay: '6 hrs', priority: 'Critical' },
-  { sample: 'SMP-0318', stage: 'Transport', delay: '1.5 hrs', priority: 'Medium' },
-];
-
-const turnaroundBreakdown = [
-  { stage: 'Collection', hours: 2, color: C.blue },
-  { stage: 'Transport', hours: 3, color: C.amber },
-  { stage: 'Testing', hours: 8, color: C.purple },
-  { stage: 'Approval', hours: 2, color: C.green },
-];
-
-const bottlenecks = [
-  { stage: 'Testing Queue', pct: 41, color: C.red },
-  { stage: 'Approval Queue', pct: 28, color: C.orange },
-  { stage: 'Transport', pct: 17, color: C.amber },
-  { stage: 'Collection', pct: 14, color: C.blue },
-];
-
-const notifications = [
-  { type: 'Pending Approval', count: 14, color: 'text-amber-600', bg: 'bg-amber-50' },
-  { type: 'Samples Delayed', count: 6, color: 'text-red-600', bg: 'bg-red-50' },
-  { type: 'Testing Complete', count: 22, color: 'text-green-600', bg: 'bg-green-50' },
-  { type: 'Overdue Requests', count: 8, color: 'text-orange-600', bg: 'bg-orange-50' },
-];
-
-const notifFeed = [
-  { msg: 'Request LR-1032 approved by Lab Manager', time: '5 min ago', type: 'success' },
-  { msg: 'Sample SMP-0552 reached laboratory reception', time: '12 min ago', type: 'info' },
-  { msg: 'Testing completed — SMP-0441 results ready', time: '18 min ago', type: 'success' },
-  { msg: 'Manager review pending — LR-1029', time: '31 min ago', type: 'warning' },
-  { msg: 'SLA exceeded — SMP-0220 Testing stage', time: '42 min ago', type: 'error' },
-];
-
-const escalations = [
-  { request: 'LR-1002', sla: '24 hrs', escalatedTo: 'QA Manager', since: '8 hrs', resolved: false },
-  { request: 'LR-1021', sla: '12 hrs', escalatedTo: 'Lab Head', since: '3 hrs', resolved: false },
-  { request: 'LR-0998', sla: '24 hrs', escalatedTo: 'Director', since: '2 days', resolved: true },
-];
-
-const auditTrail = [
-  { time: '09:14', user: 'Alice', dept: 'Field Ops', action: 'Collected', sample: 'SMP-0221', prevStatus: '—', newStatus: 'Collected', device: 'Mobile', signature: '✓' },
-  { time: '09:25', user: 'Bob', dept: 'Logistics', action: 'Received', sample: 'SMP-0221', prevStatus: 'Collected', newStatus: 'Received', device: 'Scanner', signature: '✓' },
-  { time: '10:44', user: 'QA Team', dept: 'Quality', action: 'Approved', sample: 'SMP-0221', prevStatus: 'Review', newStatus: 'Approved', device: 'Desktop', signature: '✓' },
-  { time: '11:02', user: 'Alice', dept: 'Chemistry', action: 'Testing Started', sample: 'SMP-1023', prevStatus: 'Received', newStatus: 'Testing', device: 'Desktop', signature: '✓' },
-  { time: '11:38', user: 'System', dept: 'LIMS', action: 'Results Synced', sample: 'SMP-1023', prevStatus: 'Testing', newStatus: 'Review', device: 'LIMS API', signature: '✓' },
-  { time: '12:14', user: 'John', dept: 'QA', action: 'Review Complete', sample: 'SMP-1020', prevStatus: 'Review', newStatus: 'Approved', device: 'Desktop', signature: '✓' },
-];
-
-const integrations = [
-  { name: 'LIMS', status: 'Connected', syncOk: '99.4%', icon: '🔬' },
-  { name: 'SAP', status: 'Connected', syncOk: '99.1%', icon: '💼' },
-  { name: 'ERP', status: 'Connected', syncOk: '98.8%', icon: '🏭' },
-  { name: 'Courier API', status: 'Connected', syncOk: '99.7%', icon: '🚚' },
-  { name: 'Email', status: 'Connected', syncOk: '100%', icon: '📧' },
-];
-
-const aiInsights = [
-  { text: 'Average sample turnaround improved by 14% vs last month.', tag: 'Performance' },
-  { text: '7 samples are approaching SLA limits — immediate attention needed.', tag: 'SLA' },
-  { text: 'Approval queue is growing faster than testing capacity.', tag: 'Bottleneck' },
-  { text: 'Laboratory 2 has the highest request volume this week.', tag: 'Workload' },
-  { text: 'Technician Alice processed 18% more samples than average.', tag: 'Workload' },
-  { text: 'Three requests waiting due to missing documentation.', tag: 'Compliance' },
-  { text: 'Barcode scan accuracy reached 99.6% — new record.', tag: 'Accuracy' },
-  { text: 'Transport delays increased by 9% this week vs last.', tag: 'Logistics' },
-  { text: 'Predicted request volume tomorrow: 82 ± 5 requests.', tag: 'Forecast' },
-  { text: 'Recommend assigning additional reviewers during 10AM–1PM shift.', tag: 'Recommendation' },
-];
-
 const recentActivity = [
   { time: '09:12', event: 'Request LR-220 submitted via portal', type: 'info' },
   { time: '09:18', event: 'Supervisor approved request LR-220', type: 'success' },
@@ -244,7 +173,7 @@ function KpiChip({ icon: Icon, label, value, sub, color }: {
   );
 }
 
-const SECTIONS = ['Overview', 'Request & Approval', 'Sample Tracking',  'Audit & Integration'];
+const SECTIONS = ['Overview', 'Request & Approval', 'Sample Tracking']
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
@@ -738,100 +667,6 @@ export function SampleTracking() {
           </div>
         </div>
       )}
-
-
-      {/* ══════════════════════════════════════════════════════════════
-          SECTION 5 — AUDIT & INTEGRATION
-      ══════════════════════════════════════════════════════════════ */}
-      {section === 'Audit & Integration' && (
-        <div className="space-y-4">
-
-          {/* Audit Trail — full width */}
-          <SCard title="Audit Trail" subtitle="Complete immutable action log — every event signed & timestamped">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b border-slate-100 bg-slate-50/50">
-                  {['Time', 'User', 'Department', 'Action', 'Sample', 'Prev Status', 'New Status', 'Device', 'Signature'].map(h => (
-                    <th key={h} className="text-left py-2.5 px-3 text-[10px] text-slate-400 font-medium">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {auditTrail.map((row, i) => (
-                  <tr key={i} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
-                    <td className="py-2.5 px-3 text-slate-400 text-[10px] font-mono">{row.time}</td>
-                    <td className="py-2.5 px-3 font-medium text-slate-800">{row.user}</td>
-                    <td className="py-2.5 px-3 text-slate-500">{row.dept}</td>
-                    <td className="py-2.5 px-3 font-medium text-cyan-700">{row.action}</td>
-                    <td className="py-2.5 px-3 font-mono text-[10px] text-slate-500">{row.sample}</td>
-                    <td className="py-2.5 px-3 text-slate-400">{row.prevStatus}</td>
-                    <td className="py-2.5 px-3"><span className={`px-1.5 py-0.5 rounded-full text-[9px] font-medium ${stageColor[row.newStatus] || 'bg-slate-100 text-slate-600'}`}>{row.newStatus}</span></td>
-                    <td className="py-2.5 px-3 text-slate-500">{row.device}</td>
-                    <td className="py-2.5 px-3 text-green-600 font-medium">{row.signature}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <div className="mt-3 flex items-center justify-between">
-              <p className="text-[10px] text-slate-400">Showing 6 of 2,840 audit records today</p>
-              <button className="flex items-center gap-1.5 px-3 py-1.5 border border-slate-200 text-slate-600 rounded-lg text-xs hover:bg-slate-50">
-                <Download className="w-3 h-3" /> Export Full Audit Log
-              </button>
-            </div>
-          </SCard>
-
-          <div className="grid grid-cols-2 gap-4">
-
-            {/* Enterprise Integration */}
-            <SCard title="Enterprise Integration Status" subtitle="Connected systems — live sync health">
-              <div className="grid grid-cols-2 gap-2 mb-4">
-                {[
-                  { label: 'Successful Sync', value: '99.4%', color: 'text-green-600', bg: 'bg-green-50 border-green-100' },
-                  { label: 'Failed Sync', value: '0.6%', color: 'text-red-600', bg: 'bg-red-50 border-red-100' },
-                ].map(m => (
-                  <div key={m.label} className={`${m.bg} border rounded-xl p-3 text-center`}>
-                    <p className={`text-2xl font-bold ${m.color}`}>{m.value}</p>
-                    <p className="text-[9px] text-slate-500">{m.label}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="space-y-2">
-                {integrations.map(sys => (
-                  <div key={sys.name} className="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-100 rounded-xl">
-                    <div className="flex items-center gap-2">
-                      <span className="text-base">{sys.icon}</span>
-                      <div>
-                        <p className="text-xs font-semibold text-slate-800">{sys.name}</p>
-                        <p className="text-[9px] text-slate-400">Sync rate: {sys.syncOk}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                      <Badge variant="success" size="sm">{sys.status}</Badge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </SCard>
-
-            {/* AI Operational Insights */}
-            <SCard title="AI Operational Insights" subtitle="Continuously updated — predictive & operational">
-              <div className="space-y-2">
-                {aiInsights.map((ins, i) => (
-                  <div key={i} className="flex gap-2 p-2.5 bg-slate-50 border border-slate-100 rounded-lg hover:bg-cyan-50/40 hover:border-cyan-200/40 transition-colors">
-                    <Brain className="w-3 h-3 text-cyan-500 flex-shrink-0 mt-0.5" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[10px] text-slate-700 leading-snug">{ins.text}</p>
-                      <span className="text-[9px] text-cyan-500 font-medium">{ins.tag}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </SCard>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }

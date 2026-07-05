@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Trash2, AlertTriangle, CheckCircle, TrendingDown, Recycle, Leaf, Eye, Brain, MapPin, Clock, Package, TrendingUp, Download } from 'lucide-react';
+import { Trash2, AlertTriangle, CheckCircle, Recycle, Eye, Brain, MapPin, } from 'lucide-react';
 import { MetricCard } from '../ui/MetricCard';
 import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, Legend } from 'recharts';
 
-const tabs = ['Overview', 'Waste Tracking', 'Vision Segregation', 'Sustainability'];
+const tabs = ['Overview', 'Waste Tracking', 'Vision Segregation'];
 
 
 // ========== DATA STRUCTURES ==========
@@ -21,21 +21,6 @@ const aiClassificationDistribution = [
   { name: 'General', value: 6, color: '#94a3b8' },
 ];
 
-const aiPerformanceMetrics = {
-  objectsClassified: 18420,
-  accuracy: 99.2,
-  manualCorrections: 38,
-  unknownWaste: 6,
-  avgConfidence: 97.8,
-};
-
-const aiInsights = [
-  'Most chemical waste originates from Organic Chemistry Lab (38%).',
-  'Biomedical waste increased by 11% this month.',
-  'Plastic waste recycling potential remains high (82% recyclable).',
-  'Glass waste contamination rate decreased by 15%.',
-  'Average classification time: 1.4 seconds per object.',
-];
 
 // Waste Tracking Data
 const wasteTracking = [
@@ -49,32 +34,6 @@ const wasteTracking = [
   { id: 'WT-2138', type: 'Chemical', location: 'Treatment Facility', status: 'Treatment', quantity: '95 kg', lab: 'Organic Chemistry', generated: '2026-06-30 09:00', handler: 'Dr. Patel', container: 'HDPE-200L' },
 ];
 
-const lifecycleStages = ['Generated', 'Classified', 'Stored', 'Collected', 'Transported', 'Treatment', 'Disposed'];
-
-// Hazardous Waste Compliance Data
-const hazardousCompliance = {
-  totalContainers: 124,
-  compliant: 121,
-  violations: 3,
-  immediateAttention: 1,
-  complianceRate: 98.4,
-};
-
-const hazardLevelDistribution = [
-  { level: 'Low Risk', value: 32, color: '#10b981' },
-  { level: 'Moderate', value: 28, color: '#f59e0b' },
-  { level: 'High', value: 24, color: '#ef4444' },
-  { level: 'Critical', value: 16, color: '#dc2626' },
-];
-
-const complianceChecklist = [
-  { item: 'Proper Labeling', status: true },
-  { item: 'Correct Container', status: true },
-  { item: 'Maximum Storage Time', status: false },
-  { item: 'PPE Compliance', status: true },
-  { item: 'Authorized Handling', status: true },
-  { item: 'Disposal Certificate', status: false },
-];
 
 // Vision-Based Segregation Data
 const visionDetectionMetrics = {
@@ -99,64 +58,7 @@ const segregationAlerts = [
   { id: 4, time: '2026-07-01 08:15', alert: 'Needle detected outside Sharps Container', location: 'Lab D - Area 3', severity: 'critical', resolved: true },
 ];
 
-const smartBins = [
-  { id: 'BIN-A12', zone: 'Lab A', type: 'Chemical', fill: 82, temp: '22°C', weight: '45 kg', status: 'Normal', battery: 89, lidStatus: 'Closed', rfid: 'Active' },
-  { id: 'BIN-B05', zone: 'Lab B', type: 'Biomedical', fill: 96, temp: '24°C', weight: '78 kg', status: 'Nearly Full', battery: 76, lidStatus: 'Closed', rfid: 'Active' },
-  { id: 'BIN-C08', zone: 'Lab C', type: 'Glass', fill: 38, temp: '21°C', weight: '28 kg', status: 'Available', battery: 92, lidStatus: 'Open', rfid: 'Active' },
-  { id: 'BIN-D14', zone: 'Lab D', type: 'Plastic', fill: 67, temp: '23°C', weight: '34 kg', status: 'Normal', battery: 84, lidStatus: 'Closed', rfid: 'Active' },
-  { id: 'BIN-E03', zone: 'Lab E', type: 'General', fill: 55, temp: '22°C', weight: '42 kg', status: 'Normal', battery: 88, lidStatus: 'Closed', rfid: 'Active' },
-  { id: 'BIN-F07', zone: 'Lab F', type: 'Sharps', fill: 44, temp: '21°C', weight: '12 kg', status: 'Normal', battery: 94, lidStatus: 'Closed', rfid: 'Active' },
-  { id: 'BIN-G09', zone: 'Warehouse', type: 'Metal', fill: 72, temp: '20°C', weight: '56 kg', status: 'Normal', battery: 81, lidStatus: 'Closed', rfid: 'Active' },
-  { id: 'BIN-H11', zone: 'Building B', type: 'Paper', fill: 88, temp: '22°C', weight: '39 kg', status: 'Normal', battery: 79, lidStatus: 'Closed', rfid: 'Active' },
-];
 
-const fillLevelHeatmap = [
-  { location: 'Building A', fillPercent: 68 },
-  { location: 'Building B', fillPercent: 89 },
-  { location: 'Building C', fillPercent: 42 },
-  { location: 'Warehouse', fillPercent: 75 },
-];
-
-// Disposal Operations Data
-const disposalOperations = [
-  { id: 'WT-2102', vendor: 'CleanEarth', pickupTime: '11:20', method: 'Incineration', status: 'Completed', cost: '$420' },
-  { id: 'WT-2108', vendor: 'EcoRecycle', pickupTime: '13:10', method: 'Recycling', status: 'In Progress', cost: '$180' },
-  { id: 'WT-2116', vendor: 'GlassCycle', pickupTime: '09:45', method: 'Recycling', status: 'Completed', cost: '$95' },
-  { id: 'WT-2121', vendor: 'PlasticRegen', pickupTime: '14:30', method: 'Recycling', status: 'Scheduled', cost: '$65' },
-  { id: 'WT-2124', vendor: 'HazWaste Pro', pickupTime: '10:00', method: 'Chemical Treatment', status: 'In Progress', cost: '$850' },
-];
-
-const disposalMethodDistribution = [
-  { method: 'Incineration', value: 42, color: '#ef4444' },
-  { method: 'Recycling', value: 26, color: '#10b981' },
-  { method: 'Chemical Treatment', value: 18, color: '#f59e0b' },
-  { method: 'Landfill', value: 9, color: '#64748b' },
-  { method: 'Autoclave', value: 5, color: '#8b5cf6' },
-];
-
-// Sustainability & ESG Data
-const sustainabilityMetrics = {
-  wasteRecycled: 9.4,
-  carbonSaved: 18.2,
-  plasticRecovered: 3.1,
-  wasteDiverted: 42,
-};
-
-const recyclingPerformance = [
-  { material: 'Plastic', rate: 82 },
-  { material: 'Glass', rate: 91 },
-  { material: 'Metal', rate: 87 },
-  { material: 'Paper', rate: 78 },
-];
-
-const esgTrend = [
-  { month: 'Jan', generated: 38.2, recycled: 12.4, carbon: 15.8, score: 76 },
-  { month: 'Feb', generated: 41.5, recycled: 14.1, carbon: 16.9, score: 78 },
-  { month: 'Mar', generated: 39.8, recycled: 13.8, carbon: 17.2, score: 80 },
-  { month: 'Apr', generated: 43.1, recycled: 15.2, carbon: 17.8, score: 82 },
-  { month: 'May', generated: 40.7, recycled: 14.6, carbon: 18.0, score: 84 },
-  { month: 'Jun', generated: 42.6, recycled: 16.1, carbon: 18.2, score: 85 },
-];
 
 // Waste Generation by Laboratory
 const wasteByLaboratory = [
@@ -222,66 +124,6 @@ const recentActivity = [
   { time: '15:07', event: 'Disposal certificate uploaded', status: 'Verified' },
 ];
 
-// Operational Performance Metrics
-const operationalMetrics = {
-  avgClassificationTime: 1.4,
-  avgPickupTime: 4.8,
-  avgDisposalTime: 28,
-  avgComplianceAudit: 98.8,
-};
-
-// Regulatory Compliance
-const regulatoryCompliance = {
-  auditsPassed: 96,
-  auditsFailed: 2,
-  certificatesGenerated: 84,
-  pendingDocumentation: 4,
-};
-
-const trendData = [
-  { week: 'W1', chemical: 45, biological: 12, general: 30 },
-  { week: 'W2', chemical: 38, biological: 15, general: 28 },
-  { week: 'W3', chemical: 52, biological: 10, general: 35 },
-  { week: 'W4', chemical: 41, biological: 18, general: 25 },
-];
-
-const complianceData = [
-  { name: 'Compliant', value: 87, color: '#10b981' },
-  { name: 'Non-Compliant', value: 13, color: '#ef4444' },
-];
-
-const wasteEntries = [
-  { id: 'WST-0441', type: 'Spent Solvent', classification: 'Chemical', generated: '2024-06-10', stage: 'Stored', handler: 'Lab A', compliance: 'compliant' },
-  { id: 'WST-0440', type: 'Culture Media', classification: 'Biological', generated: '2024-06-09', stage: 'Collected', handler: 'Microbio', compliance: 'compliant' },
-  { id: 'WST-0439', type: 'Contaminated PPE', classification: 'General', generated: '2024-06-09', stage: 'Disposed', handler: 'Waste Ops', compliance: 'compliant' },
-  { id: 'WST-0438', type: 'Sharps Container', classification: 'Sharps', generated: '2024-06-08', stage: 'Non-Compliant', handler: 'Lab B', compliance: 'violation' },
-  { id: 'WST-0437', type: 'Acid Waste', classification: 'Chemical', generated: '2024-06-08', stage: 'In Transit', handler: 'Chem Lab', compliance: 'compliant' },
-];
-
-const stageColors: Record<string, string> = {
-  Generated: 'bg-blue-100 text-blue-700',
-  Stored: 'bg-amber-100 text-amber-700',
-  Collected: 'bg-purple-100 text-purple-700',
-  'In Transit': 'bg-orange-100 text-orange-700',
-  Disposed: 'bg-green-100 text-green-700',
-  'Non-Compliant': 'bg-red-100 text-red-700',
-};
-
-const classColors: Record<string, 'error' | 'warning' | 'info' | 'success' | 'neutral'> = {
-  Chemical: 'error',
-  Biological: 'warning',
-  General: 'neutral',
-  Sharps: 'info',
-  Radioactive: 'error',
-};
-
-const bins = [
-  { id: 'BIN-01', zone: 'Lab A', type: 'Chemical', status: 'ok', fill: 65 },
-  { id: 'BIN-02', zone: 'Lab B', type: 'General', status: 'violation', fill: 95 },
-  { id: 'BIN-03', zone: 'Microbio', type: 'Biological', status: 'ok', fill: 40 },
-  { id: 'BIN-04', zone: 'Lab C', type: 'Sharps', status: 'ok', fill: 50 },
-];
-
 export function WasteManagement() {
   const [activeTab, setActiveTab] = useState('Overview');
 
@@ -301,7 +143,7 @@ export function WasteManagement() {
         {/* <MetricCard title="Pending Disposal" value="3.1 T" subtitle="Awaiting pickup" icon={Clock} status="warning" /> */}
         <MetricCard title="Compliance" value="98.8%" subtitle="Target: 95%" icon={CheckCircle} status="success" trend="up" trendValue="+0.4%" />
         {/* <MetricCard title="Segregation Errors" value="12" subtitle="CV detected today" icon={Eye} status="error" /> */}
-        <MetricCard title="Recycled" value="9.4 T" subtitle="22% recycled" icon={Recycle} status="success" trend="up" trendValue="+9%" />
+        <MetricCard title="Disposal Completed" value="9.4 T" subtitle="22% recycled" icon={Recycle} status="success" trend="up" trendValue="+9%" />
       </div>
 
       {/* Tabs */}
@@ -355,7 +197,7 @@ export function WasteManagement() {
             </ResponsiveContainer>
           </Card>
 
-          <Card title="Waste Source Distribution" subtitle="By department" className="col-span-1 bg-white/70 border-slate-200/40">
+          <Card title="Waste Source Distribution" subtitle="" className="col-span-1 bg-white/70 border-slate-200/40">
             <div className="flex items-center gap-4">
               <ResponsiveContainer width={130} height={130}>
                 <PieChart>
@@ -376,7 +218,7 @@ export function WasteManagement() {
             </div>
           </Card>
 
-          <Card title="AI Classification Distribution" subtitle="By waste type" className="col-span-1 bg-white/70 border-slate-200/40">
+          <Card title="Waste Type" subtitle="" className="col-span-1 bg-white/70 border-slate-200/40">
             <div className="flex items-center gap-4">
               <ResponsiveContainer width={140} height={140}>
                 <PieChart>
@@ -566,62 +408,6 @@ export function WasteManagement() {
         </div>
       )}
 
-
-      {activeTab === 'Sustainability' && (
-        <div className="grid grid-cols-3 gap-4">
-          <div className="col-span-3 grid grid-cols-4 gap-3">
-            <div className="bg-gradient-to-br from-green-50 to-green-100/50 border border-green-200/40 rounded-xl p-4 shadow-sm">
-              <Recycle className="w-5 h-5 text-green-600 mb-2" />
-              <div className="text-2xl font-bold text-slate-800 mb-1">{sustainabilityMetrics.wasteRecycled} T</div>
-              <p className="text-xs text-slate-600">Waste Recycled</p>
-            </div>
-            <div className="bg-gradient-to-br from-cyan-50 to-cyan-100/50 border border-cyan-200/40 rounded-xl p-4 shadow-sm">
-              <Leaf className="w-5 h-5 text-cyan-600 mb-2" />
-              <div className="text-2xl font-bold text-slate-800 mb-1">{sustainabilityMetrics.carbonSaved} T</div>
-              <p className="text-xs text-slate-600">Carbon Saved</p>
-            </div>
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100/50 border border-blue-200/40 rounded-xl p-4 shadow-sm">
-              <Package className="w-5 h-5 text-blue-600 mb-2" />
-              <div className="text-2xl font-bold text-slate-800 mb-1">{sustainabilityMetrics.plasticRecovered} T</div>
-              <p className="text-xs text-slate-600">Plastic Recovered</p>
-            </div>
-            <div className="bg-gradient-to-br from-amber-50 to-amber-100/50 border border-amber-200/40 rounded-xl p-4 shadow-sm">
-              <TrendingDown className="w-5 h-5 text-amber-600 mb-2" />
-              <div className="text-2xl font-bold text-slate-800 mb-1">{sustainabilityMetrics.wasteDiverted}%</div>
-              <p className="text-xs text-slate-600">Waste Diverted</p>
-            </div>
-          </div>
-
-          <Card title="ESG Trend — 6 Months" subtitle="Environmental performance tracking" className="col-span-2 bg-white/70 border-slate-200/40">
-            <ResponsiveContainer width="100%" height={180}>
-              <LineChart data={esgTrend}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="month" tick={{ fontSize: 9 }} />
-                <YAxis tick={{ fontSize: 9 }} />
-                <Tooltip contentStyle={{ fontSize: 11 }} />
-                <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
-                <Line type="monotone" dataKey="generated" stroke="#64748b" strokeWidth={2} name="Generated (T)" />
-                <Line type="monotone" dataKey="recycled" stroke="#10b981" strokeWidth={2} name="Recycled (T)" />
-                <Line type="monotone" dataKey="carbon" stroke="#06b6d4" strokeWidth={2} name="Carbon Saved (T)" />
-                <Line type="monotone" dataKey="score" stroke="#8b5cf6" strokeWidth={2} name="ESG Score" />
-              </LineChart>
-            </ResponsiveContainer>
-          </Card>
-
-          <Card title="Recycling Performance" subtitle="Material recovery rates" className="col-span-1 bg-white/70 border-slate-200/40">
-            <ResponsiveContainer width="100%" height={180}>
-              <BarChart data={recyclingPerformance} layout="vertical" barSize={18}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
-                <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 9 }} unit="%" />
-                <YAxis type="category" dataKey="material" tick={{ fontSize: 10 }} width={50} />
-                <Tooltip contentStyle={{ fontSize: 11 }} formatter={(v: number) => `${v}%`} />
-                <Bar dataKey="rate" fill="#10b981" radius={[0, 4, 4, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </Card>
-
-        </div>
-      )}
     </div>
   );
 }

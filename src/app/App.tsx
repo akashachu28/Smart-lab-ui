@@ -31,7 +31,7 @@ export default function App() {
             <Route path="safety-and-security" element={<ComputerVision />} />
             <Route path="sample-tracking" element={<SampleTracking />} />
             <Route path="chemical-management" element={<ChemicalManagement />} />
-            <Route path="gas-cylinders" element={<GasCylinders />} />
+            <Route path="gas-monitoring" element={<GasCylinders />} />
             <Route path="waste-management" element={<WasteManagement />} />
             <Route path="demand-forecasting" element={<DemandForecasting />} />
             <Route path="compatibility-monitoring" element={<CompatibilityMonitoring />} />

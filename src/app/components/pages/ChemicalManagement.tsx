@@ -4,7 +4,7 @@ import { MetricCard } from '../ui/MetricCard';
 import { Badge } from '../ui/badge';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area, ReferenceLine } from 'recharts';
 
-const tabs = ['Chemical Register', 'Storage Map', 'MSDS', 'Analytics', 'Tracking', 'Consumption & Forecast', 'Expiry & Reorder', 'Chemical Compatibility'];
+const tabs = ['Chemical Register', 'MSDS', 'Analytics', 'Tracking', 'Expiry & Reorder', 'Chemical Compatibility'];
 
 const chemicals = [
   { id: 'CHM-001', name: 'Benzene', cas: '71-43-2', location: 'CAB-A-12', qty: '25 L', expiry: '2025-08-12', storageClass: 'Flammable Liquid', compliance: 'compliant', supplier: 'Merck KGaA', batch: 'BZ-2024-0847', barcode: 'BC001847293', rfid: 'RFID-A847', lastScanned: '2026-06-30 14:22', usage7d: '2.4 L', tempRange: '-5 to 25°C', flashPoint: '-11°C', density: '0.876 g/mL' },
@@ -98,33 +98,8 @@ const violations = [
 ];
 
 
-// Storage map - 8x8 grid for comprehensive petrochemical lab
-const storageMap = [
-  ['safe', 'safe', 'safe', 'safe', 'empty', 'safe', 'safe', 'safe'],
-  ['safe', 'safe', 'safe', 'safe', 'safe', 'safe', 'safe', 'safe'],
-  ['safe', 'warning', 'safe', 'violation', 'safe', 'safe', 'safe', 'safe'],
-  ['safe', 'safe', 'safe', 'safe', 'safe', 'safe', 'empty', 'safe'],
-  ['safe', 'safe', 'safe', 'safe', 'safe', 'warning', 'safe', 'safe'],
-  ['empty', 'safe', 'safe', 'safe', 'safe', 'safe', 'safe', 'empty'],
-  ['safe', 'safe', 'safe', 'safe', 'safe', 'safe', 'safe', 'safe'],
-  ['safe', 'warning', 'safe', 'safe', 'empty', 'safe', 'safe', 'safe'],
-];
 
-const storageCabinets = [
-  { id: 'CAB-A', name: 'Flammable Liquids Storage', capacity: 15, occupied: 12, temp: '19°C', humidity: '45%', status: 'optimal', ventilation: 'Active' },
-  { id: 'CAB-B', name: 'Corrosive Bases Storage', capacity: 10, occupied: 8, temp: '21°C', humidity: '38%', status: 'optimal', ventilation: 'Active' },
-  { id: 'CAB-C', name: 'Corrosive Acids Storage', capacity: 8, occupied: 7, temp: '20°C', humidity: '42%', status: 'optimal', ventilation: 'Active' },
-  { id: 'CAB-O', name: 'Oxidisers Storage', capacity: 6, occupied: 2, temp: '18°C', humidity: '40%', status: 'optimal', ventilation: 'Active' },
-  { id: 'CAB-T', name: 'Toxic Materials Storage', capacity: 8, occupied: 5, temp: '17°C', humidity: '35%', status: 'optimal', ventilation: 'Active' },
-  { id: 'CAB-R', name: 'Refrigerated Storage', capacity: 12, occupied: 9, temp: '4°C', humidity: '50%', status: 'optimal', ventilation: 'Active' },
-];
 
-const mapColors: Record<string, string> = {
-  safe: 'bg-green-200 border-green-300',
-  violation: 'bg-red-300 border-red-400 animate-pulse',
-  warning: 'bg-amber-200 border-amber-300',
-  empty: 'bg-slate-100 border-slate-200',
-};
 
 // ── Consumption & Forecast Data ──────────────────────────────────────────────
 const C = {
@@ -133,22 +108,6 @@ const C = {
   blue: '#3b82f6', slate: '#94a3b8',
 };
 
-const weeklyConsumption = [
-  { day: 'Mon', chemical: 42, department: 28, lab: 35, research: 18 },
-  { day: 'Tue', chemical: 68, department: 41, lab: 52, research: 24 },
-  { day: 'Wed', chemical: 55, department: 33, lab: 44, research: 20 },
-  { day: 'Thu', chemical: 78, department: 50, lab: 61, research: 30 },
-  { day: 'Fri', chemical: 63, department: 38, lab: 49, research: 22 },
-  { day: 'Sat', chemical: 28, department: 15, lab: 21, research: 9 },
-  { day: 'Sun', chemical: 18, department: 10, lab: 14, research: 6 },
-];
-
-const topConsumed = [
-  { chemical: 'Ethanol', used: '184 L', pct: 92 },
-  { chemical: 'Acetone', used: '152 L', pct: 76 },
-  { chemical: 'Methanol', used: '118 L', pct: 59 },
-  { chemical: 'IPA', used: '102 L', pct: 51 },
-];
 
 const forecastData = [
   { date: 'Jun 1', actual: 18, forecast: null },
@@ -158,13 +117,6 @@ const forecastData = [
   { date: 'Jun 29', actual: null, forecast: 6 },
   { date: 'Jul 6', actual: null, forecast: 4 },
   { date: 'Jul 13', actual: null, forecast: 5 },
-];
-
-const labComparison = [
-  { lab: 'Chemistry', inventory: 4200, consumption: 310, waste: 42, expiry: 8 },
-  { lab: 'Biotech', inventory: 2800, consumption: 180, waste: 25, expiry: 3 },
-  { lab: 'Microbiology', inventory: 3600, consumption: 260, waste: 38, expiry: 12 },
-  { lab: 'QA', inventory: 1900, consumption: 120, waste: 15, expiry: 2 },
 ];
 
 // ── Container Tracking Data ──────────────────────────────────────────────
@@ -239,54 +191,6 @@ const rackColors: Record<string, string> = {
   empty: 'bg-slate-50 border-slate-200 text-slate-300',
 };
 
-const compatibilityMatrix = [
-  { category: 'Acids', acids: 'Compatible', bases: 'Incompatible', oxidizers: 'Warning', flammables: 'Warning', organics: 'Warning' },
-  { category: 'Bases', acids: 'Incompatible', bases: 'Compatible', oxidizers: 'Warning', flammables: 'Compatible', organics: 'Compatible' },
-  { category: 'Oxidizers', acids: 'Warning', bases: 'Warning', oxidizers: 'Compatible', flammables: 'Incompatible', organics: 'Incompatible' },
-  { category: 'Flammables', acids: 'Warning', bases: 'Compatible', oxidizers: 'Incompatible', flammables: 'Compatible', organics: 'Warning' },
-  { category: 'Organics', acids: 'Warning', bases: 'Compatible', oxidizers: 'Incompatible', flammables: 'Warning', organics: 'Compatible' },
-];
-
-const highRiskChemicals = [
-  { chemical: 'Nitric Acid', riskScore: 96, location: 'Storage A', casNumber: '7697-37-2' },
-  { chemical: 'Hydrogen Peroxide', riskScore: 91, location: 'Oxidizer Room', casNumber: '7722-84-1' },
-  { chemical: 'Sodium Metal', riskScore: 89, location: 'Chemical Vault', casNumber: '7440-23-5' },
-  { chemical: 'Perchloric Acid', riskScore: 94, location: 'Acid Room', casNumber: '7601-90-3' },
-];
-
-const aiSafetyRecommendations = [
-  'Two incompatible chemical pairs require immediate separation to eliminate fire risk.',
-  'Most compatibility violations involve oxidizers stored near organic solvents.',
-  'AI predicts an increased compatibility risk in Storage B due to incoming deliveries scheduled today.',
-  'Correcting the current storage violations will improve the overall safety score from 98.9% to 99.6%.',
-  'Flammable Storage Room maintains the highest compliance score (99.5%).',
-  'Computer Vision detected six misplaced containers during the morning inspection.',
-];
-
-const compatibilityStatusBadge: Record<string, string> = {
-  Compatible: 'bg-green-100 text-green-700 border-green-200',
-  Incompatible: 'bg-red-100 text-red-700 border-red-200',
-  Warning: 'bg-amber-100 text-amber-700 border-amber-200',
-};
-
-function CircularGauge({ value, label, size = 120 }: { value: number; label: string; size?: number }) {
-  const r = 46;
-  const circ = 2 * Math.PI * r;
-  const dash = (value / 100) * circ;
-  const color = value >= 90 ? C.green : value >= 70 ? C.amber : C.red;
-  return (
-    <div className="flex flex-col items-center">
-      <svg width={size} height={size} viewBox="0 0 110 110">
-        <circle cx="55" cy="55" r={r} fill="none" stroke="#f1f5f9" strokeWidth="10" />
-        <circle cx="55" cy="55" r={r} fill="none" stroke={color} strokeWidth="10"
-          strokeLinecap="round" strokeDasharray={`${dash} ${circ}`} transform="rotate(-90 55 55)" />
-        <text x="55" y="50" textAnchor="middle" fontSize="18" fontWeight="700" fill="#1e293b">{value}%</text>
-        <text x="55" y="65" textAnchor="middle" fontSize="9" fill="#64748b">{label}</text>
-      </svg>
-    </div>
-  );
-}
-
 function SectionCard({ title, subtitle, children, className = '' }: {
   title: string; subtitle?: string; children: React.ReactNode; className?: string;
 }) {
@@ -307,12 +211,20 @@ export function ChemicalManagement() {
   const [stockSearch, setStockSearch] = useState('');
   const [stockSort, setStockSort] = useState<'none' | 'lowToHigh' | 'highToLow'>('none');
   const [labMetric, setLabMetric] = useState<'inventory' | 'consumption' | 'waste' | 'expiry'>('inventory');
+  const [selectedChemical, setSelectedChemical] = useState<string | null>(null);
 
   const complianceBadge: Record<string, 'success' | 'error' | 'warning'> = {
     compliant: 'success',
     violation: 'error',
     warning: 'warning',
   };
+
+  // Calculate KPI values
+  const totalChemicals = chemicals.length;
+  const activeChemicals = chemicals.filter(c => c.compliance === 'compliant' && c.qty !== '0 L' && c.qty !== '0 kg').length;
+  const lowStockChemicals = stockLevels.filter(sl => sl.status === 'reorder' || sl.status === 'warning').length;
+  const expiringChemicals = chemicals.filter(c => c.expiry < '2026-08-05').length; // Within 30 days from current date
+  const complianceRate = ((chemicals.filter(c => c.compliance === 'compliant').length / totalChemicals) * 100).toFixed(1);
 
   return (
     <div className="p-5 min-h-full flex flex-col gap-4">
@@ -322,13 +234,12 @@ export function ChemicalManagement() {
       </div>
 
       {/* KPI Strip */}
-      <div className="grid grid-cols-6 gap-3">
-        <MetricCard title="Total Chemicals" value="128" subtitle="20 chemical classes" icon={TestTube} status="info" />
-        <MetricCard title="Compliance Rate" value="94.5%" subtitle="3 violations active" icon={ShieldCheck} status="warning" trend="up" trendValue="+1.2% vs last week" />
-        <MetricCard title="Expiring Soon" value="9" subtitle="Within 30 days" icon={Clock} status="warning" />
-        <MetricCard title="Compatibility Issues" value="3" subtitle="Immediate action" icon={AlertTriangle} status="error" />
-        <MetricCard title="Tracked Movements" value="847" subtitle="This week" icon={Activity} status="info" trend="up" trendValue="+12% vs last week" />
-        <MetricCard title="RFID Coverage" value="98.4%" subtitle="126/128 tagged" icon={Barcode} status="success" />
+      <div className="grid grid-cols-5 gap-3">
+        <MetricCard title="Total Chemicals" value={totalChemicals.toString()} subtitle="20 chemical classes" icon={TestTube} status="info" />
+        <MetricCard title="Active" value={activeChemicals.toString()} subtitle="In use" icon={Activity} status="success" />
+        <MetricCard title="Low Stock" value={lowStockChemicals.toString()} subtitle="Requires attention" icon={AlertTriangle} status="warning" />
+        <MetricCard title="Expiring Soon" value={expiringChemicals.toString()} subtitle="Within 30 days" icon={Clock} status="error" />
+        <MetricCard title="Compliance Rate" value={`${complianceRate}%`} subtitle={`${chemicals.filter(c => c.compliance !== 'compliant').length} violations`} icon={ShieldCheck} status={parseFloat(complianceRate) >= 95 ? 'success' : 'warning'} trend="up" trendValue="+1.2% vs last week" />
       </div>
 
       {/* Tabs */}
@@ -349,141 +260,155 @@ export function ChemicalManagement() {
       </div>
 
       {activeTab === 'Chemical Register' && (
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <div className="flex items-center gap-2 flex-1 bg-white border border-slate-200/60 rounded-lg px-3 py-1.5">
-              <Search className="w-3.5 h-3.5 text-slate-400" />
-              <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, CAS number, location, or batch..." className="flex-1 text-xs outline-none bg-transparent text-slate-700 placeholder:text-slate-400" />
+        <div className="grid grid-cols-3 gap-4">
+          {/* Chemical Register Table */}
+          <div className={selectedChemical ? 'col-span-2' : 'col-span-3'}>
+            <div className="flex items-center gap-2 mb-3">
+              <div className="flex items-center gap-2 flex-1 bg-white border border-slate-200/60 rounded-lg px-3 py-1.5">
+                <Search className="w-3.5 h-3.5 text-slate-400" />
+                <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by name, CAS number, location, or batch..." className="flex-1 text-xs outline-none bg-transparent text-slate-700 placeholder:text-slate-400" />
+              </div>
+              <button className="px-3 py-1.5 text-xs bg-cyan-500 text-white rounded-lg font-medium hover:bg-cyan-600">Add Chemical</button>
+              <button className="px-3 py-1.5 text-xs border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50">Export CSV</button>
             </div>
-            <button className="px-3 py-1.5 text-xs bg-cyan-500 text-white rounded-lg font-medium hover:bg-cyan-600">Add Chemical</button>
-            <button className="px-3 py-1.5 text-xs border border-slate-200 text-slate-600 rounded-lg hover:bg-slate-50">Export CSV</button>
-          </div>
-          <div className="bg-white/70 rounded-xl border border-slate-200/40 overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/50">
-                    {['ID', 'Chemical Name', 'CAS No.', 'Location', 'Qty', 'Batch', 'Expiry', 'Storage Class', 'Last Scan', 'Tracking', 'Status'].map(h => (
-                      <th key={h} className="text-left px-4 py-2.5 text-slate-500 font-medium whitespace-nowrap">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {chemicals.filter(c => !search || c.name.toLowerCase().includes(search.toLowerCase()) || c.cas.includes(search) || c.location.toLowerCase().includes(search.toLowerCase())).slice(0, 15).map(c => (
-                    <tr key={c.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
-                      <td className="px-4 py-2.5 text-slate-400 font-mono text-[10px]">{c.id}</td>
-                      <td className="px-4 py-2.5 font-medium text-slate-800">{c.name}</td>
-                      <td className="px-4 py-2.5 text-slate-500 font-mono text-[10px]">{c.cas}</td>
-                      <td className="px-4 py-2.5 text-cyan-600 font-medium">{c.location}</td>
-                      <td className="px-4 py-2.5 text-slate-700 font-semibold">{c.qty}</td>
-                      <td className="px-4 py-2.5 text-slate-500 font-mono text-[10px]">{c.batch}</td>
-                      <td className={`px-4 py-2.5 ${c.expiry < '2025-08-01' ? 'text-orange-600 font-semibold' : 'text-slate-600'}`}>{c.expiry}</td>
-                      <td className="px-4 py-2.5 text-slate-600 text-[10px]">{c.storageClass}</td>
-                      <td className="px-4 py-2.5 text-slate-400 text-[10px]">{c.lastScanned}</td>
-                      <td className="px-4 py-2.5">
-                        <div className="flex items-center gap-1">
-                          {c.rfid && <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[9px] rounded font-medium">RFID</span>}
-                          {c.barcode && <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 text-[9px] rounded font-medium">BC</span>}
-                        </div>
-                      </td>
-                      <td className="px-4 py-2.5">
-                        <Badge variant={complianceBadge[c.compliance]} size="sm">
-                          {c.compliance === 'compliant' ? 'OK' : c.compliance === 'violation' ? 'Violation' : 'Warning'}
-                        </Badge>
-                      </td>
+            <div className="bg-white/70 rounded-xl border border-slate-200/40 overflow-hidden shadow-sm">
+              <div className="overflow-x-auto max-h-[600px] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-slate-100 [&::-webkit-scrollbar-thumb]:bg-slate-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:hover:bg-slate-400">
+                <table className="w-full text-xs">
+                  <thead className="sticky top-0 bg-slate-50/95 backdrop-blur-sm z-10">
+                    <tr className="border-b border-slate-100">
+                      {['ID', 'Chemical Name', 'CAS No.', 'Location', 'Qty', 'Batch', 'Expiry', 'Storage Class', 'Last Scan', 'Tracking', 'Status'].map(h => (
+                        <th key={h} className="text-left px-4 py-2.5 text-slate-500 font-medium whitespace-nowrap">{h}</th>
+                      ))}
                     </tr>
+                  </thead>
+                  <tbody>
+                    {chemicals.filter(c => !search || c.name.toLowerCase().includes(search.toLowerCase()) || c.cas.includes(search) || c.location.toLowerCase().includes(search.toLowerCase())).map(c => (
+                      <tr 
+                        key={c.id} 
+                        onClick={() => setSelectedChemical(c.id)}
+                        className={`border-b border-slate-50 hover:bg-cyan-50/50 transition-colors cursor-pointer ${selectedChemical === c.id ? 'bg-cyan-50' : ''}`}
+                      >
+                        <td className="px-4 py-2.5 text-slate-400 font-mono text-[10px]">{c.id}</td>
+                        <td className="px-4 py-2.5 font-medium text-slate-800">{c.name}</td>
+                        <td className="px-4 py-2.5 text-slate-500 font-mono text-[10px]">{c.cas}</td>
+                        <td className="px-4 py-2.5 text-cyan-600 font-medium">{c.location}</td>
+                        <td className="px-4 py-2.5 text-slate-700 font-semibold">{c.qty}</td>
+                        <td className="px-4 py-2.5 text-slate-500 font-mono text-[10px]">{c.batch}</td>
+                        <td className={`px-4 py-2.5 ${c.expiry < '2025-08-01' ? 'text-orange-600 font-semibold' : 'text-slate-600'}`}>{c.expiry}</td>
+                        <td className="px-4 py-2.5 text-slate-600 text-[10px]">{c.storageClass}</td>
+                        <td className="px-4 py-2.5 text-slate-400 text-[10px]">{c.lastScanned}</td>
+                        <td className="px-4 py-2.5">
+                          <div className="flex items-center gap-1">
+                            {c.rfid && <span className="px-1.5 py-0.5 bg-blue-100 text-blue-700 text-[9px] rounded font-medium">RFID</span>}
+                            {c.barcode && <span className="px-1.5 py-0.5 bg-purple-100 text-purple-700 text-[9px] rounded font-medium">BC</span>}
+                          </div>
+                        </td>
+                        <td className="px-4 py-2.5">
+                          <Badge variant={complianceBadge[c.compliance]} size="sm">
+                            {c.compliance === 'compliant' ? 'OK' : c.compliance === 'violation' ? 'Violation' : 'Warning'}
+                          </Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="px-4 py-2.5 border-t border-slate-100 bg-slate-50/30 flex items-center justify-between">
+                <span className="text-[10px] text-slate-500">Showing {chemicals.filter(c => !search || c.name.toLowerCase().includes(search.toLowerCase()) || c.cas.includes(search)).length} of {chemicals.length} chemicals</span>
+                <div className="flex gap-1">
+                  {[1, 2, 3, 4].map(p => (
+                    <button key={p} className={`w-6 h-6 rounded text-[10px] font-medium ${p === 1 ? 'bg-cyan-500 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}>{p}</button>
                   ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="px-4 py-2.5 border-t border-slate-100 bg-slate-50/30 flex items-center justify-between">
-              <span className="text-[10px] text-slate-500">Showing {chemicals.filter(c => !search || c.name.toLowerCase().includes(search.toLowerCase()) || c.cas.includes(search)).slice(0, 15).length} of {chemicals.length} chemicals</span>
-              <div className="flex gap-1">
-                {[1, 2, 3, 4].map(p => (
-                  <button key={p} className={`w-6 h-6 rounded text-[10px] font-medium ${p === 1 ? 'bg-cyan-500 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'}`}>{p}</button>
-                ))}
+                </div>
               </div>
             </div>
           </div>
+
+          {/* Consumption & Forecast Panel - Shows when chemical is selected */}
+          {selectedChemical && (
+            <div className="col-span-1 space-y-4">
+              <SectionCard title={`Forecast: ${chemicals.find(c => c.id === selectedChemical)?.name || ''}`} subtitle="Consumption & AI prediction">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-medium text-slate-700">Selected Chemical</span>
+                  <button 
+                    onClick={() => setSelectedChemical(null)}
+                    className="text-[10px] text-slate-500 hover:text-slate-700"
+                  >
+                    ✕ Close
+                  </button>
+                </div>
+                
+                <ResponsiveContainer width="100%" height={140}>
+                  <LineChart data={forecastData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                    <XAxis dataKey="date" tick={{ fontSize: 9 }} />
+                    <YAxis tick={{ fontSize: 9 }} />
+                    <Tooltip contentStyle={{ fontSize: 10 }} />
+                    <ReferenceLine y={5} stroke={C.red} strokeDasharray="3 3"
+                      label={{ value: 'Safety Stock', position: 'right', fontSize: 8, fill: C.red }} />
+                    <Line type="monotone" dataKey="actual" name="Actual" stroke={C.cyan} strokeWidth={2} dot={{ r: 2 }} connectNulls={false} />
+                    <Line type="monotone" dataKey="forecast" name="Forecast" stroke={C.purple} strokeWidth={2} strokeDasharray="5 5" dot={false} connectNulls />
+                  </LineChart>
+                </ResponsiveContainer>
+                
+                <div className="grid grid-cols-2 gap-2 mt-3 pt-3 border-t border-slate-100">
+                  {[
+                    ['Current Stock', chemicals.find(c => c.id === selectedChemical)?.qty || '—', 'text-slate-700'], 
+                    ['Expected (30d)', '5 L', 'text-amber-600'], 
+                    ['Recommended', '20 L', 'text-cyan-600'], 
+                    ['Confidence', '92%', 'text-green-600']
+                  ].map(([l, v, cls]) => (
+                    <div key={l} className="text-center bg-slate-50 rounded-lg p-2">
+                      <p className="text-[9px] text-slate-400">{l}</p>
+                      <p className={`text-xs font-bold ${cls}`}>{v}</p>
+                    </div>
+                  ))}
+                </div>
+              </SectionCard>
+
+              <SectionCard title="Weekly Usage" subtitle="Last 7 days">
+                <div className="space-y-3">
+                  <div className="text-center p-3 bg-gradient-to-br from-cyan-50 to-blue-50 rounded-lg border border-cyan-100">
+                    <p className="text-2xl font-bold text-cyan-600">
+                      {chemicals.find(c => c.id === selectedChemical)?.usage7d || '—'}
+                    </p>
+                    <p className="text-[10px] text-slate-500 mt-1">Used this week</p>
+                  </div>
+                  
+                  <div className="flex items-start gap-2 p-2.5 bg-purple-50 border border-purple-200/50 rounded-lg">
+                    <Brain className="w-3.5 h-3.5 text-purple-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-[10px] text-purple-700">
+                        <strong>AI Insight:</strong> Usage pattern is consistent. Reorder recommended in 14 days.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 text-[10px]">
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500">Temperature:</span>
+                      <span className="font-medium text-slate-700">{chemicals.find(c => c.id === selectedChemical)?.tempRange}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500">Flash Point:</span>
+                      <span className="font-medium text-slate-700">{chemicals.find(c => c.id === selectedChemical)?.flashPoint}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-slate-500">Density:</span>
+                      <span className="font-medium text-slate-700">{chemicals.find(c => c.id === selectedChemical)?.density}</span>
+                    </div>
+                    <div className="flex justify-between items-center pt-2 border-t border-slate-100">
+                      <span className="text-slate-500">Last Scanned:</span>
+                      <span className="font-medium text-slate-700 text-[9px]">{chemicals.find(c => c.id === selectedChemical)?.lastScanned}</span>
+                    </div>
+                  </div>
+                </div>
+              </SectionCard>
+            </div>
+          )}
         </div>
       )}
 
-      {activeTab === 'Storage Map' && (
-        <div className="grid grid-cols-3 gap-4">
-          <div className="col-span-2">
-            <div className="bg-white/70 border border-slate-200/40 rounded-xl p-4 shadow-sm">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <p className="text-sm font-semibold text-slate-800">Petrochemical Lab Storage Grid</p>
-                  <p className="text-[10px] text-slate-500 mt-0.5">8×8 cabinet layout — real-time monitoring</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Eye className="w-3.5 h-3.5 text-green-500" />
-                  <span className="text-[10px] text-green-600 font-medium">CV Active</span>
-                </div>
-              </div>
-              <div className="grid gap-2 mb-4" style={{ gridTemplateColumns: 'repeat(8, 52px)' }}>
-                {storageMap.flat().map((cell, i) => (
-                  <div key={i} className={`w-12 h-10 rounded border-2 ${mapColors[cell]} flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity relative group`}>
-                    <span className="text-[9px] font-medium text-slate-600">{String.fromCharCode(65 + Math.floor(i / 8))}{(i % 8) + 1}</span>
-                    {cell === 'violation' && (
-                      <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-                    )}
-                  </div>
-                ))}
-              </div>
-              <div className="flex gap-4">
-                {[['bg-green-200', 'Safe Storage'], ['bg-amber-200', 'Proximity Warning'], ['bg-red-300', 'Violation'], ['bg-slate-100', 'Empty']].map(([c, l]) => (
-                  <div key={l} className="flex items-center gap-1.5">
-                    <div className={`w-3 h-3 rounded ${c} border border-slate-200`}></div>
-                    <span className="text-[10px] text-slate-500">{l}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-          
-          <div className="space-y-3">
-            <div className="bg-white/70 border border-slate-200/40 rounded-xl p-4 shadow-sm">
-              <p className="text-xs font-semibold text-slate-800 mb-3">Storage Cabinets Status</p>
-              <div className="space-y-3">
-                {storageCabinets.map(cab => (
-                  <div key={cab.id} className="border-b border-slate-100 pb-2.5 last:border-0 last:pb-0">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[11px] font-semibold text-slate-700">{cab.id}</span>
-                      <Badge variant="success" size="sm">{cab.status}</Badge>
-                    </div>
-                    <p className="text-[10px] text-slate-500 mb-2">{cab.name}</p>
-                    <div className="flex items-center gap-2 mb-1.5">
-                      <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full rounded-full ${cab.occupied / cab.capacity > 0.8 ? 'bg-amber-400' : 'bg-green-400'}`}
-                          style={{ width: `${(cab.occupied / cab.capacity) * 100}%` }}
-                        ></div>
-                      </div>
-                      <span className="text-[9px] text-slate-500 font-medium">{cab.occupied}/{cab.capacity}</span>
-                    </div>
-                    <div className="grid grid-cols-3 gap-1.5">
-                      <div className="flex items-center gap-1">
-                        <Thermometer className="w-2.5 h-2.5 text-blue-500" />
-                        <span className="text-[9px] text-slate-600">{cab.temp}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Droplet className="w-2.5 h-2.5 text-cyan-500" />
-                        <span className="text-[9px] text-slate-600">{cab.humidity}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Wind className="w-2.5 h-2.5 text-green-500" />
-                        <span className="text-[9px] text-green-600">{cab.ventilation}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {activeTab === 'MSDS' && (
         <div>
@@ -879,134 +804,6 @@ export function ChemicalManagement() {
               </div>
             </div>
           </SectionCard>
-        </div>
-      )}
-
-      {/* ══════════════════════════════════════════════════════════════
-          NEW TAB — CONSUMPTION & FORECAST
-      ══════════════════════════════════════════════════════════════ */}
-      {activeTab === 'Consumption & Forecast' && (
-        <div className="space-y-4">
-          <div className="grid grid-cols-3 gap-4">
-
-            {/* Weekly Consumption Area Chart */}
-            <SectionCard title="Weekly Consumption Trend" subtitle="Usage by category — current week" className="col-span-2">
-              <ResponsiveContainer width="100%" height={190}>
-                <AreaChart data={weeklyConsumption}>
-                  <defs>
-                    {[C.cyan, C.purple, C.amber, C.green].map((c, i) => (
-                      <linearGradient key={i} id={`cg${i}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={c} stopOpacity={0.18} />
-                        <stop offset="95%" stopColor={c} stopOpacity={0.01} />
-                      </linearGradient>
-                    ))}
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                  <XAxis dataKey="day" tick={{ fontSize: 9 }} />
-                  <YAxis tick={{ fontSize: 9 }} />
-                  <Tooltip contentStyle={{ fontSize: 10 }} />
-                  <Legend iconSize={8} wrapperStyle={{ fontSize: 10 }} />
-                  <Area type="monotone" dataKey="chemical" name="Chemical" stroke={C.cyan} fill="url(#cg0)" strokeWidth={2} />
-                  <Area type="monotone" dataKey="department" name="Department" stroke={C.purple} fill="url(#cg1)" strokeWidth={2} />
-                  <Area type="monotone" dataKey="lab" name="Lab" stroke={C.amber} fill="url(#cg2)" strokeWidth={2} />
-                  <Area type="monotone" dataKey="research" name="Research" stroke={C.green} fill="url(#cg3)" strokeWidth={2} />
-                </AreaChart>
-              </ResponsiveContainer>
-            </SectionCard>
-
-            {/* Top Consumed */}
-            <SectionCard title="Top Consumed Chemicals" subtitle="This month">
-              <div className="space-y-4 pt-1">
-                {topConsumed.map(tc => (
-                  <div key={tc.chemical}>
-                    <div className="flex justify-between mb-1">
-                      <span className="text-xs font-medium text-slate-700">{tc.chemical}</span>
-                      <span className="text-xs font-bold text-slate-800">{tc.used}</span>
-                    </div>
-                    <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-cyan-400 to-cyan-500 rounded-full" style={{ width: `${tc.pct}%` }}></div>
-                    </div>
-                  </div>
-                ))}
-                <div className="mt-3 p-2.5 bg-cyan-50 border border-cyan-200/50 rounded-lg flex gap-2">
-                  <Brain className="w-3.5 h-3.5 text-cyan-500 flex-shrink-0 mt-0.5" />
-                  <p className="text-[10px] text-cyan-700">
-                    Ethanol usage <strong>+18%</strong> vs last month. Likely Project X. Pre-order 40 L recommended.
-                  </p>
-                </div>
-              </div>
-            </SectionCard>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            {/* Forecast Chart */}
-            <SectionCard title="Forecast Demand — Acetone" subtitle="Actual (solid) vs AI prediction (dashed)">
-              <ResponsiveContainer width="100%" height={160}>
-                <LineChart data={forecastData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                  <XAxis dataKey="date" tick={{ fontSize: 9 }} />
-                  <YAxis tick={{ fontSize: 9 }} />
-                  <Tooltip contentStyle={{ fontSize: 10 }} />
-                  <ReferenceLine y={5} stroke={C.red} strokeDasharray="3 3"
-                    label={{ value: 'Safety Stock', position: 'right', fontSize: 8, fill: C.red }} />
-                  <Line type="monotone" dataKey="actual" name="Actual" stroke={C.cyan} strokeWidth={2} dot={{ r: 2 }} connectNulls={false} />
-                  <Line type="monotone" dataKey="forecast" name="Forecast" stroke={C.purple} strokeWidth={2} strokeDasharray="5 5" dot={false} connectNulls />
-                </LineChart>
-              </ResponsiveContainer>
-              <div className="grid grid-cols-4 gap-2 mt-3 pt-3 border-t border-slate-100">
-                {[['Current Stock', '18 L', 'text-slate-700'], ['Expected (30d)', '5 L', 'text-amber-600'], ['Recommended', '20 L', 'text-cyan-600'], ['Confidence', '92%', 'text-green-600']].map(([l, v, cls]) => (
-                  <div key={l} className="text-center">
-                    <p className="text-[9px] text-slate-400">{l}</p>
-                    <p className={`text-sm font-bold ${cls}`}>{v}</p>
-                  </div>
-                ))}
-              </div>
-            </SectionCard>
-
-            {/* Lab Comparison + Predictive */}
-            <div className="space-y-4">
-              <SectionCard title="Laboratory Comparison" subtitle="Inventory metrics by lab">
-                <div className="flex gap-1.5 mb-3">
-                  {(['inventory', 'consumption', 'waste', 'expiry'] as const).map(m => (
-                    <button key={m} onClick={() => setLabMetric(m)} className={`px-2.5 py-1 text-[10px] rounded-lg font-medium capitalize transition-colors ${labMetric === m ? 'bg-cyan-500 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>{m}</button>
-                  ))}
-                </div>
-                <ResponsiveContainer width="100%" height={110}>
-                  <BarChart data={labComparison} barSize={22}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                    <XAxis dataKey="lab" tick={{ fontSize: 9 }} />
-                    <YAxis tick={{ fontSize: 9 }} />
-                    <Tooltip contentStyle={{ fontSize: 10 }} />
-                    <Bar dataKey={labMetric} fill={C.cyan} radius={[3, 3, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </SectionCard>
-
-              <SectionCard title="Predictive Analytics" subtitle="Next 30 days — ML forecast">
-                <div className="grid grid-cols-4 gap-2 mb-3">
-                  {[
-                    { label: 'Demand', delta: '+18%', up: true },
-                    { label: 'Inventory', delta: '-11%', up: false },
-                    { label: 'Waste', delta: '-6%', up: false },
-                    { label: 'Reorder', delta: '+8%', up: true },
-                  ].map(p => (
-                    <div key={p.label} className="p-2 bg-slate-50 rounded-lg text-center border border-slate-100">
-                      <p className="text-[9px] text-slate-500 mb-0.5">{p.label}</p>
-                      <p className={`text-sm font-bold ${p.up ? 'text-red-500' : 'text-green-500'}`}>{p.delta}</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="space-y-1">
-                  {['Historical consumption trends', 'Seasonal demand patterns', 'Ongoing research projects', 'Supplier lead times', 'Minimum safety stock', 'Batch expiry dates'].map(m => (
-                    <div key={m} className="flex items-center gap-1.5">
-                      <ChevronRight className="w-2.5 h-2.5 text-slate-300" />
-                      <span className="text-[9px] text-slate-500">{m}</span>
-                    </div>
-                  ))}
-                </div>
-              </SectionCard>
-            </div>
-          </div>
         </div>
       )}
 

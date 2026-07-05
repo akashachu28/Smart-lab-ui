@@ -1,13 +1,32 @@
-import { useState } from 'react';
-import { Bot, Send, Mic, Paperclip, Plus, Clock, FileText, ChevronRight, Settings, Beaker, ClipboardList, Package, BookOpen, FlaskConical, AlertTriangle, Languages, BarChart3 } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Bot, Send, Mic, Paperclip, Plus, Clock, FileText, ChevronRight, Settings, BookOpen, FlaskConical, AlertTriangle, Languages, BarChart3 } from 'lucide-react';
 import { Badge } from '../ui/badge';
+import { marked } from 'marked';
+import { aiResponses } from './aiResponses';
+import brainLogo from '../../../imports/brainLogo.png';
+import { findBestResponseKey } from './fuzzyMatch';
 
-const sessions = [
-  { id: 1, title: 'Acetone MSDS Query', time: 'Today, 09:14' },
-  { id: 2, title: 'PPE Requirements for Lab B', time: 'Today, 08:32' },
-  { id: 3, title: 'SOP for Sample Disposal', time: 'Yesterday' },
-  { id: 4, title: 'Chemical Compatibility Check', time: 'Yesterday' },
-  { id: 5, title: 'Fire Safety Procedures', time: '2 days ago' },
+interface Message {
+  id: number;
+  role: 'user' | 'ai';
+  content: string;
+  source?: string;
+  sourceType?: string;
+}
+
+interface Session {
+  id: number;
+  title: string;
+  time: string;
+  messages: Message[];
+}
+
+const initialSessions: Session[] = [
+  { id: 1, title: 'Acetone MSDS Query', time: 'Today, 09:14', messages: [] },
+  { id: 2, title: 'PPE Requirements for Lab B', time: 'Today, 08:32', messages: [] },
+  { id: 3, title: 'SOP for Sample Disposal', time: 'Yesterday', messages: [] },
+  { id: 4, title: 'Chemical Compatibility Check', time: 'Yesterday', messages: [] },
+  { id: 5, title: 'Fire Safety Procedures', time: '2 days ago', messages: [] },
 ];
 
 const aiModels = [
@@ -64,78 +83,223 @@ const aiModels = [
 
 const suggestionCards = [
   {
-    icon: FileText,
-    title: 'Find SOP',
-    description: 'Retrieve protocol for Centrifuge C-4',
+    icon: BarChart3,
+    title: 'Daily Summary',
+    description: "Give me today's laboratory summary",
     color: 'from-cyan-400 to-cyan-600'
   },
   {
-    icon: Beaker,
-    title: 'Chemical Guidance',
-    description: 'Compatibility check for Acetone and Nitric Acid',
+    icon: FlaskConical,
+    title: 'Storage Guidance',
+    description: 'How should Sulfuric Acid be stored?',
     color: 'from-cyan-400 to-cyan-600'
   },
   {
-    icon: ClipboardList,
-    title: 'Summarize Report',
-    description: 'Key findings from yesterday\'s batch run',
+    icon: Clock,
+    title: 'Expiry Check',
+    description: 'Show all chemicals expiring in the next 30 days',
     color: 'from-cyan-400 to-cyan-600'
   },
   {
-    icon: Package,
-    title: 'Inventory Check',
-    description: 'Current stock of Class 3 Flammables',
+    icon: AlertTriangle,
+    title: 'MSDS Lookup',
+    description: 'Safety data sheet for Benzene',
     color: 'from-cyan-400 to-cyan-600'
   }
 ];
 
-const initialMessages: any[] = [];
+const initialMessages: Message[] = [];
 
 export function AIAssistant() {
-  const [messages, setMessages] = useState(initialMessages);
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [selectedModel, setSelectedModel] = useState('copilot');
   const [showModelSelector, setShowModelSelector] = useState(false);
+  const [sessions, setSessions] = useState<Session[]>(initialSessions);
+  const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
 
-  const handleSuggestionClick = (suggestion: string) => {
-    setInput(suggestion);
-    sendMessage();
+  // Configure marked options
+  useMemo(() => {
+    marked.setOptions({
+      breaks: true,
+      gfm: true,
+    });
+  }, []);
+
+  const parseMarkdown = (text: string) => {
+    return marked.parse(text);
+  };
+
+  const generateSessionTitle = (firstMessage: string) => {
+    // Generate a title from the first user message (max 40 chars)
+    const title = firstMessage.length > 40 
+      ? firstMessage.substring(0, 40) + '...' 
+      : firstMessage;
+    return title;
+  };
+
+  const getCurrentTime = () => {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    return `Today, ${hours}:${minutes}`;
+  };
+
+  const handleNewChat = () => {
+    // Save current chat to sessions if it has messages
+    if (messages.length > 0) {
+      const firstUserMessage = messages.find(m => m.role === 'user');
+      const sessionTitle = firstUserMessage 
+        ? generateSessionTitle(firstUserMessage.content)
+        : 'New Chat';
+      
+      const newSession = {
+        id: Date.now(), // Use timestamp as unique ID
+        title: sessionTitle,
+        time: getCurrentTime(),
+        messages: [...messages]
+      };
+
+      setSessions(prev => [newSession, ...prev]);
+    }
+
+    // Clear current chat
+    setMessages([]);
+    setCurrentSessionId(null);
+  };
+
+  const loadSession = (sessionId: number) => {
+    const session = sessions.find(s => s.id === sessionId);
+    if (session) {
+      setMessages(session.messages);
+      setCurrentSessionId(sessionId);
+    }
   };
 
   const sendMessage = () => {
     if (!input.trim()) return;
-    const newMsg = { id: messages.length + 1, role: 'user', content: input };
+    const newMsg: Message = { id: messages.length + 1, role: 'user', content: input };
     setMessages(prev => [...prev, newMsg]);
+    
+    const userInput = input.toLowerCase().trim();
     setInput('');
     setIsTyping(true);
+    
     setTimeout(() => {
       setIsTyping(false);
-      setMessages(prev => [...prev, {
-        id: prev.length + 1,
+      
+      const matchedKey = findBestResponseKey(userInput, Object.keys(aiResponses));
+      const response = matchedKey ? aiResponses[matchedKey] : null;
+
+      const aiMessage: Message = response ? {
+        id: messages.length + 2,
+        role: 'ai',
+        content: response.content,
+        source: response.source,
+        sourceType: response.sourceType
+      } : {
+        id: messages.length + 2,
         role: 'ai',
         content: 'I\'m processing your query against the laboratory documentation library. Please allow me a moment to retrieve the most accurate information.',
         source: 'Lab Document Library',
         sourceType: 'SOP'
-      }]);
+      };
+      
+      
+      setMessages(prev => [...prev, aiMessage]);
     }, 1500);
   };
 
   return (
-    <div className="flex h-full">
+    <>
+      <style>{`
+        .ai-message-content h1,
+        .ai-message-content h2,
+        .ai-message-content h3 {
+          font-weight: 600;
+          margin-top: 0.75rem;
+          margin-bottom: 0.5rem;
+        }
+        .ai-message-content h1 { font-size: 1rem; }
+        .ai-message-content h2 { font-size: 0.875rem; }
+        .ai-message-content h3 { font-size: 0.8rem; }
+        .ai-message-content p {
+          margin: 0.5rem 0;
+        }
+        .ai-message-content ul,
+        .ai-message-content ol {
+          margin: 0.5rem 0;
+          padding-left: 1.25rem;
+        }
+        .ai-message-content li {
+          margin: 0.25rem 0;
+        }
+        .ai-message-content strong {
+          font-weight: 600;
+          color: rgb(15 23 42);
+        }
+        .ai-message-content code {
+          background: rgb(241 245 249);
+          padding: 0.125rem 0.25rem;
+          border-radius: 0.25rem;
+          font-size: 0.75rem;
+          font-family: 'Courier New', monospace;
+        }
+        .ai-message-content pre {
+          background: rgb(241 245 249);
+          padding: 0.5rem;
+          border-radius: 0.375rem;
+          overflow-x: auto;
+          margin: 0.5rem 0;
+        }
+        .ai-message-content blockquote {
+          border-left: 3px solid rgb(6 182 212);
+          padding-left: 0.75rem;
+          margin: 0.5rem 0;
+          color: rgb(71 85 105);
+        }
+        .ai-message-content a {
+          color: rgb(6 182 212);
+          text-decoration: underline;
+        }
+        .ai-message-content table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 0.5rem 0;
+        }
+        .ai-message-content th,
+        .ai-message-content td {
+          border: 1px solid rgb(226 232 240);
+          padding: 0.375rem 0.5rem;
+          text-align: left;
+        }
+        .ai-message-content th {
+          background: rgb(248 250 252);
+          font-weight: 600;
+        }
+      `}</style>
+      <div className="flex h-full">
       {/* Sidebar */}
       <div className="w-56 border-r border-slate-200/40 flex flex-col">
         <div className="p-3">
-          <button className="w-full flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-lg text-xs font-medium shadow-sm">
+          <button 
+            onClick={handleNewChat}
+            className="w-full flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-lg text-xs font-medium shadow-sm hover:from-cyan-600 hover:to-cyan-700 transition-all"
+          >
             <Plus className="w-3.5 h-3.5" />
             New Chat
           </button>
         </div>
-        <div className="px-3 pb-2">
+        <div className="px-3 pb-2 flex-1 overflow-y-auto">
           <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Recent Sessions</p>
           <div className="space-y-0.5">
             {sessions.map((s) => (
-              <button key={s.id} className={`w-full text-left px-2 py-2 rounded-lg hover:bg-slate-100/60 transition-colors ${s.id === 1 ? 'bg-slate-100/80' : ''}`}>
+              <button 
+                key={s.id} 
+                onClick={() => loadSession(s.id)}
+                className={`w-full text-left px-2 py-2 rounded-lg hover:bg-slate-100/60 transition-colors ${currentSessionId === s.id ? 'bg-cyan-50 border border-cyan-200' : ''}`}
+              >
                 <p className="text-xs font-medium text-slate-700 truncate">{s.title}</p>
                 <div className="flex items-center gap-1 mt-0.5">
                   <Clock className="w-2.5 h-2.5 text-slate-400" />
@@ -232,10 +396,9 @@ export function AIAssistant() {
               
               {/* Central Icon and Heading */}
               <div className="flex flex-col items-center mb-10">
-                <div className="w-24 h-24 rounded-2xl bg-cyan-50/80 flex items-center justify-center mb-6">
+                <div className="w-24 h-24 rounded-2xl flex items-center justify-center mb-6">
                   <div className="relative">
-                    <Bot className="w-12 h-12 text-cyan-600" />
-                    <Settings className="w-5 h-5 text-cyan-600 absolute -bottom-1 -right-1" />
+                    <img src={brainLogo} alt="AI Assistant" className="w-14 h-14" />
                   </div>
                 </div>
                 <h2 className="text-2xl font-bold text-slate-800 mb-3">
@@ -285,12 +448,19 @@ export function AIAssistant() {
                     </div>
                   )}
                   <div className={`max-w-lg ${msg.role === 'user' ? 'items-end' : 'items-start'} flex flex-col gap-1.5`}>
-                    <div className={`px-4 py-3 rounded-2xl text-xs leading-relaxed whitespace-pre-line ${
+                    <div className={`px-4 py-3 rounded-2xl text-xs leading-relaxed ${
                       msg.role === 'user'
                         ? 'bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-tr-sm'
                         : 'bg-white border border-slate-200/60 text-slate-700 rounded-tl-sm shadow-sm'
                     }`}>
-                      {msg.content}
+                      {msg.role === 'ai' ? (
+                        <div 
+                          className="ai-message-content"
+                          dangerouslySetInnerHTML={{ __html: parseMarkdown(msg.content) }}
+                        />
+                      ) : (
+                        <div className="whitespace-pre-line">{msg.content}</div>
+                      )}
                     </div>
                     {msg.role === 'ai' && msg.source && (
                       <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-50 border border-slate-200/60 rounded-lg">
@@ -349,6 +519,7 @@ export function AIAssistant() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

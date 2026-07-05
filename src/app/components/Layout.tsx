@@ -38,15 +38,15 @@ const navigationGroups = [
     items: [
       { name: 'Sample Tracking', path: '/sample-tracking', icon: FlaskConical, description: 'Chain of Custody' },
       { name: 'Chemical Management', path: '/chemical-management', icon: TestTube, description: 'Lifecycle & Compliance' },
-      { name: 'Gas Cylinders', path: '/gas-cylinders', icon: Gauge, description: 'IoT Monitoring' },
+      { name: 'Gas Monitoring', path: '/gas-monitoring', icon: Gauge, description: 'IoT Monitoring' },
     ]
   },
   {
     items: [
       { name: 'Waste Management', path: '/waste-management', icon: Trash2, description: 'Disposal Tracking' },
       // { name: 'Demand Forecasting', path: '/demand-forecasting', icon: TrendingUp, description: 'AI Predictions' },
-      { name: 'Compatibility', path: '/compatibility-monitoring', icon: AlertOctagon, description: 'Storage Safety' },
-      { name: 'Root Cause', path: '/root-cause-analysis', icon: Search, description: 'Incident Analysis' },
+      // { name: 'Compatibility', path: '/compatibility-monitoring', icon: AlertOctagon, description: 'Storage Safety' },
+      // { name: 'Root Cause', path: '/root-cause-analysis', icon: Search, description: 'Incident Analysis' },
       { name: 'AI Assistant', path: '/ai-assistant', icon: Bot, description: 'Lab Copilot' },
     ]
   },
